@@ -14,18 +14,18 @@ import VoltMarketEnhancedMessages from '@/components/voltmarket/VoltMarketEnhanc
 import VoltMarketWatchlist from '@/components/voltmarket/VoltMarketWatchlist';
 import VoltMarketVerificationCenter from '@/components/voltmarket/VoltMarketVerificationCenter';
 
-import { VoltMarketAdvancedSearch } from '@/components/voltmarket/VoltMarketAdvancedSearch';
-import { VoltMarketNotificationCenter } from '@/components/voltmarket/VoltMarketNotificationCenter';
+import VoltMarketAdvancedSearch from '@/components/voltmarket/VoltMarketAdvancedSearch';
+import VoltMarketNotificationCenter from '@/components/voltmarket/VoltMarketNotificationCenter';
 import { useVoltMarketAuth } from '@/contexts/VoltMarketAuthContext';
 import VoltMarketQATest from '@/components/voltmarket/VoltMarketQATest';
-import { VoltMarketDocumentCenter } from '@/components/voltmarket/VoltMarketDocumentCenter';
-import { VoltMarketAdvancedPortfolio } from '@/components/voltmarket/VoltMarketAdvancedPortfolio';
-import { VoltMarketLOICenter } from '@/components/voltmarket/VoltMarketLOICenter';
-import { VoltMarketDueDiligenceCenter } from '@/components/voltmarket/VoltMarketDueDiligenceCenter';
-import { VoltMarketContactMessages } from '@/components/voltmarket/VoltMarketContactMessages';
-import { VoltMarketDocumentRequests } from '@/components/voltmarket/VoltMarketDocumentRequests';
-import { VoltMarketInvestmentCalculator } from '@/components/voltmarket/VoltMarketInvestmentCalculator';
-import { VoltMarketMarketReports } from '@/components/voltmarket/VoltMarketMarketReports';
+import VoltMarketDocumentCenter from '@/components/voltmarket/VoltMarketDocumentCenter';
+import VoltMarketAdvancedPortfolio from '@/components/voltmarket/VoltMarketAdvancedPortfolio';
+import VoltMarketLOICenter from '@/components/voltmarket/VoltMarketLOICenter';
+import VoltMarketDueDiligenceCenter from '@/components/voltmarket/VoltMarketDueDiligenceCenter';
+import VoltMarketContactMessages from '@/components/voltmarket/VoltMarketContactMessages';
+import VoltMarketDocumentRequests from '@/components/voltmarket/VoltMarketDocumentRequests';
+import VoltMarketInvestmentCalculator from '@/components/voltmarket/VoltMarketInvestmentCalculator';
+import VoltMarketMarketReports from '@/components/voltmarket/VoltMarketMarketReports';
 import { ForgotPassword } from '@/pages/ForgotPassword';
 import { ResetPassword } from '@/pages/ResetPassword';
 
