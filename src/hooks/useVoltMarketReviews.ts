@@ -90,7 +90,7 @@ export const useVoltMarketReviews = () => {
       const { data, error } = await supabase
         .from('voltmarket_reviews')
         .select('rating')
-        .eq('reviewed_user_id', userId);
+        .eq('reviewer_id', userId);
 
       if (error) throw error;
 

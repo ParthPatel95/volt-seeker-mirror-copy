@@ -83,7 +83,7 @@ export const useVoltMarketSavedSearches = () => {
       if (error) throw error;
       return {
         id: data.id,
-        name: data.search_name,
+        name: data.name,
         criteria: data.search_criteria
       };
     } catch (error) {
@@ -113,7 +113,7 @@ export const useVoltMarketSavedSearches = () => {
     try {
       const { error } = await supabase
         .from('voltmarket_saved_searches')
-        .update({ notification_enabled: enabled })
+        .update({ notifications_enabled: enabled })
         .eq('id', searchId);
 
       if (error) throw error;

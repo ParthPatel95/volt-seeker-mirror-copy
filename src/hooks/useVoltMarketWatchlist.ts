@@ -29,21 +29,26 @@ export const useVoltMarketWatchlist = () => {
     try {
       const { data, error } = await supabase
         .from('voltmarket_watchlist')
-        .select(`
-          *,
-          listing:voltmarket_listings(
-            id,
-            title,
-            location,
-            asking_price,
-            status
-          )
-        `)
+        .select('*')
         .eq('user_id', profile.id)
-        .order('created_at', { ascending: false });
+        .order('added_at', { ascending: false });
 
       if (error) throw error;
-      setWatchlist(data || []);
+      
+      // Map the data to match interface
+      const mappedData = (data || []).map(item => ({
+        ...item,
+        created_at: item.added_at,
+        listing: {
+          id: '',
+          title: 'Unknown Listing',
+          location: '',
+          asking_price: 0,
+          status: 'active'
+        }
+      }));
+      
+      setWatchlist(mappedData);
     } catch (error) {
       console.error('Error fetching watchlist:', error);
     } finally {
