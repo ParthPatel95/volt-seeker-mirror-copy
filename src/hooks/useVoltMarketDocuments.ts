@@ -40,7 +40,7 @@ export const useVoltMarketDocuments = () => {
       }
 
       if (documentType && documentType !== 'all') {
-        query = query.eq('document_type', documentType);
+        query = query.eq('document_type', documentType as any);
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
@@ -53,9 +53,7 @@ export const useVoltMarketDocuments = () => {
         original_filename: doc.file_name,
         access_level: doc.is_private ? 'private' : 'public',
         is_confidential: doc.is_private,
-        document_type: (doc.document_type || 'other') as 'financial' | 'legal' | 'technical' | 'marketing' | 'due_diligence' | 'other',
-        created_at: doc.created_at || new Date().toISOString(),
-        description: doc.description || ''
+        updated_at: doc.updated_at || doc.created_at
       }));
       
       setDocuments(mappedDocuments);
@@ -103,7 +101,7 @@ export const useVoltMarketDocuments = () => {
           file_url: publicUrl,
           file_size: file.size,
           file_type: file.type,
-          document_type: documentType,
+          document_type: documentType as any,
           is_private: accessLevel === 'private' || isConfidential,
           description: `${documentType} document`
         })

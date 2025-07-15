@@ -27,9 +27,9 @@ export const useVoltMarketSavedSearches = () => {
         .from('voltmarket_saved_searches')
         .insert({
           user_id: profile.id,
-          search_name: searchName,
+          name: searchName,
           search_criteria: searchCriteria,
-          notification_enabled: notificationEnabled
+          notifications_enabled: notificationEnabled
         })
         .select()
         .single();
@@ -54,7 +54,14 @@ export const useVoltMarketSavedSearches = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setSavedSearches(data || []);
+      // Map the data to match interface
+      const mappedData = (data || []).map(item => ({
+        ...item,
+        search_name: item.name,
+        notification_enabled: item.notifications_enabled,
+        updated_at: item.created_at
+      }));
+      setSavedSearches(mappedData);
       return { data, error: null };
     } catch (error) {
       setSavedSearches([]);

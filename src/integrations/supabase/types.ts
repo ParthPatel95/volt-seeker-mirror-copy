@@ -418,6 +418,344 @@ export type Database = {
           },
         ]
       }
+      voltmarket_analytics: {
+        Row: {
+          id: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number
+          recorded_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value: number
+          recorded_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number
+          recorded_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      voltmarket_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          last_message_at: string | null
+          listing_id: string | null
+          participant_ids: string[]
+          title: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          listing_id?: string | null
+          participant_ids: string[]
+          title?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          listing_id?: string | null
+          participant_ids?: string[]
+          title?: string | null
+        }
+        Relationships: []
+      }
+      voltmarket_documents: {
+        Row: {
+          created_at: string
+          description: string | null
+          document_type: Database["public"]["Enums"]["voltmarket_document_type"]
+          file_name: string
+          file_size: number
+          file_type: string | null
+          file_url: string
+          id: string
+          is_private: boolean
+          listing_id: string | null
+          updated_at: string
+          uploader_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          document_type: Database["public"]["Enums"]["voltmarket_document_type"]
+          file_name: string
+          file_size: number
+          file_type?: string | null
+          file_url: string
+          id?: string
+          is_private?: boolean
+          listing_id?: string | null
+          updated_at?: string
+          uploader_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          document_type?: Database["public"]["Enums"]["voltmarket_document_type"]
+          file_name?: string
+          file_size?: number
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          is_private?: boolean
+          listing_id?: string | null
+          updated_at?: string
+          uploader_id?: string
+        }
+        Relationships: []
+      }
+      voltmarket_due_diligence: {
+        Row: {
+          buyer_id: string
+          completed_at: string | null
+          documents: Json | null
+          id: string
+          listing_id: string
+          notes: string | null
+          started_at: string
+          status: string
+        }
+        Insert: {
+          buyer_id: string
+          completed_at?: string | null
+          documents?: Json | null
+          id?: string
+          listing_id: string
+          notes?: string | null
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          buyer_id?: string
+          completed_at?: string | null
+          documents?: Json | null
+          id?: string
+          listing_id?: string
+          notes?: string | null
+          started_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      voltmarket_listings: {
+        Row: {
+          asking_price: number
+          created_at: string
+          description: string | null
+          id: string
+          listing_type: string
+          location: string
+          power_capacity_mw: number | null
+          seller_id: string
+          status: Database["public"]["Enums"]["voltmarket_listing_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          asking_price: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          listing_type: string
+          location: string
+          power_capacity_mw?: number | null
+          seller_id: string
+          status?: Database["public"]["Enums"]["voltmarket_listing_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          asking_price?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          listing_type?: string
+          location?: string
+          power_capacity_mw?: number | null
+          seller_id?: string
+          status?: Database["public"]["Enums"]["voltmarket_listing_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      voltmarket_lois: {
+        Row: {
+          additional_notes: string | null
+          buyer_id: string
+          conditions: string | null
+          id: string
+          listing_id: string
+          offered_price: number
+          responded_at: string | null
+          seller_id: string
+          status: Database["public"]["Enums"]["voltmarket_loi_status"]
+          submitted_at: string
+          timeline_days: number | null
+        }
+        Insert: {
+          additional_notes?: string | null
+          buyer_id: string
+          conditions?: string | null
+          id?: string
+          listing_id: string
+          offered_price: number
+          responded_at?: string | null
+          seller_id: string
+          status?: Database["public"]["Enums"]["voltmarket_loi_status"]
+          submitted_at?: string
+          timeline_days?: number | null
+        }
+        Update: {
+          additional_notes?: string | null
+          buyer_id?: string
+          conditions?: string | null
+          id?: string
+          listing_id?: string
+          offered_price?: number
+          responded_at?: string | null
+          seller_id?: string
+          status?: Database["public"]["Enums"]["voltmarket_loi_status"]
+          submitted_at?: string
+          timeline_days?: number | null
+        }
+        Relationships: []
+      }
+      voltmarket_nda_requests: {
+        Row: {
+          id: string
+          listing_id: string
+          requested_at: string
+          requester_id: string
+          responded_at: string | null
+          status: string
+        }
+        Insert: {
+          id?: string
+          listing_id: string
+          requested_at?: string
+          requester_id: string
+          responded_at?: string | null
+          status?: string
+        }
+        Update: {
+          id?: string
+          listing_id?: string
+          requested_at?: string
+          requester_id?: string
+          responded_at?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      voltmarket_portfolio_items: {
+        Row: {
+          acquisition_date: string | null
+          acquisition_price: number | null
+          added_at: string
+          current_value: number | null
+          id: string
+          item_type: string
+          listing_id: string | null
+          metadata: Json | null
+          name: string
+          notes: string | null
+          portfolio_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          acquisition_date?: string | null
+          acquisition_price?: number | null
+          added_at?: string
+          current_value?: number | null
+          id?: string
+          item_type?: string
+          listing_id?: string | null
+          metadata?: Json | null
+          name: string
+          notes?: string | null
+          portfolio_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          acquisition_date?: string | null
+          acquisition_price?: number | null
+          added_at?: string
+          current_value?: number | null
+          id?: string
+          item_type?: string
+          listing_id?: string | null
+          metadata?: Json | null
+          name?: string
+          notes?: string | null
+          portfolio_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_portfolio"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "voltmarket_portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      voltmarket_portfolios: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          portfolio_type: string
+          risk_tolerance: string | null
+          target_allocation: Json | null
+          total_value: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          portfolio_type?: string
+          risk_tolerance?: string | null
+          target_allocation?: Json | null
+          total_value?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          portfolio_type?: string
+          risk_tolerance?: string | null
+          target_allocation?: Json | null
+          total_value?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       voltmarket_profiles: {
         Row: {
           accredited_investor: boolean | null
@@ -493,6 +831,111 @@ export type Database = {
         }
         Relationships: []
       }
+      voltmarket_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          listing_id: string
+          rating: number
+          reviewer_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          listing_id: string
+          rating: number
+          reviewer_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          listing_id?: string
+          rating?: number
+          reviewer_id?: string
+        }
+        Relationships: []
+      }
+      voltmarket_saved_searches: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          notifications_enabled: boolean | null
+          search_criteria: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          notifications_enabled?: boolean | null
+          search_criteria: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          notifications_enabled?: boolean | null
+          search_criteria?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      voltmarket_verification: {
+        Row: {
+          documents: Json | null
+          id: string
+          status: Database["public"]["Enums"]["voltmarket_verification_status"]
+          submitted_at: string
+          user_id: string
+          verification_type: string
+          verified_at: string | null
+        }
+        Insert: {
+          documents?: Json | null
+          id?: string
+          status?: Database["public"]["Enums"]["voltmarket_verification_status"]
+          submitted_at?: string
+          user_id: string
+          verification_type: string
+          verified_at?: string | null
+        }
+        Update: {
+          documents?: Json | null
+          id?: string
+          status?: Database["public"]["Enums"]["voltmarket_verification_status"]
+          submitted_at?: string
+          user_id?: string
+          verification_type?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
+      voltmarket_watchlist: {
+        Row: {
+          added_at: string
+          id: string
+          listing_id: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string
+          id?: string
+          listing_id: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string
+          id?: string
+          listing_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -513,6 +956,20 @@ export type Database = {
         | "solar_farm"
         | "wind_farm"
         | "other"
+      voltmarket_document_type:
+        | "financial"
+        | "legal"
+        | "technical"
+        | "marketing"
+        | "due_diligence"
+        | "other"
+      voltmarket_listing_status:
+        | "active"
+        | "sold"
+        | "under_contract"
+        | "withdrawn"
+      voltmarket_loi_status: "pending" | "accepted" | "rejected"
+      voltmarket_verification_status: "pending" | "verified" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -653,6 +1110,22 @@ export const Constants = {
         "wind_farm",
         "other",
       ],
+      voltmarket_document_type: [
+        "financial",
+        "legal",
+        "technical",
+        "marketing",
+        "due_diligence",
+        "other",
+      ],
+      voltmarket_listing_status: [
+        "active",
+        "sold",
+        "under_contract",
+        "withdrawn",
+      ],
+      voltmarket_loi_status: ["pending", "accepted", "rejected"],
+      voltmarket_verification_status: ["pending", "verified", "rejected"],
     },
   },
 } as const

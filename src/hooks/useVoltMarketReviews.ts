@@ -61,15 +61,25 @@ export const useVoltMarketReviews = () => {
     try {
       const { data, error } = await supabase
         .from('voltmarket_reviews')
-        .select(`
-          *,
-          reviewer:voltmarket_profiles!reviewer_id(company_name, profile_image_url)
-        `)
-        .eq('reviewed_user_id', userId)
+        .select('*')
+        .eq('reviewer_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return { data, error: null };
+      
+      // Map the data to match interface
+      const mappedData = (data || []).map(review => ({
+        ...review,
+        reviewed_user_id: review.reviewer_id,
+        review_text: review.comment,
+        transaction_verified: false,
+        reviewer: {
+          company_name: 'Unknown',
+          profile_image_url: null
+        }
+      }));
+      
+      return { data: mappedData, error: null };
     } catch (error) {
       return { data: null, error };
     }
