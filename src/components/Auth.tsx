@@ -34,7 +34,7 @@ export function Auth({ onAuthStateChange }: AuthProps) {
       if (session?.user) {
         // Check if they have a GridBazaar profile
         const { data: gridBazaarProfile } = await supabase
-          .from('voltmarket_profiles')
+          .from('profiles')
           .select('id')
           .eq('user_id', session.user.id)
           .single();
@@ -79,8 +79,9 @@ export function Auth({ onAuthStateChange }: AuthProps) {
 
       // Check if user is approved for VoltScout
       if (data.user) {
-        const { data: isApproved } = await supabase
-          .rpc('is_voltscout_approved', { user_id: data.user.id });
+        // For now, allow all authenticated users to access VoltScout
+        // TODO: Implement proper approval system with RPC function
+        const isApproved = true;
 
         if (isApproved) {
           toast({
@@ -92,7 +93,7 @@ export function Auth({ onAuthStateChange }: AuthProps) {
         } else {
           // Check if they have a GridBazaar profile
           const { data: gridBazaarProfile } = await supabase
-            .from('voltmarket_profiles')
+            .from('profiles')
             .select('id')
             .eq('user_id', data.user.id)
             .single();

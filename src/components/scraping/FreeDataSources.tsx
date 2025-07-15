@@ -1,6 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export function FreeDataSources() {
+interface FreeDataSourcesProps {
+  onPropertiesFound?: (count: number) => void;
+}
+
+export function FreeDataSources({ onPropertiesFound }: FreeDataSourcesProps) {
   return (
     <Card>
       <CardHeader>

@@ -1,6 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export function AIPropertyScraper() {
+interface AIPropertyScraperProps {
+  onPropertiesFound?: (count: number) => void;
+}
+
+export function AIPropertyScraper({ onPropertiesFound }: AIPropertyScraperProps) {
   return (
     <Card>
       <CardHeader>

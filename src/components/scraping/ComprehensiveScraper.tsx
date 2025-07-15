@@ -1,6 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export function ComprehensiveScraper() {
+interface ComprehensiveScraperProps {
+  onPropertiesFound?: (count: number) => void;
+}
+
+export function ComprehensiveScraper({ onPropertiesFound }: ComprehensiveScraperProps) {
   return (
     <Card>
       <CardHeader>
