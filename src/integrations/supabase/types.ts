@@ -110,6 +110,45 @@ export type Database = {
         }
         Relationships: []
       }
+      energy_markets: {
+        Row: {
+          created_at: string
+          current_price_mwh: number | null
+          daily_high: number | null
+          daily_low: number | null
+          id: string
+          market_name: string
+          market_status: string | null
+          price_timestamp: string | null
+          region: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_price_mwh?: number | null
+          daily_high?: number | null
+          daily_low?: number | null
+          id?: string
+          market_name: string
+          market_status?: string | null
+          price_timestamp?: string | null
+          region?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_price_mwh?: number | null
+          daily_high?: number | null
+          daily_low?: number | null
+          id?: string
+          market_name?: string
+          market_status?: string | null
+          price_timestamp?: string | null
+          region?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -171,7 +210,7 @@ export type Database = {
           longitude: number | null
           lot_size_acres: number | null
           power_capacity_mw: number | null
-          property_type: string
+          property_type: Database["public"]["Enums"]["property_type"]
           source: string | null
           square_footage: number | null
           state: string | null
@@ -196,7 +235,7 @@ export type Database = {
           longitude?: number | null
           lot_size_acres?: number | null
           power_capacity_mw?: number | null
-          property_type: string
+          property_type: Database["public"]["Enums"]["property_type"]
           source?: string | null
           square_footage?: number | null
           state?: string | null
@@ -221,7 +260,7 @@ export type Database = {
           longitude?: number | null
           lot_size_acres?: number | null
           power_capacity_mw?: number | null
-          property_type?: string
+          property_type?: Database["public"]["Enums"]["property_type"]
           source?: string | null
           square_footage?: number | null
           state?: string | null
@@ -379,6 +418,81 @@ export type Database = {
           },
         ]
       }
+      voltmarket_profiles: {
+        Row: {
+          accredited_investor: boolean | null
+          address: string | null
+          business_license: string | null
+          city: string | null
+          company_name: string | null
+          contact_person: string | null
+          country: string | null
+          created_at: string
+          id: string
+          investment_capacity_usd: number | null
+          investment_timeline: string | null
+          is_email_verified: boolean | null
+          is_id_verified: boolean | null
+          linkedin_url: string | null
+          phone: string | null
+          preferred_investment_types: string[] | null
+          role: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+          website_url: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          accredited_investor?: boolean | null
+          address?: string | null
+          business_license?: string | null
+          city?: string | null
+          company_name?: string | null
+          contact_person?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          investment_capacity_usd?: number | null
+          investment_timeline?: string | null
+          is_email_verified?: boolean | null
+          is_id_verified?: boolean | null
+          linkedin_url?: string | null
+          phone?: string | null
+          preferred_investment_types?: string[] | null
+          role?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          accredited_investor?: boolean | null
+          address?: string | null
+          business_license?: string | null
+          city?: string | null
+          company_name?: string | null
+          contact_person?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          investment_capacity_usd?: number | null
+          investment_timeline?: string | null
+          is_email_verified?: boolean | null
+          is_id_verified?: boolean | null
+          linkedin_url?: string | null
+          phone?: string | null
+          preferred_investment_types?: string[] | null
+          role?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -387,7 +501,18 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      property_type:
+        | "residential"
+        | "commercial"
+        | "industrial"
+        | "land"
+        | "mixed_use"
+        | "agricultural"
+        | "warehouse"
+        | "data_center"
+        | "solar_farm"
+        | "wind_farm"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -514,6 +639,20 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      property_type: [
+        "residential",
+        "commercial",
+        "industrial",
+        "land",
+        "mixed_use",
+        "agricultural",
+        "warehouse",
+        "data_center",
+        "solar_farm",
+        "wind_farm",
+        "other",
+      ],
+    },
   },
 } as const

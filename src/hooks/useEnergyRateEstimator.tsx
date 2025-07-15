@@ -2,14 +2,14 @@
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { EnergyRateInput } from '@/components/energy/EnergyRateInputTypes';
+import { EnergyRateInputs } from '@/components/energy/EnergyRateInputTypes';
 import { EnergyRateResults } from '@/components/energy/EnergyRateResults';
 
 export function useEnergyRateEstimator() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const calculateRates = async (input: EnergyRateInput): Promise<EnergyRateResults> => {
+  const calculateRates = async (input: EnergyRateInputs): Promise<EnergyRateResults> => {
     setLoading(true);
     try {
       console.log('Calculating energy rates for input:', input);
@@ -53,7 +53,7 @@ export function useEnergyRateEstimator() {
     }
   };
 
-  const downloadCSV = async (results: EnergyRateResults, input: EnergyRateInput) => {
+  const downloadCSV = async (results: EnergyRateResults, input: EnergyRateInputs) => {
     try {
       console.log('Generating CSV download...');
       
@@ -95,7 +95,7 @@ export function useEnergyRateEstimator() {
     }
   };
 
-  const downloadPDF = async (results: EnergyRateResults, input: EnergyRateInput) => {
+  const downloadPDF = async (results: EnergyRateResults, input: EnergyRateInputs) => {
     try {
       console.log('Generating PDF download...');
       

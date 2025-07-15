@@ -27,18 +27,9 @@ export const useVoltMarketAccessRequests = () => {
   const fetchAccessRequests = useCallback(async (sellerId: string) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('voltmarket_nda_requests')
-        .select(`
-          *,
-          requester_profile:voltmarket_profiles!voltmarket_nda_requests_requester_id_fkey(company_name, role),
-          listing:voltmarket_listings!voltmarket_nda_requests_listing_id_fkey(title)
-        `)
-        .eq('seller_id', sellerId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setAccessRequests(data || []);
+      // For now, return empty array since table doesn't exist
+      // TODO: Create voltmarket_nda_requests table
+      setAccessRequests([]);
     } catch (error) {
       console.error('Error fetching access requests:', error);
       toast({

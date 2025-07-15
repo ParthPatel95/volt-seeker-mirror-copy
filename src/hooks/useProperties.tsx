@@ -5,32 +5,33 @@ import { supabase } from '@/integrations/supabase/client';
 export interface Property {
   id: string;
   address: string;
-  city: string;
-  state: string;
-  zip_code: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
+  country?: string;
   property_type: string;
-  status: string;
+  status?: string;
   square_footage?: number;
   lot_size_acres?: number;
   asking_price?: number;
-  price_per_sqft?: number;
   year_built?: number;
   power_capacity_mw?: number;
   substation_distance_miles?: number;
-  transmission_access: boolean;
-  zoning?: string;
+  latitude?: number;
+  longitude?: number;
   description?: string;
   listing_url?: string;
-  source: string;
-  discovered_at: string;
+  image_urls?: string[];
+  source?: string;
+  created_by?: string;
   created_at: string;
+  updated_at: string;
   volt_scores?: Array<{
     overall_score: number;
     location_score: number;
-    power_score: number;
     infrastructure_score: number;
-    financial_score: number;
-    risk_score: number;
+    economic_score: number;
+    market_score: number;
     calculated_at: string;
   }>;
 }
@@ -50,14 +51,13 @@ export function useProperties() {
           volt_scores (
             overall_score,
             location_score,
-            power_score,
             infrastructure_score,
-            financial_score,
-            risk_score,
+            economic_score,
+            market_score,
             calculated_at
           )
         `)
-        .order('discovered_at', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setProperties(data || []);
