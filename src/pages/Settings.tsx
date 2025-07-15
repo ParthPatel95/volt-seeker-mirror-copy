@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { LogOut, User, Bell, Shield, Palette, Users } from 'lucide-react';
-import { AccessRequestsSettings } from '@/components/settings/AccessRequestsSettings';
+import AccessRequestsSettings from '@/components/settings/AccessRequestsSettings';
 
 export default function Settings() {
   const { user, signOut } = useAuth();

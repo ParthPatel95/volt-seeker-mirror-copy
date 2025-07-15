@@ -27,10 +27,11 @@ export const mapPropertyType = (type: string): PropertyType => {
   const typeMap: { [key: string]: PropertyType } = {
     'industrial': 'industrial',
     'warehouse': 'warehouse', 
-    'manufacturing': 'manufacturing',
+    'manufacturing': 'industrial',
     'data_center': 'data_center',
-    'logistics': 'logistics',
-    'mixed_use': 'flex_space'
+    'logistics': 'warehouse',
+    'flex_space': 'industrial',
+    'mixed_use': 'mixed_use'
   };
   return typeMap[type.toLowerCase()] || 'other';
 };

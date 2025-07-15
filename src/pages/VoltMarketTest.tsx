@@ -1,5 +1,5 @@
 import React from 'react';
-import { VoltMarketFeatureTest } from '@/components/voltmarket/VoltMarketFeatureTest';
+import VoltMarketFeatureTest from '@/components/voltmarket/VoltMarketFeatureTest';
 
 export default function VoltMarketTest() {
   return (

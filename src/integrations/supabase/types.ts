@@ -56,6 +56,42 @@ export type Database = {
         }
         Relationships: []
       }
+      btc_roi_calculations: {
+        Row: {
+          calculation_type: string
+          created_at: string
+          form_data: Json
+          id: string
+          network_data: Json
+          results: Json
+          site_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          calculation_type: string
+          created_at?: string
+          form_data: Json
+          id?: string
+          network_data: Json
+          results: Json
+          site_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          calculation_type?: string
+          created_at?: string
+          form_data?: Json
+          id?: string
+          network_data?: Json
+          results?: Json
+          site_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           analyzed_at: string | null
@@ -146,6 +182,39 @@ export type Database = {
           price_timestamp?: string | null
           region?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      energy_rates: {
+        Row: {
+          created_at: string
+          id: string
+          market_name: string
+          node_id: string | null
+          node_name: string | null
+          price_per_mwh: number
+          rate_type: string
+          timestamp: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          market_name: string
+          node_id?: string | null
+          node_name?: string | null
+          price_per_mwh: number
+          rate_type: string
+          timestamp: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          market_name?: string
+          node_id?: string | null
+          node_name?: string | null
+          price_per_mwh?: number
+          rate_type?: string
+          timestamp?: string
         }
         Relationships: []
       }
@@ -634,6 +703,39 @@ export type Database = {
         }
         Relationships: []
       }
+      voltmarket_messages: {
+        Row: {
+          conversation_id: string | null
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          listing_id: string
+          message: string
+          recipient_id: string
+          sender_id: string
+        }
+        Insert: {
+          conversation_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          listing_id: string
+          message: string
+          recipient_id: string
+          sender_id: string
+        }
+        Update: {
+          conversation_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          listing_id?: string
+          message?: string
+          recipient_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
       voltmarket_nda_requests: {
         Row: {
           id: string
@@ -838,7 +940,10 @@ export type Database = {
           id: string
           listing_id: string
           rating: number
+          review_text: string | null
+          reviewed_user_id: string | null
           reviewer_id: string
+          transaction_verified: boolean | null
         }
         Insert: {
           comment?: string | null
@@ -846,7 +951,10 @@ export type Database = {
           id?: string
           listing_id: string
           rating: number
+          review_text?: string | null
+          reviewed_user_id?: string | null
           reviewer_id: string
+          transaction_verified?: boolean | null
         }
         Update: {
           comment?: string | null
@@ -854,7 +962,10 @@ export type Database = {
           id?: string
           listing_id?: string
           rating?: number
+          review_text?: string | null
+          reviewed_user_id?: string | null
           reviewer_id?: string
+          transaction_verified?: boolean | null
         }
         Relationships: []
       }
@@ -863,24 +974,30 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          notification_enabled: boolean | null
           notifications_enabled: boolean | null
           search_criteria: Json
+          search_name: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           name: string
+          notification_enabled?: boolean | null
           notifications_enabled?: boolean | null
           search_criteria: Json
+          search_name?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
           name?: string
+          notification_enabled?: boolean | null
           notifications_enabled?: boolean | null
           search_criteria?: Json
+          search_name?: string | null
           user_id?: string
         }
         Relationships: []
@@ -915,6 +1032,33 @@ export type Database = {
         }
         Relationships: []
       }
+      voltmarket_verification_documents: {
+        Row: {
+          document_type: string
+          file_path: string
+          filename: string
+          id: string
+          uploaded_at: string | null
+          verification_id: string
+        }
+        Insert: {
+          document_type: string
+          file_path: string
+          filename: string
+          id?: string
+          uploaded_at?: string | null
+          verification_id: string
+        }
+        Update: {
+          document_type?: string
+          file_path?: string
+          filename?: string
+          id?: string
+          uploaded_at?: string | null
+          verification_id?: string
+        }
+        Relationships: []
+      }
       voltmarket_watchlist: {
         Row: {
           added_at: string
@@ -944,6 +1088,17 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      alert_type:
+        | "new_property"
+        | "price_change"
+        | "status_change"
+        | "high_voltscore"
+      property_status:
+        | "available"
+        | "under_contract"
+        | "sold"
+        | "off_market"
+        | "analyzing"
       property_type:
         | "residential"
         | "commercial"
@@ -963,12 +1118,35 @@ export type Database = {
         | "marketing"
         | "due_diligence"
         | "other"
+      voltmarket_equipment_condition: "new" | "used" | "refurbished"
+      voltmarket_equipment_type:
+        | "asic"
+        | "gpu"
+        | "cooling"
+        | "generator"
+        | "ups"
+        | "transformer"
+        | "other"
       voltmarket_listing_status:
         | "active"
         | "sold"
         | "under_contract"
         | "withdrawn"
       voltmarket_loi_status: "pending" | "accepted" | "rejected"
+      voltmarket_nda_status: "pending" | "approved" | "rejected"
+      voltmarket_property_type:
+        | "data_center"
+        | "industrial"
+        | "warehouse"
+        | "land"
+        | "office"
+        | "other"
+      voltmarket_seller_type:
+        | "site_owner"
+        | "broker"
+        | "realtor"
+        | "equipment_vendor"
+      voltmarket_user_role: "buyer" | "seller" | "admin"
       voltmarket_verification_status: "pending" | "verified" | "rejected"
     }
     CompositeTypes: {
@@ -1097,6 +1275,19 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      alert_type: [
+        "new_property",
+        "price_change",
+        "status_change",
+        "high_voltscore",
+      ],
+      property_status: [
+        "available",
+        "under_contract",
+        "sold",
+        "off_market",
+        "analyzing",
+      ],
       property_type: [
         "residential",
         "commercial",
@@ -1118,6 +1309,16 @@ export const Constants = {
         "due_diligence",
         "other",
       ],
+      voltmarket_equipment_condition: ["new", "used", "refurbished"],
+      voltmarket_equipment_type: [
+        "asic",
+        "gpu",
+        "cooling",
+        "generator",
+        "ups",
+        "transformer",
+        "other",
+      ],
       voltmarket_listing_status: [
         "active",
         "sold",
@@ -1125,6 +1326,22 @@ export const Constants = {
         "withdrawn",
       ],
       voltmarket_loi_status: ["pending", "accepted", "rejected"],
+      voltmarket_nda_status: ["pending", "approved", "rejected"],
+      voltmarket_property_type: [
+        "data_center",
+        "industrial",
+        "warehouse",
+        "land",
+        "office",
+        "other",
+      ],
+      voltmarket_seller_type: [
+        "site_owner",
+        "broker",
+        "realtor",
+        "equipment_vendor",
+      ],
+      voltmarket_user_role: ["buyer", "seller", "admin"],
       voltmarket_verification_status: ["pending", "verified", "rejected"],
     },
   },
