@@ -763,6 +763,57 @@ export type Database = {
           },
         ]
       }
+      gridbazaar_profiles: {
+        Row: {
+          bio: string | null
+          company_name: string | null
+          created_at: string
+          id: string
+          is_email_verified: boolean
+          is_id_verified: boolean
+          linkedin_url: string | null
+          phone_number: string | null
+          profile_image_url: string | null
+          role: string
+          seller_type: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          bio?: string | null
+          company_name?: string | null
+          created_at?: string
+          id?: string
+          is_email_verified?: boolean
+          is_id_verified?: boolean
+          linkedin_url?: string | null
+          phone_number?: string | null
+          profile_image_url?: string | null
+          role?: string
+          seller_type?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          bio?: string | null
+          company_name?: string | null
+          created_at?: string
+          id?: string
+          is_email_verified?: boolean
+          is_id_verified?: boolean
+          linkedin_url?: string | null
+          phone_number?: string | null
+          profile_image_url?: string | null
+          role?: string
+          seller_type?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       industry_intel_results: {
         Row: {
           address: string | null
