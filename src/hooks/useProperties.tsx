@@ -26,12 +26,19 @@ export interface Property {
   created_by?: string;
   created_at: string;
   updated_at: string;
+  // Legacy properties for compatibility
+  discovered_at?: string;
+  zoning?: string;
+  transmission_access?: boolean;
   volt_scores?: Array<{
     overall_score: number;
     location_score: number;
     infrastructure_score: number;
     economic_score: number;
     market_score: number;
+    // Legacy volt score properties for compatibility
+    power_score?: number;
+    financial_score?: number;
     calculated_at: string;
   }>;
 }
