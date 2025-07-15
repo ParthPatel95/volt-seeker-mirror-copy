@@ -14,7 +14,371 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          id: string
+          is_read: boolean | null
+          message: string
+          related_entity_id: string | null
+          related_entity_type: string | null
+          severity: string | null
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message: string
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          severity?: string | null
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          severity?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      companies: {
+        Row: {
+          analyzed_at: string | null
+          competitive_advantages: string[] | null
+          created_at: string
+          description: string | null
+          financial_data: Json | null
+          headquarters_location: string | null
+          id: string
+          industry: string | null
+          market_cap: number | null
+          name: string
+          risk_factors: string[] | null
+          sector: string | null
+          ticker: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          analyzed_at?: string | null
+          competitive_advantages?: string[] | null
+          created_at?: string
+          description?: string | null
+          financial_data?: Json | null
+          headquarters_location?: string | null
+          id?: string
+          industry?: string | null
+          market_cap?: number | null
+          name: string
+          risk_factors?: string[] | null
+          sector?: string | null
+          ticker?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          analyzed_at?: string | null
+          competitive_advantages?: string[] | null
+          created_at?: string
+          description?: string | null
+          financial_data?: Json | null
+          headquarters_location?: string | null
+          id?: string
+          industry?: string | null
+          market_cap?: number | null
+          name?: string
+          risk_factors?: string[] | null
+          sector?: string | null
+          ticker?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          company: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          preferences: Json | null
+          role: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          company?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          preferences?: Json | null
+          role?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          company?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          preferences?: Json | null
+          role?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      properties: {
+        Row: {
+          address: string
+          asking_price: number | null
+          city: string | null
+          country: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          image_urls: string[] | null
+          latitude: number | null
+          listing_url: string | null
+          longitude: number | null
+          lot_size_acres: number | null
+          power_capacity_mw: number | null
+          property_type: string
+          source: string | null
+          square_footage: number | null
+          state: string | null
+          status: string | null
+          substation_distance_miles: number | null
+          updated_at: string
+          year_built: number | null
+          zip_code: string | null
+        }
+        Insert: {
+          address: string
+          asking_price?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_urls?: string[] | null
+          latitude?: number | null
+          listing_url?: string | null
+          longitude?: number | null
+          lot_size_acres?: number | null
+          power_capacity_mw?: number | null
+          property_type: string
+          source?: string | null
+          square_footage?: number | null
+          state?: string | null
+          status?: string | null
+          substation_distance_miles?: number | null
+          updated_at?: string
+          year_built?: number | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string
+          asking_price?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_urls?: string[] | null
+          latitude?: number | null
+          listing_url?: string | null
+          longitude?: number | null
+          lot_size_acres?: number | null
+          power_capacity_mw?: number | null
+          property_type?: string
+          source?: string | null
+          square_footage?: number | null
+          state?: string | null
+          status?: string | null
+          substation_distance_miles?: number | null
+          updated_at?: string
+          year_built?: number | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      scraped_properties: {
+        Row: {
+          address: string | null
+          created_at: string
+          description: string | null
+          id: string
+          images: string[] | null
+          lot_size: string | null
+          price: number | null
+          property_type: string | null
+          scraped_data: Json | null
+          source_website: string | null
+          square_footage: number | null
+          title: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          lot_size?: string | null
+          price?: number | null
+          property_type?: string | null
+          scraped_data?: Json | null
+          source_website?: string | null
+          square_footage?: number | null
+          title?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          lot_size?: string | null
+          price?: number | null
+          property_type?: string | null
+          scraped_data?: Json | null
+          source_website?: string | null
+          square_footage?: number | null
+          title?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      substations: {
+        Row: {
+          capacity_mva: number | null
+          commissioned_date: string | null
+          created_at: string
+          id: string
+          latitude: number | null
+          longitude: number | null
+          name: string
+          owner: string | null
+          status: string | null
+          substation_type: string | null
+          updated_at: string
+          voltage_kv: number | null
+        }
+        Insert: {
+          capacity_mva?: number | null
+          commissioned_date?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          owner?: string | null
+          status?: string | null
+          substation_type?: string | null
+          updated_at?: string
+          voltage_kv?: number | null
+        }
+        Update: {
+          capacity_mva?: number | null
+          commissioned_date?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          owner?: string | null
+          status?: string | null
+          substation_type?: string | null
+          updated_at?: string
+          voltage_kv?: number | null
+        }
+        Relationships: []
+      }
+      volt_scores: {
+        Row: {
+          calculated_at: string
+          calculation_data: Json | null
+          created_at: string
+          economic_score: number | null
+          id: string
+          infrastructure_score: number | null
+          location_score: number | null
+          market_score: number | null
+          overall_score: number | null
+          property_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          calculated_at?: string
+          calculation_data?: Json | null
+          created_at?: string
+          economic_score?: number | null
+          id?: string
+          infrastructure_score?: number | null
+          location_score?: number | null
+          market_score?: number | null
+          overall_score?: number | null
+          property_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          calculated_at?: string
+          calculation_data?: Json | null
+          created_at?: string
+          economic_score?: number | null
+          id?: string
+          infrastructure_score?: number | null
+          location_score?: number | null
+          market_score?: number | null
+          overall_score?: number | null
+          property_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "volt_scores_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
