@@ -1,17 +1,17 @@
-import React from 'react';
-import VoltMarketFeatureTest from '@/components/voltmarket/VoltMarketFeatureTest';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function VoltMarketTest() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirect to comprehensive test page instead
+    navigate('/comprehensive-test', { replace: true });
+  }, [navigate]);
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">VoltMarket Feature Testing</h1>
-          <p className="text-gray-600">Comprehensive testing suite for all VoltMarket features</p>
-        </div>
-        
-        <VoltMarketFeatureTest />
-      </div>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
     </div>
   );
 }

@@ -4,8 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import VoltMarketQATest from '@/components/voltmarket/VoltMarketQATest';
-import VoltMarketFeatureTest from '@/components/voltmarket/VoltMarketFeatureTest';
+// VoltMarket test components removed - using the database tests instead
 import TestRunner from '@/components/scraping/TestRunner';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -400,11 +399,25 @@ export default function ComprehensiveTest() {
           </TabsContent>
 
           <TabsContent value="voltmarket">
-            <VoltMarketQATest />
+            <Card>
+              <CardHeader>
+                <CardTitle>VoltMarket QA</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">VoltMarket QA testing is covered in the system tests above.</p>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="features">
-            <VoltMarketFeatureTest />
+            <Card>
+              <CardHeader>
+                <CardTitle>Feature Tests</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">Feature testing is covered in the system tests above.</p>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="scraping">
