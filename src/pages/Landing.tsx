@@ -2,23 +2,23 @@
 import React, { useState, lazy, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { EnhancedSignUpForm } from '@/components/EnhancedSignUpForm';
-import LandingNavigation from '@/components/landing/LandingNavigation';
-import OptimizedHeroSection from '@/components/landing/OptimizedHeroSection';
-import LiveDataSection from '@/components/landing/LiveDataSection';
-import LandingBackground from '@/components/landing/LandingBackground';
-import SectionDivider from '@/components/landing/SectionDivider';
-import LandingFooter from '@/components/landing/LandingFooter';
-import ScrollAnimations from '@/components/landing/ScrollAnimations';
+import { LandingNavigation } from '@/components/landing/LandingNavigation';
+import { OptimizedHeroSection } from '@/components/landing/OptimizedHeroSection';
+import { LiveDataSection } from '@/components/landing/LiveDataSection';
+import { LandingBackground } from '@/components/landing/LandingBackground';
+import { SectionDivider } from '@/components/landing/SectionDivider';
+import { LandingFooter } from '@/components/landing/LandingFooter';
+import { SmoothScroll } from '@/components/landing/ScrollAnimations';
 
 // Lazy load sections for better performance
-const ProblemSolutionSection = lazy(() => import('@/components/landing/ProblemSolutionSection'));
-const MarketOpportunitySection = lazy(() => import('@/components/landing/MarketOpportunitySection'));
-const FundOverviewSection = lazy(() => import('@/components/landing/FundOverviewSection'));
-const LeadershipTeamSection = lazy(() => import('@/components/landing/LeadershipTeamSection'));
-const FundGrowthPlanSection = lazy(() => import('@/components/landing/FundGrowthPlanSection'));
-const InvestmentThesisSection = lazy(() => import('@/components/landing/InvestmentThesisSection'));
-const VoltScoutSection = lazy(() => import('@/components/landing/VoltScoutSection'));
-const LPPortalSection = lazy(() => import('@/components/landing/LPPortalSection'));
+const ProblemSolutionSection = lazy(() => import('@/components/landing/ProblemSolutionSection').then(module => ({ default: module.ProblemSolutionSection })));
+const MarketOpportunitySection = lazy(() => import('@/components/landing/MarketOpportunitySection').then(module => ({ default: module.MarketOpportunitySection })));
+const FundOverviewSection = lazy(() => import('@/components/landing/FundOverviewSection').then(module => ({ default: module.FundOverviewSection })));
+const LeadershipTeamSection = lazy(() => import('@/components/landing/LeadershipTeamSection').then(module => ({ default: module.LeadershipTeamSection })));
+const FundGrowthPlanSection = lazy(() => import('@/components/landing/FundGrowthPlanSection').then(module => ({ default: module.FundGrowthPlanSection })));
+const InvestmentThesisSection = lazy(() => import('@/components/landing/InvestmentThesisSection').then(module => ({ default: module.InvestmentThesisSection })));
+const VoltScoutSection = lazy(() => import('@/components/landing/VoltScoutSection').then(module => ({ default: module.VoltScoutSection })));
+const LPPortalSection = lazy(() => import('@/components/landing/LPPortalSection').then(module => ({ default: module.LPPortalSection })));
 
 const SectionLoader = () => (
   <div className="flex justify-center items-center py-12 sm:py-16 md:py-20">
@@ -32,7 +32,7 @@ const Landing: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-white relative overflow-hidden">
       {/* Smooth scroll functionality */}
-      <ScrollAnimations />
+      <SmoothScroll />
       
       {/* SEO content */}
       <header>
@@ -52,11 +52,11 @@ const Landing: React.FC = () => {
         <main>
           <OptimizedHeroSection />
           
-          <SectionDivider />
+          <SectionDivider color="blue" />
           
           <LiveDataSection />
           
-          <SectionDivider />
+          <SectionDivider color="green" />
           
           <section aria-label="Problem and Solution" className="relative">
             <Suspense fallback={<SectionLoader />}>
@@ -64,7 +64,7 @@ const Landing: React.FC = () => {
             </Suspense>
           </section>
           
-          <SectionDivider />
+          <SectionDivider color="green" />
           
           <section aria-label="Market Opportunity" className="relative">
             <Suspense fallback={<SectionLoader />}>
@@ -72,7 +72,7 @@ const Landing: React.FC = () => {
             </Suspense>
           </section>
           
-          <SectionDivider />
+          <SectionDivider color="yellow" />
           
           <section aria-label="Leadership Team" className="relative">
             <Suspense fallback={<SectionLoader />}>
@@ -80,7 +80,7 @@ const Landing: React.FC = () => {
             </Suspense>
           </section>
           
-          <SectionDivider />
+          <SectionDivider color="purple" />
           
           <section aria-label="Fund Growth Plan" className="relative">
             <Suspense fallback={<SectionLoader />}>
@@ -88,7 +88,7 @@ const Landing: React.FC = () => {
             </Suspense>
           </section>
           
-          <SectionDivider />
+          <SectionDivider color="cyan" />
           
           <section aria-label="Fund Overview" className="relative">
             <Suspense fallback={<SectionLoader />}>
@@ -96,7 +96,7 @@ const Landing: React.FC = () => {
             </Suspense>
           </section>
           
-          <SectionDivider />
+          <SectionDivider color="blue" />
           
           <section aria-label="Investment Thesis" className="relative">
             <Suspense fallback={<SectionLoader />}>
@@ -104,7 +104,7 @@ const Landing: React.FC = () => {
             </Suspense>
           </section>
           
-          <SectionDivider />
+          <SectionDivider color="green" />
           
           <section aria-label="VoltScout Platform" className="relative">
             <Suspense fallback={<SectionLoader />}>
@@ -112,7 +112,7 @@ const Landing: React.FC = () => {
             </Suspense>
           </section>
           
-          <SectionDivider />
+          <SectionDivider color="yellow" />
           
           <section aria-label="LP Portal" className="relative">
             <Suspense fallback={<SectionLoader />}>

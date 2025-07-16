@@ -9,9 +9,9 @@ export interface EnergyRate {
   rate_type: string;
   price_per_mwh: number;
   timestamp: string;
-  market_status: string;
+  node_name: string;
+  node_id: string;
   created_at: string;
-  updated_at: string;
 }
 
 export interface EnergyMarket {
@@ -26,10 +26,12 @@ export interface EnergyMarket {
 
 export interface UtilityCompany {
   id: string;
-  name: string;
+  company_name: string;
   service_territory: string;
+  state: string;
   market_id: string;
-  contact_info: string;
+  website_url: string;
+  contact_info: any;
   created_at: string;
   updated_at: string;
 }
@@ -50,15 +52,7 @@ export function useEnergyRates() {
         .order('market_name');
 
       if (error) throw error;
-      
-      // Map database fields to expected interface
-      const mappedData = (data || []).map(item => ({
-        ...item,
-        market_code: item.market_name?.toLowerCase().replace(/\s+/g, '_') || '',
-        timezone: item.region || 'UTC'
-      }));
-      
-      setMarkets(mappedData);
+      setMarkets(data || []);
     } catch (error: any) {
       console.error('Error fetching markets:', error);
       toast({
@@ -71,26 +65,19 @@ export function useEnergyRates() {
 
   const fetchUtilities = async (state?: string) => {
     try {
-      // Use companies table as utility companies source
-      const { data, error } = await supabase
-        .from('companies')
+      let query = supabase
+        .from('utility_companies')
         .select('*')
-        .order('name');
+        .order('company_name');
 
+      if (state) {
+        query = query.eq('state', state);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       
-      // Map to expected UtilityCompany interface
-      const mappedData = (data || []).map(item => ({
-        id: item.id,
-        name: item.name,
-        service_territory: item.headquarters_location || '',
-        market_id: '',
-        contact_info: item.website || '',
-        created_at: item.created_at,
-        updated_at: item.updated_at
-      }));
-      
-      setUtilities(mappedData);
+      setUtilities(data || []);
     } catch (error: any) {
       console.error('Error fetching utilities:', error);
       toast({
@@ -104,31 +91,20 @@ export function useEnergyRates() {
   const fetchRates = async (marketId?: string, limit = 100) => {
     setLoading(true);
     try {
-      // Create mock energy rates since table doesn't exist
-      const mockRates: EnergyRate[] = [
-        {
-          id: '1',
-          market_id: marketId || 'ercot',
-          rate_type: 'real_time',
-          price_per_mwh: 45.50,
-          timestamp: new Date().toISOString(),
-          market_status: 'active',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: '2', 
-          market_id: marketId || 'pjm',
-          rate_type: 'day_ahead',
-          price_per_mwh: 42.30,
-          timestamp: new Date().toISOString(),
-          market_status: 'active',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
-      ];
+      let query = supabase
+        .from('energy_rates')
+        .select('*')
+        .order('timestamp', { ascending: false })
+        .limit(limit);
+
+      if (marketId) {
+        query = query.eq('market_id', marketId);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
       
-      setRates(mockRates);
+      setRates(data || []);
     } catch (error: any) {
       console.error('Error fetching rates:', error);
       toast({

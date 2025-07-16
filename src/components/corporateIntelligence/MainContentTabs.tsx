@@ -1,85 +1,106 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { TabsContent } from '@/components/ui/tabs';
+import { Activity, BarChart3, Users, Settings, Lightbulb, TrendingUp } from 'lucide-react';
+import { ResponsiveTabs } from '@/components/ui/responsive-tabs';
+import { DashboardTab } from './DashboardTab';
+import { AnalysisTab } from './AnalysisTab';
+import { IntelligenceTab } from './IntelligenceTab';
+import { InsightsTab } from './InsightsTab';
+import { PortfolioTab } from './PortfolioTab';
+import { SettingsTab } from './SettingsTab';
+import { Company, LoadingStates, DistressAlert } from '@/types/corporateIntelligence';
 
 interface MainContentTabsProps {
-  companies: any[];
-  selectedCompany: any;
+  companies: Company[];
+  selectedCompany: Company | null;
   loading: boolean;
-  loadingStates: any;
+  loadingStates: LoadingStates;
   searchTerm: string;
   industryFilter: string;
-  distressAlerts: any[];
+  distressAlerts: DistressAlert[];
   aiAnalysis: any;
-  storedAiAnalyses: any[];
-  onAnalyze: (companyName: string, ticker?: string) => void;
+  storedAiAnalyses?: any[];
+  onAnalyze: (companyName: string, ticker?: string) => Promise<void>;
   onAIAnalysisComplete: (analysis: any) => void;
   onSearchChange: (value: string) => void;
   onIndustryChange: (value: string) => void;
-  onSelectCompany: (company: any) => void;
-  onInvestigateAlert: (alert: any) => void;
+  onSelectCompany: (company: Company) => void;
+  onInvestigateAlert: (alert: DistressAlert) => void;
 }
 
-export function MainContentTabs(props: MainContentTabsProps) {
+const tabItems = [
+  { id: 'dashboard', label: 'Dashboard', icon: BarChart3, priority: 1 },
+  { id: 'analysis', label: 'Analysis', icon: Activity, priority: 2 },
+  { id: 'intelligence', label: 'Intelligence', icon: Lightbulb, priority: 3 },
+  { id: 'insights', label: 'Insights', icon: TrendingUp, priority: 4 },
+  { id: 'portfolio', label: 'Portfolio', icon: Users, priority: 5 },
+  { id: 'settings', label: 'Settings', icon: Settings, priority: 6 }
+];
+
+export function MainContentTabs({
+  companies,
+  selectedCompany,
+  loading,
+  loadingStates,
+  searchTerm,
+  industryFilter,
+  distressAlerts,
+  aiAnalysis,
+  storedAiAnalyses,
+  onAnalyze,
+  onAIAnalysisComplete,
+  onSearchChange,
+  onIndustryChange,
+  onSelectCompany,
+  onInvestigateAlert
+}: MainContentTabsProps) {
   return (
-    <Tabs defaultValue="overview" className="space-y-6">
-      <TabsList>
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="companies">Companies</TabsTrigger>
-        <TabsTrigger value="alerts">Alerts</TabsTrigger>
-        <TabsTrigger value="analysis">AI Analysis</TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="overview">
-        <Card>
-          <CardHeader>
-            <CardTitle>Corporate Intelligence Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              Comprehensive corporate intelligence and market analysis platform.
-            </p>
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      <TabsContent value="companies">
-        <Card>
-          <CardHeader>
-            <CardTitle>Companies Database</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              Company research and analysis tools.
-            </p>
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      <TabsContent value="alerts">
-        <Card>
-          <CardHeader>
-            <CardTitle>Distress Alerts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              Real-time monitoring and alert system.
-            </p>
-          </CardContent>
-        </Card>
+    <ResponsiveTabs items={tabItems} defaultValue="dashboard" className="w-full">
+      <TabsContent value="dashboard">
+        <DashboardTab
+          companies={companies}
+          distressAlerts={distressAlerts}
+          loading={loading}
+          onSelectCompany={onSelectCompany}
+          onInvestigateAlert={onInvestigateAlert}
+        />
       </TabsContent>
 
       <TabsContent value="analysis">
-        <Card>
-          <CardHeader>
-            <CardTitle>AI Analysis</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              AI-powered corporate intelligence and insights.
-            </p>
-          </CardContent>
-        </Card>
+        <AnalysisTab
+          companies={companies}
+          aiAnalysis={aiAnalysis}
+          storedAiAnalyses={storedAiAnalyses}
+          loadingStates={loadingStates}
+          searchTerm={searchTerm}
+          industryFilter={industryFilter}
+          loading={loading}
+          onAnalyze={onAnalyze}
+          onAIAnalysisComplete={onAIAnalysisComplete}
+          onSearchChange={onSearchChange}
+          onIndustryChange={onIndustryChange}
+          onSelectCompany={onSelectCompany}
+        />
       </TabsContent>
-    </Tabs>
+
+      <TabsContent value="intelligence">
+        <IntelligenceTab />
+      </TabsContent>
+
+      <TabsContent value="insights">
+        <InsightsTab />
+      </TabsContent>
+
+      <TabsContent value="portfolio">
+        <PortfolioTab />
+      </TabsContent>
+
+      <TabsContent value="settings">
+        <SettingsTab 
+          distressAlerts={distressAlerts}
+          onInvestigateAlert={onInvestigateAlert}
+        />
+      </TabsContent>
+    </ResponsiveTabs>
   );
 }

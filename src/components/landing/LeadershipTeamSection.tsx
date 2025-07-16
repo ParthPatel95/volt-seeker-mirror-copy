@@ -1,32 +1,77 @@
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
-const LeadershipTeamSection = () => {
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { User, Award, Globe, Building } from 'lucide-react';
+
+export const LeadershipTeamSection = () => {
   const teamMembers = [
-    { name: 'John Smith', role: 'CEO & Founder', initials: 'JS' },
-    { name: 'Sarah Johnson', role: 'CTO', initials: 'SJ' },
-    { name: 'Michael Chen', role: 'Head of Strategy', initials: 'MC' },
+    {
+      name: "Jay Hao",
+      role: "Managing GP",
+      icon: <User className="w-6 h-6 text-electric-blue" />,
+      achievements: [
+        "Former CEO of OKX Exchange, one of the world's largest crypto trading platforms with multi-billion dollar transaction volumes",
+        "Brings extensive experience leading global fintech, crypto infrastructure, and digital asset strategy",
+        "Deep LP relationships across Asia, MENA, and emerging markets, with access to sovereign wealth and private capital networks",
+        "Oversees fund governance, investor relations, and capital raising strategy for Wattbyte"
+      ]
+    },
+    {
+      name: "Vivek Patel",
+      role: "COO",
+      icon: <Building className="w-6 h-6 text-electric-yellow" />,
+      achievements: [
+        "Experienced infrastructure operator, responsible for due diligence, permitting, entitlements, and construction oversight",
+        "Leads execution and compliance across all Wattbyte projects in North America",
+        "Coordinates business relationships, environmental review, and legal frameworks to accelerate site readiness",
+        "Proven track record in scaling teams and managing multi-site operations under complex regulatory conditions"
+      ]
+    },
+    {
+      name: "Parth Patel",
+      role: "CIO",
+      icon: <Award className="w-6 h-6 text-neon-green" />,
+      achievements: [
+        "Led the consulting and transaction of over 275MW of power assets across North America",
+        "Building a pipeline of 700MW+ and over 1,000 acres of power-rich real estate for data centers and HPC deployment",
+        "Manages site sourcing, power negotiations, underwriting, and investment strategy",
+        "Hands-on experience in low-cost energy procurement, crypto/AI hosting, and infrastructure buildouts"
+      ]
+    }
   ];
 
   return (
-    <section className="py-20 bg-muted/50">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">Leadership Team</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <section className="relative z-10 py-12 px-6 bg-slate-900/30">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold mb-3 text-white">
+            Leadership Team
+          </h2>
+          <p className="text-slate-200 text-lg max-w-2xl mx-auto">
+            Proven operators with 675MW+ of power infrastructure experience
+          </p>
+        </div>
+        
+        <div className="grid lg:grid-cols-3 gap-6">
           {teamMembers.map((member, index) => (
-            <Card key={index}>
-              <CardHeader className="text-center">
-                <Avatar className="w-24 h-24 mx-auto mb-4">
-                  <AvatarFallback className="text-lg">{member.initials}</AvatarFallback>
-                </Avatar>
-                <CardTitle>{member.name}</CardTitle>
-                <CardDescription>{member.role}</CardDescription>
+            <Card key={index} className="bg-slate-800/50 border-slate-700 h-full">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3 mb-2">
+                  {member.icon}
+                  <div>
+                    <CardTitle className="text-white text-xl">{member.name}</CardTitle>
+                    <p className="text-electric-blue font-semibold">{member.role}</p>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-center">
-                  Experienced leader in energy and technology sectors
-                </p>
+              <CardContent className="pt-0">
+                <ul className="space-y-3">
+                  {member.achievements.map((achievement, achievementIndex) => (
+                    <li key={achievementIndex} className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-electric-blue rounded-full mt-2 flex-shrink-0"></div>
+                      <span className="text-slate-300 text-sm leading-relaxed">{achievement}</span>
+                    </li>
+                  ))}
+                </ul>
               </CardContent>
             </Card>
           ))}
@@ -35,5 +80,3 @@ const LeadershipTeamSection = () => {
     </section>
   );
 };
-
-export default LeadershipTeamSection;

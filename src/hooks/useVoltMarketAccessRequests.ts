@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface AccessRequest {
@@ -26,9 +27,18 @@ export const useVoltMarketAccessRequests = () => {
   const fetchAccessRequests = useCallback(async (sellerId: string) => {
     setLoading(true);
     try {
-      // For now, return empty array since table doesn't exist
-      // TODO: Create voltmarket_nda_requests table
-      setAccessRequests([]);
+      const { data, error } = await supabase
+        .from('voltmarket_nda_requests')
+        .select(`
+          *,
+          requester_profile:voltmarket_profiles!voltmarket_nda_requests_requester_id_fkey(company_name, role),
+          listing:voltmarket_listings!voltmarket_nda_requests_listing_id_fkey(title)
+        `)
+        .eq('seller_id', sellerId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setAccessRequests(data || []);
     } catch (error) {
       console.error('Error fetching access requests:', error);
       toast({
@@ -43,9 +53,16 @@ export const useVoltMarketAccessRequests = () => {
 
   const updateAccessRequestStatus = useCallback(async (requestId: string, status: 'approved' | 'rejected') => {
     try {
-      // For now, just return success since table doesn't exist
-      // TODO: Create voltmarket_nda_requests table
-      
+      const { error } = await supabase
+        .from('voltmarket_nda_requests')
+        .update({ 
+          status,
+          approved_at: status === 'approved' ? new Date().toISOString() : null
+        })
+        .eq('id', requestId);
+
+      if (error) throw error;
+
       setAccessRequests(prev => 
         prev.map(req => 
           req.id === requestId 
@@ -73,26 +90,20 @@ export const useVoltMarketAccessRequests = () => {
 
   const submitAccessRequest = useCallback(async (listingId: string, requesterId: string, sellerId: string) => {
     try {
-      // For now, just return success since table doesn't exist
-      // TODO: Create voltmarket_nda_requests table
-      
-      const newRequest: AccessRequest = {
-        id: `mock-${Date.now()}`,
-        listing_id: listingId,
-        requester_id: requesterId,
-        seller_id: sellerId,
-        status: 'pending',
-        created_at: new Date().toISOString(),
-        approved_at: undefined,
-        requester_profile: undefined,
-        listing: undefined
-      };
+      const { error } = await supabase
+        .from('voltmarket_nda_requests')
+        .insert({
+          listing_id: listingId,
+          requester_id: requesterId,
+          seller_id: sellerId,
+          status: 'pending'
+        });
 
-      setAccessRequests(prev => [newRequest, ...prev]);
+      if (error) throw error;
 
       toast({
-        title: "Success",
-        description: "Access request submitted successfully."
+        title: "Request Submitted",
+        description: "Your access request has been submitted to the listing owner."
       });
 
       return { success: true };
