@@ -1,45 +1,24 @@
-import React from 'react';
 
-const LandingFooter = () => {
+import { Bitcoin } from 'lucide-react';
+import { EnhancedLogo } from '../EnhancedLogo';
+
+export const LandingFooter = () => {
   return (
-    <footer className="py-12 bg-muted">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <h3 className="font-bold mb-4">VoltMarket</h3>
-            <p className="text-muted-foreground">The future of energy asset marketplace</p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-4">Platform</h4>
-            <ul className="space-y-2 text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground">Marketplace</a></li>
-              <li><a href="#" className="hover:text-foreground">Analytics</a></li>
-              <li><a href="#" className="hover:text-foreground">Portfolio</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-4">Resources</h4>
-            <ul className="space-y-2 text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground">Documentation</a></li>
-              <li><a href="#" className="hover:text-foreground">Support</a></li>
-              <li><a href="#" className="hover:text-foreground">Blog</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-4">Company</h4>
-            <ul className="space-y-2 text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground">About</a></li>
-              <li><a href="#" className="hover:text-foreground">Contact</a></li>
-              <li><a href="#" className="hover:text-foreground">Privacy</a></li>
-            </ul>
-          </div>
+    <footer className="relative z-10 py-8 px-6 bg-slate-950 border-t border-slate-800">
+      <div className="max-w-6xl mx-auto text-center">
+        <div className="flex items-center justify-center space-x-3 mb-3">
+          <EnhancedLogo className="w-8 h-8 object-contain" />
+          <span className="text-2xl font-bold text-white flex items-center">
+            Watt<Bitcoin className="inline w-6 h-6 -mx-0.5" style={{ color: '#f7af14' }} />yte
+          </span>
         </div>
-        <div className="mt-8 pt-8 border-t text-center text-muted-foreground">
-          <p>&copy; 2024 VoltMarket. All rights reserved.</p>
-        </div>
+        <p className="text-slate-300 mb-3 text-sm">
+          Turning power into profit through intelligent infrastructure investment
+        </p>
+        <p className="text-slate-400 text-xs">
+          © 2024 WattByte Infrastructure Fund. All rights reserved.
+        </p>
       </div>
     </footer>
   );
 };
-
-export default LandingFooter;

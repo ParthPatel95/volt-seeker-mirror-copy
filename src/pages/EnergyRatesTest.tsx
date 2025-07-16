@@ -1,6 +1,6 @@
 
 import React from 'react';
-import EnergyRateEstimatorTest from '@/components/energy/EnergyRateEstimatorTest';
+import { EnergyRateEstimatorTest } from '@/components/energy/EnergyRateEstimatorTest';
 
 export default function EnergyRatesTest() {
   return (

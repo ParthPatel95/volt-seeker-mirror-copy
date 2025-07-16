@@ -1,43 +1,36 @@
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-const LiveDataSection = () => {
+import { BTCMiningROIWidget } from './BTCMiningROIWidget';
+import { LiveDataPreview } from './LiveDataPreview';
+import { LiveERCOTData } from './LiveERCOTData';
+import { LiveAESOData } from './LiveAESOData';
+import { ScrollReveal } from './ScrollAnimations';
+
+export const LiveDataSection = () => {
   return (
-    <section className="py-20 bg-muted/50">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">Live Market Data</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Active Listings</CardTitle>
-              <CardDescription>Current market opportunities</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">1,250+</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Total Capacity</CardTitle>
-              <CardDescription>Available power capacity</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">15.2 GW</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Transactions</CardTitle>
-              <CardDescription>Completed this month</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">$2.4B</div>
-            </CardContent>
-          </Card>
-        </div>
+    <section className="relative z-10 py-8 sm:py-12 md:py-16 px-3 sm:px-4 md:px-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Section Header */}
+        <ScrollReveal delay={100}>
+          <div className="text-center mb-6 sm:mb-8 md:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 leading-tight">
+              Live Market Intelligence
+            </h2>
+            <p className="text-base sm:text-lg md:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed px-2">
+              Real-time data and analytics powering our investment decisions
+            </p>
+          </div>
+        </ScrollReveal>
+
+        {/* Live Data Grid */}
+        <ScrollReveal delay={200}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <BTCMiningROIWidget />
+            <LiveDataPreview />
+            <LiveERCOTData />
+            <LiveAESOData />
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );
 };
-
-export default LiveDataSection;

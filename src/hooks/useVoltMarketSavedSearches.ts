@@ -27,9 +27,9 @@ export const useVoltMarketSavedSearches = () => {
         .from('voltmarket_saved_searches')
         .insert({
           user_id: profile.id,
-          name: searchName,
+          search_name: searchName,
           search_criteria: searchCriteria,
-          notifications_enabled: notificationEnabled
+          notification_enabled: notificationEnabled
         })
         .select()
         .single();
@@ -54,14 +54,7 @@ export const useVoltMarketSavedSearches = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      // Map the data to match interface
-      const mappedData = (data || []).map(item => ({
-        ...item,
-        search_name: item.name,
-        notification_enabled: item.notifications_enabled,
-        updated_at: item.created_at
-      }));
-      setSavedSearches(mappedData);
+      setSavedSearches(data || []);
       return { data, error: null };
     } catch (error) {
       setSavedSearches([]);
@@ -83,7 +76,7 @@ export const useVoltMarketSavedSearches = () => {
       if (error) throw error;
       return {
         id: data.id,
-        name: data.name,
+        name: data.search_name,
         criteria: data.search_criteria
       };
     } catch (error) {
@@ -113,7 +106,7 @@ export const useVoltMarketSavedSearches = () => {
     try {
       const { error } = await supabase
         .from('voltmarket_saved_searches')
-        .update({ notifications_enabled: enabled })
+        .update({ notification_enabled: enabled })
         .eq('id', searchId);
 
       if (error) throw error;

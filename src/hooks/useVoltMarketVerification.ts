@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useVoltMarketAuth } from '@/contexts/VoltMarketAuthContext';
@@ -45,11 +46,11 @@ export const useVoltMarketVerification = () => {
       const documentUrl = await uploadVerificationDocument(file, verificationType);
 
       const { data, error } = await supabase
-        .from('voltmarket_verification')
+        .from('voltmarket_verifications')
         .insert({
           user_id: profile.id,
           verification_type: verificationType,
-          documents: [{ url: documentUrl, type: verificationType }]
+          document_url: documentUrl
         })
         .select()
         .single();
@@ -68,10 +69,10 @@ export const useVoltMarketVerification = () => {
 
     try {
       const { data, error } = await supabase
-        .from('voltmarket_verification')
+        .from('voltmarket_verifications')
         .select('*')
         .eq('user_id', profile.id)
-        .order('submitted_at', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       return { data, error: null };
