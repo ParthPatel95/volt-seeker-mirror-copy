@@ -1,10 +1,9 @@
 
-import Landing from "@/pages/Landing";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { VoltMarketHomepage } from '@/components/voltmarket/VoltMarketHomepage';
 
 const Index = () => {
-  return <Landing />;
+  return <VoltMarketHomepage />;
 };
 
 export default Index;

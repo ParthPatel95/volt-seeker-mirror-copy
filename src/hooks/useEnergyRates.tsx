@@ -5,21 +5,24 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface EnergyRate {
   id: string;
-  market_id: string;
+  market_name: string;
   rate_type: string;
   price_per_mwh: number;
   timestamp: string;
-  node_name: string;
-  node_id: string;
+  node_name: string | null;
+  node_id: string | null;
   created_at: string;
 }
 
 export interface EnergyMarket {
   id: string;
   market_name: string;
-  market_code: string;
-  region: string;
-  timezone: string;
+  region: string | null;
+  market_status: string | null;
+  current_price_mwh: number | null;
+  daily_high: number | null;
+  daily_low: number | null;
+  price_timestamp: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -64,28 +67,9 @@ export function useEnergyRates() {
   };
 
   const fetchUtilities = async (state?: string) => {
-    try {
-      let query = supabase
-        .from('utility_companies')
-        .select('*')
-        .order('company_name');
-
-      if (state) {
-        query = query.eq('state', state);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      
-      setUtilities(data || []);
-    } catch (error: any) {
-      console.error('Error fetching utilities:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch utility companies",
-        variant: "destructive"
-      });
-    }
+    // Utility companies table doesn't exist in current schema
+    // Return empty array for now
+    setUtilities([]);
   };
 
   const fetchRates = async (marketId?: string, limit = 100) => {
@@ -98,7 +82,7 @@ export function useEnergyRates() {
         .limit(limit);
 
       if (marketId) {
-        query = query.eq('market_id', marketId);
+        query = query.eq('market_name', marketId);
       }
 
       const { data, error } = await query;

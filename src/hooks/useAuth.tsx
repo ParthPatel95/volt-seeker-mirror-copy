@@ -10,21 +10,8 @@ export function useAuth() {
   const [isApproved, setIsApproved] = useState(false);
 
   const checkApproval = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .rpc('is_voltscout_approved', { user_id: userId });
-      
-      if (error) {
-        console.error('Error checking VoltScout approval:', error);
-        setIsApproved(false);
-        return;
-      }
-      
-      setIsApproved(data || false);
-    } catch (error) {
-      console.error('Error checking VoltScout approval:', error);
-      setIsApproved(false);
-    }
+    // For GridBazaar, all authenticated users are approved
+    setIsApproved(true);
   };
 
   useEffect(() => {
