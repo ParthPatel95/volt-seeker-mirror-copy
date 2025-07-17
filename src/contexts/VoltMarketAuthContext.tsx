@@ -42,7 +42,6 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
 
   const fetchProfile = async (userId: string) => {
     try {
-      console.log('Fetching profile for user:', userId);
       const { data: profileData, error } = await supabase
         .from('voltmarket_profiles')
         .select('*')
@@ -54,7 +53,6 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
         return null;
       }
       
-      console.log('Profile fetched successfully:', profileData);
       return profileData;
     } catch (err) {
       console.log('Unexpected error fetching profile:', err);
@@ -69,8 +67,6 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
     phone_number?: string;
   }) => {
     try {
-      // For signup, we need to ensure the profile is created with proper auth context
-      // First, let's try with the service role for initial profile creation
       const { data, error } = await supabase
         .from('voltmarket_profiles')
         .insert({
@@ -87,36 +83,6 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
 
       if (error) {
         console.error('Profile creation error:', error);
-        // If RLS error, try creating via edge function
-        if (error.message.includes('row-level security')) {
-          try {
-            const response = await fetch(`https://ktgosplhknmnyagxrgbe.supabase.co/functions/v1/create-voltmarket-profile`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Z29zcGxoa25tbnlhZ3hyZ2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTkzMDUsImV4cCI6MjA2NTI3NTMwNX0.KVs7C_7PHARS-JddBgARWFpDZE6yCeMTLgZhu2UKACE`,
-              },
-              body: JSON.stringify({
-                user_id: userId,
-                role: userData.role,
-                seller_type: userData.seller_type,
-                company_name: userData.company_name,
-                phone_number: userData.phone_number,
-              }),
-            });
-
-            if (!response.ok) {
-              const errorData = await response.json();
-              return { error: new Error(errorData.error || 'Failed to create profile via edge function') };
-            }
-
-            const profileData = await response.json();
-            return { data: profileData, error: null };
-          } catch (edgeFunctionError) {
-            console.error('Edge function error:', edgeFunctionError);
-            return { error: edgeFunctionError as Error };
-          }
-        }
         return { error };
       }
 
@@ -130,17 +96,14 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
   useEffect(() => {
     let mounted = true;
 
-    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!mounted) return;
 
-        console.log('Auth state changed:', event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Use setTimeout to avoid potential recursive calls
           setTimeout(async () => {
             if (mounted) {
               const profileData = await fetchProfile(session.user.id);
@@ -159,13 +122,11 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
       }
     );
 
-    // Check for existing session only once
     const initializeAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!mounted) return;
 
-        console.log('Initial session check:', session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -193,7 +154,7 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []); // Empty dependency array to run only once
+  }, []);
 
   const signUp = async (email: string, password: string, userData: {
     role: 'buyer' | 'seller';
@@ -202,15 +163,11 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
     phone_number?: string;
   }) => {
     try {
-      console.log('Starting signup process...');
-      
-      // Sign up user with Supabase auth (disable automatic email confirmation)
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          // Don't send automatic verification email - we'll use our custom system
-          emailRedirectTo: undefined,
+          emailRedirectTo: `${window.location.origin}/voltmarket/auth`,
           data: {
             role: userData.role,
             company_name: userData.company_name
@@ -222,46 +179,15 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
         console.error('Signup error:', error);
         return { error };
       }
-      
-      console.log('User created:', data.user?.id);
 
       if (data.user) {
-        // Create profile
-        console.log('Creating profile for user:', data.user.id);
-        
         const profileResult = await createProfile(data.user.id, userData);
         
         if (profileResult.error) {
           return { error: profileResult.error };
         }
         
-        console.log('Profile created successfully');
         setProfile(profileResult.data);
-
-        // Send custom verification email
-        try {
-          const response = await fetch(`https://ktgosplhknmnyagxrgbe.supabase.co/functions/v1/send-verification-email`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Z29zcGxoa25tbnlhZ3hyZ2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTkzMDUsImV4cCI6MjA2NTI3NTMwNX0.KVs7C_7PHARS-JddBgARWFpDZE6yCeMTLgZhu2UKACE`,
-            },
-            body: JSON.stringify({
-              email: data.user.email,
-              user_id: data.user.id,
-              is_resend: false
-            }),
-          });
-
-          if (!response.ok) {
-            console.error('Failed to send verification email');
-          } else {
-            console.log('Verification email sent successfully');
-          }
-        } catch (emailError) {
-          console.error('Error sending verification email:', emailError);
-          // Don't fail signup if email sending fails
-        }
       }
 
       return { data, error: null };
@@ -280,26 +206,15 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
   };
 
   const signOut = async () => {
-    console.log('Attempting to sign out...');
     try {
-      // Clear local state FIRST to ensure immediate UI update
       setUser(null);
       setProfile(null);
       setSession(null);
       setLoading(false);
       
-      // Then sign out from Supabase
       const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error('Sign out error:', error);
-        // Even if there's an error, we've cleared local state
-      } else {
-        console.log('Sign out successful');
-      }
-      
       return { error };
     } catch (err) {
-      console.error('Unexpected sign out error:', err);
       return { error: err as Error };
     }
   };
@@ -321,16 +236,7 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
       }
 
       if (data) {
-        console.log('Profile updated successfully:', data);
         setProfile(data);
-        
-        // Refresh profile data from database to ensure we have latest
-        setTimeout(async () => {
-          const freshProfile = await fetchProfile(user.id);
-          if (freshProfile) {
-            setProfile(freshProfile);
-          }
-        }, 100);
       }
 
       return { data, error: null };
@@ -341,30 +247,18 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
   };
 
   const resendEmailVerification = async () => {
-    if (!user?.email || !user?.id) return { error: new Error('No user found') };
-
+    if (!user?.email) return { error: new Error('No user found') };
+    
     try {
-      const response = await fetch(`https://ktgosplhknmnyagxrgbe.supabase.co/functions/v1/send-verification-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Z29zcGxoa25tbnlhZ3hyZ2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTkzMDUsImV4cCI6MjA2NTI3NTMwNX0.KVs7C_7PHARS-JddBgARWFpDZE6yCeMTLgZhu2UKACE`,
-        },
-        body: JSON.stringify({
-          email: user.email,
-          user_id: user.id,
-          is_resend: true
-        }),
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: user.email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/voltmarket/auth`
+        }
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        return { error: new Error(errorData.error || 'Failed to send verification email') };
-      }
-
-      return { error: null };
+      return { error };
     } catch (err) {
-      console.error('Error resending verification email:', err);
       return { error: err as Error };
     }
   };
