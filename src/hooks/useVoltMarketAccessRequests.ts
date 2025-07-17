@@ -6,9 +6,17 @@ interface AccessRequest {
   id: string;
   listing_id: string;
   requester_id: string;
-  status: string;
-  requested_at: string;
-  responded_at: string | null;
+  seller_id: string;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+  approved_at?: string;
+  requester_profile?: {
+    company_name?: string;
+    role: string;
+  };
+  listing?: {
+    title: string;
+  };
 }
 
 export const useVoltMarketAccessRequests = () => {
@@ -16,13 +24,18 @@ export const useVoltMarketAccessRequests = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const fetchAccessRequests = useCallback(async () => {
+  const fetchAccessRequests = useCallback(async (sellerId: string) => {
     setLoading(true);
     try {
       const { data, error } = await supabase
         .from('voltmarket_nda_requests')
-        .select('*')
-        .order('requested_at', { ascending: false });
+        .select(`
+          *,
+          requester_profile:voltmarket_profiles!voltmarket_nda_requests_requester_id_fkey(company_name, role),
+          listing:voltmarket_listings!voltmarket_nda_requests_listing_id_fkey(title)
+        `)
+        .eq('seller_id', sellerId)
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setAccessRequests(data || []);
@@ -44,7 +57,7 @@ export const useVoltMarketAccessRequests = () => {
         .from('voltmarket_nda_requests')
         .update({ 
           status,
-          responded_at: status === 'approved' ? new Date().toISOString() : null
+          approved_at: status === 'approved' ? new Date().toISOString() : null
         })
         .eq('id', requestId);
 
@@ -53,7 +66,7 @@ export const useVoltMarketAccessRequests = () => {
       setAccessRequests(prev => 
         prev.map(req => 
           req.id === requestId 
-            ? { ...req, status }
+            ? { ...req, status, approved_at: status === 'approved' ? new Date().toISOString() : req.approved_at }
             : req
         )
       );
@@ -75,13 +88,14 @@ export const useVoltMarketAccessRequests = () => {
     }
   }, [toast]);
 
-  const submitAccessRequest = useCallback(async (listingId: string, requesterId: string) => {
+  const submitAccessRequest = useCallback(async (listingId: string, requesterId: string, sellerId: string) => {
     try {
       const { error } = await supabase
         .from('voltmarket_nda_requests')
         .insert({
           listing_id: listingId,
           requester_id: requesterId,
+          seller_id: sellerId,
           status: 'pending'
         });
 
