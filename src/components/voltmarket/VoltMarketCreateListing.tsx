@@ -239,7 +239,7 @@ export const VoltMarketCreateListing: React.FC = () => {
         description: "Your listing has been published successfully"
       });
 
-      navigate('/voltmarket/dashboard');
+      navigate('/dashboard');
     } catch (error) {
       toast({
         title: "Error",
@@ -770,7 +770,7 @@ export const VoltMarketCreateListing: React.FC = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => currentStep > 1 ? setCurrentStep(currentStep - 1) : navigate('/voltmarket/dashboard')}
+              onClick={() => currentStep > 1 ? setCurrentStep(currentStep - 1) : navigate('/dashboard')}
             >
               <ChevronLeft className="w-4 h-4 mr-2" />
               {currentStep > 1 ? 'Previous' : 'Cancel'}

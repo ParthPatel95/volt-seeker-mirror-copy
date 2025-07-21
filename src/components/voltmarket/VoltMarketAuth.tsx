@@ -74,7 +74,7 @@ export const VoltMarketAuth: React.FC = () => {
             title: "Account Created",
             description: "Please check your email to verify your account."
           });
-          navigate('/voltmarket/dashboard');
+          navigate('/dashboard');
         }
       } else {
         const { error } = await signIn(formData.email, formData.password);
@@ -86,7 +86,7 @@ export const VoltMarketAuth: React.FC = () => {
             variant: "destructive"
           });
         } else {
-          navigate('/voltmarket/dashboard');
+          navigate('/dashboard');
         }
       }
     } catch (error) {

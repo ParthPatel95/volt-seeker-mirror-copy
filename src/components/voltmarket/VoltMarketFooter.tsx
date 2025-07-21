@@ -41,27 +41,27 @@ export const VoltMarketFooter: React.FC = () => {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/voltmarket/listings" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/listings" className="text-gray-300 hover:text-white transition-colors">
                   Browse Listings
                 </Link>
               </li>
               <li>
-                <Link to="/voltmarket/listings?type=site_sale" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/listings?type=site_sale" className="text-gray-300 hover:text-white transition-colors">
                   Sites for Sale
                 </Link>
               </li>
               <li>
-                <Link to="/voltmarket/listings?type=site_lease" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/listings?type=site_lease" className="text-gray-300 hover:text-white transition-colors">
                   Sites for Lease
                 </Link>
               </li>
               <li>
-                <Link to="/voltmarket/listings?type=hosting" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/listings?type=hosting" className="text-gray-300 hover:text-white transition-colors">
                   Hosting Services
                 </Link>
               </li>
               <li>
-                <Link to="/voltmarket/listings?type=equipment" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/listings?type=equipment" className="text-gray-300 hover:text-white transition-colors">
                   Equipment
                 </Link>
               </li>
@@ -85,12 +85,12 @@ export const VoltMarketFooter: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/voltmarket/dashboard" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/dashboard" className="text-gray-300 hover:text-white transition-colors">
                   Dashboard
                 </Link>
               </li>
               <li>
-                <Link to="/voltmarket/profile" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/profile" className="text-gray-300 hover:text-white transition-colors">
                   Profile
                 </Link>
               </li>

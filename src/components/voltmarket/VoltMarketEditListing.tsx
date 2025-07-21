@@ -80,7 +80,7 @@ export const VoltMarketEditListing: React.FC = () => {
           description: "Failed to load listing or you don't have permission to edit it",
           variant: "destructive"
         });
-        navigate('/voltmarket/dashboard');
+        navigate('/dashboard');
         return;
       }
 
@@ -150,7 +150,7 @@ export const VoltMarketEditListing: React.FC = () => {
         description: "Listing updated successfully"
       });
       
-      navigate('/voltmarket/dashboard');
+      navigate('/dashboard');
     } catch (error) {
       console.error('Error updating listing:', error);
       toast({
@@ -179,7 +179,7 @@ export const VoltMarketEditListing: React.FC = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Listing not found</h2>
-          <Button onClick={() => navigate('/voltmarket/dashboard')}>
+          <Button onClick={() => navigate('/dashboard')}>
             Back to Dashboard
           </Button>
         </div>
@@ -193,7 +193,7 @@ export const VoltMarketEditListing: React.FC = () => {
         <div className="mb-6">
           <Button
             variant="ghost"
-            onClick={() => navigate('/voltmarket/dashboard')}
+            onClick={() => navigate('/dashboard')}
             className="mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -412,7 +412,7 @@ export const VoltMarketEditListing: React.FC = () => {
           <div className="flex justify-end gap-4">
             <Button
               variant="outline"
-              onClick={() => navigate('/voltmarket/dashboard')}
+              onClick={() => navigate('/dashboard')}
             >
               Cancel
             </Button>

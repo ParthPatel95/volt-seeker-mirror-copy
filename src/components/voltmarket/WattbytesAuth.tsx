@@ -44,7 +44,7 @@ export const WattbytesAuth: React.FC = () => {
   // Check if user is already logged in
   useEffect(() => {
     if (user && !authLoading) {
-      navigate('/voltmarket/dashboard');
+      navigate('/dashboard');
     }
   }, [user, authLoading, navigate]);
 
@@ -99,7 +99,7 @@ export const WattbytesAuth: React.FC = () => {
           }
         } else if (data.session) {
           setMessage({ type: 'success', text: 'Welcome back! Redirecting...' });
-          setTimeout(() => navigate('/voltmarket/dashboard'), 500);
+          setTimeout(() => navigate('/dashboard'), 500);
         }
       } else {
         // Sign up
@@ -418,7 +418,7 @@ export const WattbytesAuth: React.FC = () => {
               {isLogin && (
                 <div className="text-center">
                   <Link 
-                    to="/voltmarket/forgot-password" 
+                    to="/forgot-password" 
                     className="text-sm text-watt-primary hover:text-watt-primary/80 font-medium transition-colors"
                   >
                     Forgot your password?
@@ -444,7 +444,7 @@ export const WattbytesAuth: React.FC = () => {
               {/* Back to Home */}
               <div className="text-center pt-2">
                 <Link 
-                  to="/voltmarket" 
+                  to="/" 
                   className="text-sm text-gray-500 hover:text-watt-primary transition-colors"
                 >
                   ← Back to Home
