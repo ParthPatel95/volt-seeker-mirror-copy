@@ -55,10 +55,13 @@ export const VoltMarketProfile: React.FC = () => {
         .from('gridbazaar_profiles')
         .update({
           company_name: profileData.company_name,
-          phone: profileData.phone_number,
-          website_url: profileData.website,
+          phone_number: profileData.phone_number,
+          website: profileData.website,
           linkedin_url: profileData.linkedin_url,
-          role: profileData.role
+          role: profileData.role,
+          bio: profileData.bio,
+          profile_image_url: profileData.profile_image_url,
+          seller_type: profileData.seller_type
         })
         .eq('id', profile.id);
 
