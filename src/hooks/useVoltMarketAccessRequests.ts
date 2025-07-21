@@ -30,13 +30,13 @@ export const useVoltMarketAccessRequests = () => {
       const { data, error } = await supabase
         .from('voltmarket_nda_requests')
         .select(`*`)
-        .order('requested_at', { ascending: false }) as any;
+        .order('created_at', { ascending: false }) as any;
 
       if (error) throw error;
       setAccessRequests((data || []).map(item => ({
         ...item,
         seller_id: sellerId,
-        created_at: item.requested_at,
+        created_at: item.created_at,
         requester_profile: { company_name: 'Unknown', role: 'buyer' },
         listing: { title: 'Unknown Listing' }
       })) as AccessRequest[]);
