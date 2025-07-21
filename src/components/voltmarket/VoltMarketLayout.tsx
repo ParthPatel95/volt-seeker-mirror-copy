@@ -48,22 +48,10 @@ const VoltMarketLayoutContent: React.FC<VoltMarketLayoutProps> = ({ children }) 
             </div>
             
             <div>
-              <h3 className="font-semibold text-foreground mb-4">Support</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-watt-primary transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-watt-primary transition-colors">Contact Support</a></li>
-                <li><a href="#" className="hover:text-watt-primary transition-colors">Documentation</a></li>
-                <li><a href="#" className="hover:text-watt-primary transition-colors">API Access</a></li>
-              </ul>
-            </div>
-            
-            <div>
               <h3 className="font-semibold text-foreground mb-4">Company</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-watt-primary transition-colors">About Us</a></li>
                 <li><a href="/privacy-policy" className="hover:text-watt-primary transition-colors">Privacy Policy</a></li>
                 <li><a href="/terms-of-service" className="hover:text-watt-primary transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-watt-primary transition-colors">Security</a></li>
               </ul>
             </div>
           </div>
