@@ -103,7 +103,7 @@ export const VoltMarketFooter: React.FC = () => {
             © 2025 GridBazaar. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">
+            <a href="/privacy-policy" className="text-gray-400 hover:text-white text-sm transition-colors">
               Privacy Policy
             </a>
             <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">

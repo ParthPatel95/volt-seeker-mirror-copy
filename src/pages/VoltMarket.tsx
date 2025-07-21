@@ -26,6 +26,7 @@ import { VoltMarketContactMessages } from '@/components/voltmarket/VoltMarketCon
 import { VoltMarketDocumentRequests } from '@/components/voltmarket/VoltMarketDocumentRequests';
 import { VoltMarketInvestmentCalculator } from '@/components/voltmarket/VoltMarketInvestmentCalculator';
 import { VoltMarketMarketReports } from '@/components/voltmarket/VoltMarketMarketReports';
+import { VoltMarketPrivacyPolicy } from '@/components/voltmarket/VoltMarketPrivacyPolicy';
 import { ForgotPassword } from '@/pages/ForgotPassword';
 import { ResetPassword } from '@/pages/ResetPassword';
 import { ComprehensiveTestSuite } from '@/components/ComprehensiveTestSuite';
@@ -154,6 +155,11 @@ export const VoltMarket = () => {
       <Route path="/comprehensive-test" element={
         <VoltMarketLayout>
           <ComprehensiveTestSuite />
+        </VoltMarketLayout>
+      } />
+      <Route path="/privacy-policy" element={
+        <VoltMarketLayout>
+          <VoltMarketPrivacyPolicy />
         </VoltMarketLayout>
       } />
     </Routes>
