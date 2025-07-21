@@ -184,13 +184,21 @@ export type Database = {
           analyzed_at: string | null
           competitive_advantages: string[] | null
           created_at: string
+          current_ratio: number | null
+          debt_to_equity: number | null
           description: string | null
+          distress_signals: string[] | null
           financial_data: Json | null
+          financial_health_score: number | null
           headquarters_location: string | null
           id: string
           industry: string | null
+          locations: Json | null
           market_cap: number | null
           name: string
+          power_usage_estimate: number | null
+          profit_margin: number | null
+          revenue_growth: number | null
           risk_factors: string[] | null
           sector: string | null
           ticker: string | null
@@ -201,13 +209,21 @@ export type Database = {
           analyzed_at?: string | null
           competitive_advantages?: string[] | null
           created_at?: string
+          current_ratio?: number | null
+          debt_to_equity?: number | null
           description?: string | null
+          distress_signals?: string[] | null
           financial_data?: Json | null
+          financial_health_score?: number | null
           headquarters_location?: string | null
           id?: string
           industry?: string | null
+          locations?: Json | null
           market_cap?: number | null
           name: string
+          power_usage_estimate?: number | null
+          profit_margin?: number | null
+          revenue_growth?: number | null
           risk_factors?: string[] | null
           sector?: string | null
           ticker?: string | null
@@ -218,13 +234,21 @@ export type Database = {
           analyzed_at?: string | null
           competitive_advantages?: string[] | null
           created_at?: string
+          current_ratio?: number | null
+          debt_to_equity?: number | null
           description?: string | null
+          distress_signals?: string[] | null
           financial_data?: Json | null
+          financial_health_score?: number | null
           headquarters_location?: string | null
           id?: string
           industry?: string | null
+          locations?: Json | null
           market_cap?: number | null
           name?: string
+          power_usage_estimate?: number | null
+          profit_margin?: number | null
+          revenue_growth?: number | null
           risk_factors?: string[] | null
           sector?: string | null
           ticker?: string | null
@@ -830,6 +854,45 @@ export type Database = {
         }
         Relationships: []
       }
+      site_scan_sessions: {
+        Row: {
+          completed_at: string | null
+          config: Json | null
+          created_at: string
+          created_by: string
+          id: string
+          jurisdiction: string
+          scan_type: string
+          sites_discovered: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          config?: Json | null
+          created_at?: string
+          created_by: string
+          id?: string
+          jurisdiction: string
+          scan_type: string
+          sites_discovered?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          config?: Json | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          jurisdiction?: string
+          scan_type?: string
+          sites_discovered?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       substations: {
         Row: {
           capacity_mva: number | null
@@ -921,6 +984,7 @@ export type Database = {
         Row: {
           address: string
           business_status: string | null
+          capacity_utilization: number | null
           city: string
           confidence_level: number | null
           coordinates: unknown | null
@@ -933,24 +997,36 @@ export type Database = {
           idle_score: number | null
           industry_type: string | null
           last_verified: string
+          listing_price: number | null
+          lot_size_acres: number | null
           metadata: Json | null
+          naics_code: string | null
           name: string | null
           notes: string | null
           operational_status: string
           power_capacity_mw: number
           power_potential: number | null
+          price_per_sqft: number | null
+          satellite_analysis: Json | null
+          satellite_image_url: string | null
           site_name: string
           site_type: string
+          square_footage: number | null
           state: string
+          substation_distance_km: number | null
+          transmission_access: string | null
           updated_at: string
           validation_status: string | null
           verification_method: string
           verification_source: string | null
+          year_built: number | null
           zip_code: string | null
+          zoning: string | null
         }
         Insert: {
           address: string
           business_status?: string | null
+          capacity_utilization?: number | null
           city: string
           confidence_level?: number | null
           coordinates?: unknown | null
@@ -963,24 +1039,36 @@ export type Database = {
           idle_score?: number | null
           industry_type?: string | null
           last_verified?: string
+          listing_price?: number | null
+          lot_size_acres?: number | null
           metadata?: Json | null
+          naics_code?: string | null
           name?: string | null
           notes?: string | null
           operational_status?: string
           power_capacity_mw: number
           power_potential?: number | null
+          price_per_sqft?: number | null
+          satellite_analysis?: Json | null
+          satellite_image_url?: string | null
           site_name: string
           site_type: string
+          square_footage?: number | null
           state: string
+          substation_distance_km?: number | null
+          transmission_access?: string | null
           updated_at?: string
           validation_status?: string | null
           verification_method: string
           verification_source?: string | null
+          year_built?: number | null
           zip_code?: string | null
+          zoning?: string | null
         }
         Update: {
           address?: string
           business_status?: string | null
+          capacity_utilization?: number | null
           city?: string
           confidence_level?: number | null
           coordinates?: unknown | null
@@ -993,20 +1081,31 @@ export type Database = {
           idle_score?: number | null
           industry_type?: string | null
           last_verified?: string
+          listing_price?: number | null
+          lot_size_acres?: number | null
           metadata?: Json | null
+          naics_code?: string | null
           name?: string | null
           notes?: string | null
           operational_status?: string
           power_capacity_mw?: number
           power_potential?: number | null
+          price_per_sqft?: number | null
+          satellite_analysis?: Json | null
+          satellite_image_url?: string | null
           site_name?: string
           site_type?: string
+          square_footage?: number | null
           state?: string
+          substation_distance_km?: number | null
+          transmission_access?: string | null
           updated_at?: string
           validation_status?: string | null
           verification_method?: string
           verification_source?: string | null
+          year_built?: number | null
           zip_code?: string | null
+          zoning?: string | null
         }
         Relationships: []
       }

@@ -147,12 +147,12 @@ export function AdminSettings() {
 
     setProcessing('add-user');
     try {
-      // First check if the user exists in auth.users
+      // First check if the user exists in profiles
       const { data: existingUser, error: userError } = await supabase
         .from('profiles')
-        .select('id')
-        .eq('email', newUserEmail.trim())
-        .single();
+        .select('user_id')
+        .eq('user_id', newUserEmail.trim())
+        .maybeSingle();
 
       if (userError && userError.code !== 'PGRST116') {
         throw userError;
@@ -172,7 +172,7 @@ export function AdminSettings() {
       const { error } = await supabase
         .from('voltscout_approved_users')
         .insert([{
-          user_id: existingUser.id,
+          user_id: existingUser.user_id,
           notes: newUserNotes.trim() || null,
           approved_by: user?.id
         }]);

@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Opportunity } from './types';
 import { parseSatelliteAnalysis, parseCoordinates } from './satelliteAnalysisUtils';
@@ -16,7 +15,7 @@ export async function scanIdleProperties(jurisdiction: string): Promise<Opportun
 
     return (idleSites || []).map(site => {
       const coordinates = parseCoordinates(site.coordinates);
-      const aiInsights = parseSatelliteAnalysis(site.satellite_analysis);
+      const aiInsights = parseSatelliteAnalysis((site.metadata as any)?.satellite_analysis || null);
 
       return {
         id: site.id,
@@ -41,17 +40,17 @@ export async function scanIdleProperties(jurisdiction: string): Promise<Opportun
           confidenceLevel: site.confidence_level,
           powerPotential: site.power_potential,
           validationStatus: site.validation_status,
-          satelliteImageUrl: site.satellite_image_url,
-          capacityUtilization: site.capacity_utilization,
-          transmissionAccess: site.transmission_access,
-          substationDistance: site.substation_distance_km,
-          yearBuilt: site.year_built,
-          lotSize: site.lot_size_acres,
-          squareFootage: site.square_footage,
-          listingPrice: site.listing_price,
-          pricePerSqft: site.price_per_sqft,
-          zoning: site.zoning,
-          naicsCode: site.naics_code
+          satelliteImageUrl: (site.metadata as any)?.satellite_image_url,
+          capacityUtilization: (site.metadata as any)?.capacity_utilization,
+          transmissionAccess: (site.metadata as any)?.transmission_access,
+          substationDistance: (site.metadata as any)?.substation_distance_km,
+          yearBuilt: (site.metadata as any)?.year_built,
+          lotSize: (site.metadata as any)?.lot_size_acres,
+          squareFootage: (site.metadata as any)?.square_footage,
+          listingPrice: (site.metadata as any)?.listing_price,
+          pricePerSqft: (site.metadata as any)?.price_per_sqft,
+          zoning: (site.metadata as any)?.zoning,
+          naicsCode: (site.metadata as any)?.naics_code
         }
       };
     });
@@ -66,8 +65,8 @@ export async function analyzeCorporateDistress(jurisdiction: string): Promise<Op
     const { data: companies, error } = await supabase
       .from('companies')
       .select('*')
-      .not('distress_signals', 'is', null)
-      .order('financial_health_score', { ascending: true })
+      .not('financial_data', 'is', null)
+      .order('created_at', { ascending: false })
       .limit(25);
 
     if (error) throw error;
@@ -78,9 +77,9 @@ export async function analyzeCorporateDistress(jurisdiction: string): Promise<Op
       name: company.name,
       location: jurisdiction,
       coordinates: undefined,
-      estimatedPowerMW: company.power_usage_estimate || 0,
-      distressScore: 100 - (company.financial_health_score || 0),
-      aiInsights: `Financial distress signals detected: ${(company.distress_signals || []).join(', ')}`,
+      estimatedPowerMW: (company.financial_data as any)?.power_usage_estimate || 0,
+      distressScore: 100 - ((company.financial_data as any)?.financial_health_score || 0),
+      aiInsights: `Financial distress signals detected: ${((company.financial_data as any)?.distress_signals || []).join(', ')}`,
       sources: ['SEC Filings', 'Financial Data', 'News Intelligence'],
       lastUpdated: company.updated_at,
       status: 'active' as const,
@@ -89,13 +88,13 @@ export async function analyzeCorporateDistress(jurisdiction: string): Promise<Op
         industry: company.industry,
         sector: company.sector,
         marketCap: company.market_cap,
-        financialHealthScore: company.financial_health_score,
-        currentRatio: company.current_ratio,
-        debtToEquity: company.debt_to_equity,
-        revenueGrowth: company.revenue_growth,
-        profitMargin: company.profit_margin,
-        distressSignals: company.distress_signals,
-        locations: company.locations
+        financialHealthScore: (company.financial_data as any)?.financial_health_score,
+        currentRatio: (company.financial_data as any)?.current_ratio,
+        debtToEquity: (company.financial_data as any)?.debt_to_equity,
+        revenueGrowth: (company.financial_data as any)?.revenue_growth,
+        profitMargin: (company.financial_data as any)?.profit_margin,
+        distressSignals: (company.financial_data as any)?.distress_signals,
+        locations: (company.financial_data as any)?.locations
       }
     }));
   } catch (error) {
