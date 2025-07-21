@@ -14,6 +14,7 @@ import { User, Building, Globe, Linkedin } from 'lucide-react';
 
 export const VoltMarketProfile: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [hasRecentUpdate, setHasRecentUpdate] = useState(false);
   const [profileData, setProfileData] = useState({
     company_name: '',
     phone_number: '',
@@ -29,7 +30,7 @@ export const VoltMarketProfile: React.FC = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (profile) {
+    if (profile && !hasRecentUpdate) {
       console.log('Loading profile data:', profile);
       setProfileData({
         company_name: profile.company_name || '',
@@ -42,7 +43,7 @@ export const VoltMarketProfile: React.FC = () => {
         seller_type: 'site_owner'
       });
     }
-  }, [profile]);
+  }, [profile, hasRecentUpdate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,8 +76,14 @@ export const VoltMarketProfile: React.FC = () => {
 
       console.log('Profile updated successfully');
 
+      // Set flag to prevent form from being reset by useEffect
+      setHasRecentUpdate(true);
+      
       // Refresh the profile to get updated data
       await updateProfile({});
+
+      // Reset the flag after a short delay
+      setTimeout(() => setHasRecentUpdate(false), 1000);
 
       toast({
         title: "Profile Updated",
