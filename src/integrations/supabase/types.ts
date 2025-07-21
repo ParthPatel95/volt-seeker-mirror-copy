@@ -14,6 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_requests: {
+        Row: {
+          additional_info: string | null
+          company: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          phone: string
+          platform_use: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          role: string
+          status: string
+        }
+        Insert: {
+          additional_info?: string | null
+          company: string
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          phone: string
+          platform_use: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          role: string
+          status?: string
+        }
+        Update: {
+          additional_info?: string | null
+          company?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string
+          platform_use?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          role?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      ai_company_analysis: {
+        Row: {
+          acquisition_readiness: number | null
+          analyzed_at: string
+          company_name: string
+          created_at: string
+          distress_probability: number | null
+          financial_outlook: string | null
+          id: string
+          investment_recommendation: string | null
+          key_insights: string[] | null
+          power_consumption_analysis: string | null
+          risk_assessment: string | null
+        }
+        Insert: {
+          acquisition_readiness?: number | null
+          analyzed_at?: string
+          company_name: string
+          created_at?: string
+          distress_probability?: number | null
+          financial_outlook?: string | null
+          id?: string
+          investment_recommendation?: string | null
+          key_insights?: string[] | null
+          power_consumption_analysis?: string | null
+          risk_assessment?: string | null
+        }
+        Update: {
+          acquisition_readiness?: number | null
+          analyzed_at?: string
+          company_name?: string
+          created_at?: string
+          distress_probability?: number | null
+          financial_outlook?: string | null
+          id?: string
+          investment_recommendation?: string | null
+          key_insights?: string[] | null
+          power_consumption_analysis?: string | null
+          risk_assessment?: string | null
+        }
+        Relationships: []
+      }
       alerts: {
         Row: {
           alert_type: string
@@ -146,6 +233,108 @@ export type Database = {
         }
         Relationships: []
       }
+      company_real_estate_assets: {
+        Row: {
+          company_name: string
+          company_ticker: string | null
+          coordinates: unknown | null
+          created_at: string
+          id: string
+          location_description: string
+          property_type: string
+          raw_text: string | null
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          company_name: string
+          company_ticker?: string | null
+          coordinates?: unknown | null
+          created_at?: string
+          id: string
+          location_description: string
+          property_type: string
+          raw_text?: string | null
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          company_name?: string
+          company_ticker?: string | null
+          coordinates?: unknown | null
+          created_at?: string
+          id?: string
+          location_description?: string
+          property_type?: string
+          raw_text?: string | null
+          source?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      corporate_insights: {
+        Row: {
+          company_name: string
+          content: string
+          discovered_at: string
+          id: string
+          insight_type: string
+          keywords: string[] | null
+          source: string
+        }
+        Insert: {
+          company_name: string
+          content: string
+          discovered_at?: string
+          id?: string
+          insight_type: string
+          keywords?: string[] | null
+          source: string
+        }
+        Update: {
+          company_name?: string
+          content?: string
+          discovered_at?: string
+          id?: string
+          insight_type?: string
+          keywords?: string[] | null
+          source?: string
+        }
+        Relationships: []
+      }
+      distress_alerts: {
+        Row: {
+          alert_type: string
+          company_name: string
+          created_at: string
+          distress_level: number
+          id: string
+          potential_value: number
+          power_capacity: number
+          signals: string[]
+        }
+        Insert: {
+          alert_type: string
+          company_name: string
+          created_at?: string
+          distress_level: number
+          id?: string
+          potential_value: number
+          power_capacity: number
+          signals: string[]
+        }
+        Update: {
+          alert_type?: string
+          company_name?: string
+          created_at?: string
+          distress_level?: number
+          id?: string
+          potential_value?: number
+          power_capacity?: number
+          signals?: string[]
+        }
+        Relationships: []
+      }
       energy_markets: {
         Row: {
           created_at: string
@@ -215,6 +404,219 @@ export type Database = {
           price_per_mwh?: number
           rate_type?: string
           timestamp?: string
+        }
+        Relationships: []
+      }
+      gridbazaar_profiles: {
+        Row: {
+          bio: string | null
+          company_name: string | null
+          created_at: string
+          id: string
+          is_email_verified: boolean
+          is_id_verified: boolean
+          linkedin_url: string | null
+          phone_number: string | null
+          profile_image_url: string | null
+          role: string
+          seller_type: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          bio?: string | null
+          company_name?: string | null
+          created_at?: string
+          id?: string
+          is_email_verified?: boolean
+          is_id_verified?: boolean
+          linkedin_url?: string | null
+          phone_number?: string | null
+          profile_image_url?: string | null
+          role?: string
+          seller_type?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          bio?: string | null
+          company_name?: string | null
+          created_at?: string
+          id?: string
+          is_email_verified?: boolean
+          is_id_verified?: boolean
+          linkedin_url?: string | null
+          phone_number?: string | null
+          profile_image_url?: string | null
+          role?: string
+          seller_type?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      industry_intel_results: {
+        Row: {
+          address: string | null
+          ai_insights: string | null
+          city: string | null
+          coordinates: unknown | null
+          created_at: string
+          created_by: string | null
+          data_sources: Json | null
+          distress_score: number | null
+          estimated_power_mw: number | null
+          id: string
+          name: string
+          opportunity_details: Json | null
+          opportunity_type: string
+          scan_session_id: string | null
+          state: string | null
+          status: string | null
+          updated_at: string
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          ai_insights?: string | null
+          city?: string | null
+          coordinates?: unknown | null
+          created_at?: string
+          created_by?: string | null
+          data_sources?: Json | null
+          distress_score?: number | null
+          estimated_power_mw?: number | null
+          id?: string
+          name: string
+          opportunity_details?: Json | null
+          opportunity_type: string
+          scan_session_id?: string | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          ai_insights?: string | null
+          city?: string | null
+          coordinates?: unknown | null
+          created_at?: string
+          created_by?: string | null
+          data_sources?: Json | null
+          distress_score?: number | null
+          estimated_power_mw?: number | null
+          id?: string
+          name?: string
+          opportunity_details?: Json | null
+          opportunity_type?: string
+          scan_session_id?: string | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      industry_intelligence: {
+        Row: {
+          company_name: string
+          financial_health: number | null
+          id: string
+          industry: string
+          market_cap: number | null
+          power_intensity: string | null
+          risk_level: string | null
+          scanned_at: string
+          ticker: string | null
+        }
+        Insert: {
+          company_name: string
+          financial_health?: number | null
+          id?: string
+          industry: string
+          market_cap?: number | null
+          power_intensity?: string | null
+          risk_level?: string | null
+          scanned_at?: string
+          ticker?: string | null
+        }
+        Update: {
+          company_name?: string
+          financial_health?: number | null
+          id?: string
+          industry?: string
+          market_cap?: number | null
+          power_intensity?: string | null
+          risk_level?: string | null
+          scanned_at?: string
+          ticker?: string | null
+        }
+        Relationships: []
+      }
+      linkedin_intelligence: {
+        Row: {
+          company: string
+          content: string
+          discovered_at: string
+          id: string
+          keywords: string[] | null
+          post_date: string
+          signals: string[] | null
+        }
+        Insert: {
+          company: string
+          content: string
+          discovered_at?: string
+          id?: string
+          keywords?: string[] | null
+          post_date: string
+          signals?: string[] | null
+        }
+        Update: {
+          company?: string
+          content?: string
+          discovered_at?: string
+          id?: string
+          keywords?: string[] | null
+          post_date?: string
+          signals?: string[] | null
+        }
+        Relationships: []
+      }
+      news_intelligence: {
+        Row: {
+          content: string
+          discovered_at: string
+          id: string
+          keywords: string[] | null
+          published_at: string | null
+          source: string
+          title: string
+          url: string | null
+        }
+        Insert: {
+          content: string
+          discovered_at?: string
+          id?: string
+          keywords?: string[] | null
+          published_at?: string | null
+          source: string
+          title: string
+          url?: string | null
+        }
+        Update: {
+          content?: string
+          discovered_at?: string
+          id?: string
+          keywords?: string[] | null
+          published_at?: string | null
+          source?: string
+          title?: string
+          url?: string | null
         }
         Relationships: []
       }
@@ -392,6 +794,42 @@ export type Database = {
         }
         Relationships: []
       }
+      site_access_requests: {
+        Row: {
+          company_name: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          location: string
+          phone: string
+          power_requirement: string
+          status: string
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          location: string
+          phone: string
+          power_requirement: string
+          status?: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          location?: string
+          phone?: string
+          power_requirement?: string
+          status?: string
+        }
+        Relationships: []
+      }
       substations: {
         Row: {
           capacity_mva: number | null
@@ -434,6 +872,72 @@ export type Database = {
           substation_type?: string | null
           updated_at?: string
           voltage_kv?: number | null
+        }
+        Relationships: []
+      }
+      verified_heavy_power_sites: {
+        Row: {
+          address: string
+          city: string
+          coordinates: unknown | null
+          created_at: string
+          created_by: string
+          deleted_at: string | null
+          id: string
+          last_verified: string
+          metadata: Json | null
+          notes: string | null
+          operational_status: string
+          power_capacity_mw: number
+          site_name: string
+          site_type: string
+          state: string
+          updated_at: string
+          verification_method: string
+          verification_source: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address: string
+          city: string
+          coordinates?: unknown | null
+          created_at?: string
+          created_by: string
+          deleted_at?: string | null
+          id?: string
+          last_verified?: string
+          metadata?: Json | null
+          notes?: string | null
+          operational_status?: string
+          power_capacity_mw: number
+          site_name: string
+          site_type: string
+          state: string
+          updated_at?: string
+          verification_method: string
+          verification_source?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string
+          city?: string
+          coordinates?: unknown | null
+          created_at?: string
+          created_by?: string
+          deleted_at?: string | null
+          id?: string
+          last_verified?: string
+          metadata?: Json | null
+          notes?: string | null
+          operational_status?: string
+          power_capacity_mw?: number
+          site_name?: string
+          site_type?: string
+          state?: string
+          updated_at?: string
+          verification_method?: string
+          verification_source?: string | null
+          zip_code?: string | null
         }
         Relationships: []
       }
@@ -511,6 +1015,42 @@ export type Database = {
           metric_value?: number
           recorded_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      voltmarket_contact_messages: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean | null
+          listing_id: string
+          listing_owner_id: string
+          message: string
+          sender_email: string
+          sender_name: string
+          sender_phone: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          listing_id: string
+          listing_owner_id: string
+          message: string
+          sender_email: string
+          sender_name: string
+          sender_phone?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          listing_id?: string
+          listing_owner_id?: string
+          message?: string
+          sender_email?: string
+          sender_name?: string
+          sender_phone?: string | null
         }
         Relationships: []
       }
@@ -1112,12 +1652,42 @@ export type Database = {
         }
         Relationships: []
       }
+      voltscout_approved_users: {
+        Row: {
+          approved_at: string
+          approved_by: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          approved_at?: string
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_voltscout_approved: {
+        Args: { user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       alert_type:
@@ -1125,6 +1695,7 @@ export type Database = {
         | "price_change"
         | "status_change"
         | "high_voltscore"
+      app_role: "admin" | "moderator" | "user"
       property_status:
         | "available"
         | "under_contract"
@@ -1143,6 +1714,7 @@ export type Database = {
         | "solar_farm"
         | "wind_farm"
         | "other"
+      user_role: "admin" | "analyst" | "investor" | "broker"
       voltmarket_document_type:
         | "financial"
         | "legal"
@@ -1313,6 +1885,7 @@ export const Constants = {
         "status_change",
         "high_voltscore",
       ],
+      app_role: ["admin", "moderator", "user"],
       property_status: [
         "available",
         "under_contract",
@@ -1333,6 +1906,7 @@ export const Constants = {
         "wind_farm",
         "other",
       ],
+      user_role: ["admin", "analyst", "investor", "broker"],
       voltmarket_document_type: [
         "financial",
         "legal",
