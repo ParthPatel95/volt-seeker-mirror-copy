@@ -28,6 +28,7 @@ import { VoltMarketInvestmentCalculator } from '@/components/voltmarket/VoltMark
 import { VoltMarketMarketReports } from '@/components/voltmarket/VoltMarketMarketReports';
 import { ForgotPassword } from '@/pages/ForgotPassword';
 import { ResetPassword } from '@/pages/ResetPassword';
+import { ComprehensiveTestSuite } from '@/components/ComprehensiveTestSuite';
 
 export const VoltMarket = () => {
   const { user, loading } = useVoltMarketAuth();
@@ -148,6 +149,11 @@ export const VoltMarket = () => {
       <Route path="/qa-test" element={
         <VoltMarketLayout>
           <VoltMarketQATest />
+        </VoltMarketLayout>
+      } />
+      <Route path="/comprehensive-test" element={
+        <VoltMarketLayout>
+          <ComprehensiveTestSuite />
         </VoltMarketLayout>
       } />
     </Routes>
