@@ -875,66 +875,135 @@ export type Database = {
         }
         Relationships: []
       }
+      user_alert_preferences: {
+        Row: {
+          created_at: string
+          email_notifications: boolean | null
+          frequency: string | null
+          id: string
+          is_active: boolean | null
+          push_notifications: boolean | null
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          sms_notifications: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_notifications?: boolean | null
+          frequency?: string | null
+          id?: string
+          is_active?: boolean | null
+          push_notifications?: boolean | null
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          sms_notifications?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_notifications?: boolean | null
+          frequency?: string | null
+          id?: string
+          is_active?: boolean | null
+          push_notifications?: boolean | null
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          sms_notifications?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       verified_heavy_power_sites: {
         Row: {
           address: string
+          business_status: string | null
           city: string
+          confidence_level: number | null
           coordinates: unknown | null
           created_at: string
           created_by: string
           deleted_at: string | null
+          estimated_free_mw: number | null
+          facility_type: string | null
           id: string
+          idle_score: number | null
+          industry_type: string | null
           last_verified: string
           metadata: Json | null
+          name: string | null
           notes: string | null
           operational_status: string
           power_capacity_mw: number
+          power_potential: number | null
           site_name: string
           site_type: string
           state: string
           updated_at: string
+          validation_status: string | null
           verification_method: string
           verification_source: string | null
           zip_code: string | null
         }
         Insert: {
           address: string
+          business_status?: string | null
           city: string
+          confidence_level?: number | null
           coordinates?: unknown | null
           created_at?: string
           created_by: string
           deleted_at?: string | null
+          estimated_free_mw?: number | null
+          facility_type?: string | null
           id?: string
+          idle_score?: number | null
+          industry_type?: string | null
           last_verified?: string
           metadata?: Json | null
+          name?: string | null
           notes?: string | null
           operational_status?: string
           power_capacity_mw: number
+          power_potential?: number | null
           site_name: string
           site_type: string
           state: string
           updated_at?: string
+          validation_status?: string | null
           verification_method: string
           verification_source?: string | null
           zip_code?: string | null
         }
         Update: {
           address?: string
+          business_status?: string | null
           city?: string
+          confidence_level?: number | null
           coordinates?: unknown | null
           created_at?: string
           created_by?: string
           deleted_at?: string | null
+          estimated_free_mw?: number | null
+          facility_type?: string | null
           id?: string
+          idle_score?: number | null
+          industry_type?: string | null
           last_verified?: string
           metadata?: Json | null
+          name?: string | null
           notes?: string | null
           operational_status?: string
           power_capacity_mw?: number
+          power_potential?: number | null
           site_name?: string
           site_type?: string
           state?: string
           updated_at?: string
+          validation_status?: string | null
           verification_method?: string
           verification_source?: string | null
           zip_code?: string | null
