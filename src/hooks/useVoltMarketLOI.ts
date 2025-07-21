@@ -44,7 +44,7 @@ export const useVoltMarketLOI = () => {
         .from('voltmarket_lois')
         .insert({
           listing_id: listingId,
-          buyer_id: profile.id,
+          buyer_id: profile.user_id,
           seller_id: listing.seller_id,
           status: 'pending',
           offered_price: loiData.offering_price,
@@ -78,7 +78,7 @@ export const useVoltMarketLOI = () => {
           buyer:gridbazaar_profiles!buyer_id(company_name, phone_number, bio, website),
           seller:gridbazaar_profiles!seller_id(company_name, phone_number, bio, website)
         `)
-        .or(`buyer_id.eq.${profile.id},seller_id.eq.${profile.id}`)
+        .or(`buyer_id.eq.${profile.user_id},seller_id.eq.${profile.user_id}`)
         .order('submitted_at', { ascending: false });
 
       if (error) throw error;
@@ -86,7 +86,7 @@ export const useVoltMarketLOI = () => {
       // Add type field to determine if received or sent
       const loisWithType = (data || []).map(loi => ({
         ...loi,
-        type: loi.seller_id === profile.id ? 'received' : 'sent'
+        type: loi.seller_id === profile.user_id ? 'received' : 'sent'
       }));
       
       return loisWithType;
@@ -104,7 +104,7 @@ export const useVoltMarketLOI = () => {
         .from('voltmarket_lois')
         .update({ status, responded_at: new Date().toISOString() })
         .eq('id', loiId)
-        .eq('seller_id', profile.id)
+        .eq('seller_id', profile.user_id)
         .select()
         .single();
 

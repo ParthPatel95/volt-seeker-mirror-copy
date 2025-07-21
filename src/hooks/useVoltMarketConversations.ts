@@ -49,7 +49,7 @@ export const useVoltMarketConversations = () => {
       const { data: conversationData, error: convError } = await supabase
         .from('voltmarket_conversations')
         .select('*')
-        .contains('participant_ids', [profile.id])
+        .contains('participant_ids', [profile.user_id])
         .order('last_message_at', { ascending: false });
 
       if (convError) {
@@ -67,7 +67,7 @@ export const useVoltMarketConversations = () => {
             .from('voltmarket_messages')
             .select('*')
             .eq('listing_id', conv.listing_id)
-            .or(`sender_id.eq.${profile.id},recipient_id.eq.${profile.id}`)
+            .or(`sender_id.eq.${profile.user_id},recipient_id.eq.${profile.user_id}`)
             .order('created_at', { ascending: true });
 
           if (msgError) {
@@ -82,7 +82,7 @@ export const useVoltMarketConversations = () => {
             .single();
 
           // Get other party from participant_ids
-          const otherUserId = conv.participant_ids.find(id => id !== profile.id);
+          const otherUserId = conv.participant_ids.find(id => id !== profile.user_id);
           const { data: otherPartyProfile } = await supabase
             .from('gridbazaar_profiles')
             .select('company_name, profile_image_url')
@@ -91,12 +91,12 @@ export const useVoltMarketConversations = () => {
 
           const messageList = messages || [];
           const lastMessage = messageList.length > 0 ? messageList[messageList.length - 1] : null;
-          const unreadCount = messageList.filter(m => m.recipient_id === profile.id && !m.is_read).length;
+          const unreadCount = messageList.filter(m => m.recipient_id === profile.user_id && !m.is_read).length;
 
           return {
             ...conv,
-            buyer_id: conv.participant_ids[0] || profile.id,
-            seller_id: conv.participant_ids[1] || profile.id,
+            buyer_id: conv.participant_ids[0] || profile.user_id,
+            seller_id: conv.participant_ids[1] || profile.user_id,
             listing: listing || { title: 'Unknown Listing', asking_price: 0 },
             other_party: otherPartyProfile || { company_name: 'Unknown User', profile_image_url: null },
             messages: messageList,
@@ -125,7 +125,7 @@ export const useVoltMarketConversations = () => {
         .from('voltmarket_conversations')
         .select('id')
         .eq('listing_id', listingId)
-        .or(`and(buyer_id.eq.${profile.id},seller_id.eq.${recipientId}),and(buyer_id.eq.${recipientId},seller_id.eq.${profile.id})`)
+        .or(`and(buyer_id.eq.${profile.user_id},seller_id.eq.${recipientId}),and(buyer_id.eq.${recipientId},seller_id.eq.${profile.user_id})`)
         .maybeSingle();
 
       if (existingConv) {
@@ -137,7 +137,7 @@ export const useVoltMarketConversations = () => {
         .from('voltmarket_conversations')
         .insert({
           listing_id: listingId,
-          participant_ids: [profile.id, recipientId]
+          participant_ids: [profile.user_id, recipientId]
         })
         .select('id')
         .single();
@@ -164,7 +164,7 @@ export const useVoltMarketConversations = () => {
           .from('voltmarket_messages')
           .insert({
             listing_id: listingId,
-            sender_id: profile.id,
+            sender_id: profile.user_id,
             recipient_id: recipientId,
             message: message
           })
@@ -178,7 +178,7 @@ export const useVoltMarketConversations = () => {
           .from('voltmarket_conversations')
           .update({ last_message_at: new Date().toISOString() })
           .eq('listing_id', listingId)
-          .or(`and(buyer_id.eq.${profile.id},seller_id.eq.${recipientId}),and(buyer_id.eq.${recipientId},seller_id.eq.${profile.id})`);
+          .or(`and(buyer_id.eq.${profile.user_id},seller_id.eq.${recipientId}),and(buyer_id.eq.${recipientId},seller_id.eq.${profile.user_id})`);
 
         // Refresh conversations to show new message
         fetchConversations();
@@ -227,7 +227,7 @@ export const useVoltMarketConversations = () => {
                   : msg
               ),
               unread_count: conv.messages.filter(m => 
-                m.recipient_id === profile.id && 
+                m.recipient_id === profile.user_id && 
                 !m.is_read && 
                 m.id !== message.messageId
               ).length
@@ -256,7 +256,7 @@ export const useVoltMarketConversations = () => {
       if (cleanup) cleanup();
       clearInterval(interval);
     };
-  }, [profile?.id, fetchConversations, onMessage, isConnected]);
+  }, [profile?.user_id, fetchConversations, onMessage, isConnected]);
 
   return {
     conversations,
