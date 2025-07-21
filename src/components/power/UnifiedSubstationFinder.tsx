@@ -106,11 +106,11 @@ export function UnifiedSubstationFinder() {
         analysis_status: 'completed' as const,
         stored_at: sub.created_at,
         details: {
-          utility_owner: sub.utility_owner,
-          voltage_level: sub.voltage_level,
-          interconnection_type: sub.interconnection_type,
-          commissioning_date: sub.commissioning_date,
-          load_factor: sub.load_factor,
+          utility_owner: (sub as any).utility_owner || sub.owner,
+          voltage_level: (sub as any).voltage_level || 'unknown',
+          interconnection_type: (sub as any).interconnection_type || 'transmission',
+          commissioning_date: sub.commissioned_date,
+          load_factor: (sub as any).load_factor || (sub as any).capacity_utilization || 0,
           status: sub.status
         }
       }));

@@ -145,7 +145,10 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
             if (mounted) {
               const profileData = await fetchProfile(session.user.id);
               if (mounted) {
-                setProfile(profileData);
+                setProfile({
+                  ...profileData,
+                  role: (profileData.role as any) || 'buyer'
+                } as any);
                 setLoading(false);
               }
             }
@@ -172,7 +175,10 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
         if (session?.user) {
           const profileData = await fetchProfile(session.user.id);
           if (mounted) {
-            setProfile(profileData);
+            setProfile({
+              ...profileData,
+              role: (profileData?.role as any) || 'buyer'
+            } as any);
           }
         }
         
@@ -322,13 +328,19 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
 
       if (data) {
         console.log('Profile updated successfully:', data);
-        setProfile(data);
+        setProfile({
+          ...data,
+          role: (data?.role as any) || 'buyer'
+        } as any);
         
         // Refresh profile data from database to ensure we have latest
         setTimeout(async () => {
           const freshProfile = await fetchProfile(user.id);
           if (freshProfile) {
-            setProfile(freshProfile);
+            setProfile({
+              ...freshProfile,
+              role: (freshProfile?.role as any) || 'buyer'
+            } as any);
           }
         }, 100);
       }

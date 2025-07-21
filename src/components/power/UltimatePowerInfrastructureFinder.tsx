@@ -61,7 +61,12 @@ export function UltimatePowerInfrastructureFinder() {
         throw error;
       }
 
-      setStoredSubstations(data || []);
+      setStoredSubstations(data?.map(sub => ({
+        ...sub,
+        coordinates_source: 'database',
+        interconnection_type: (sub as any).interconnection_type || 'transmission',
+        load_factor: (sub as any).load_factor || (sub as any).capacity_utilization || 0
+      })) as any || []);
       console.log('Loaded stored substations:', data?.length || 0);
     } catch (error: any) {
       console.error('Failed to load stored substations:', error);

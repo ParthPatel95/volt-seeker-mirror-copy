@@ -133,13 +133,12 @@ export const VoltMarketDocumentUpload: React.FC<VoltMarketDocumentUploadProps> =
         const { data: dbData, error: dbError } = await supabase
           .from('voltmarket_documents')
           .insert({
-            listing_id: targetListingId,
             uploader_id: profile.id,
             file_name: file.name,
             file_url: urlData.publicUrl,
             file_type: file.type,
             file_size: file.size,
-            document_type: selectedDocumentType,
+            document_type: (selectedDocumentType as any) || 'other',
             description: documentDescription || null,
             is_private: true
           })

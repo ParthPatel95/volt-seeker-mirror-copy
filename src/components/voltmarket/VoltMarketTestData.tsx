@@ -80,8 +80,9 @@ export const VoltMarketTestData: React.FC = () => {
           sampleListings.map(listing => ({
             ...listing,
             seller_id: profile.id,
-            status: 'active' as const
-          }))
+            status: 'active' as const,
+            asking_price: listing.asking_price || 0 // Ensure asking_price is always present
+          })) as any
         )
         .select();
 

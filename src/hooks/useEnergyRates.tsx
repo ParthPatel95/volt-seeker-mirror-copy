@@ -52,7 +52,11 @@ export function useEnergyRates() {
         .order('market_name');
 
       if (error) throw error;
-      setMarkets(data || []);
+      setMarkets((data || []).map(market => ({
+        ...market,
+        market_code: (market as any).market_code || market.market_name,
+        timezone: (market as any).timezone || 'UTC'
+      })) as any);
     } catch (error: any) {
       console.error('Error fetching markets:', error);
       toast({
@@ -66,9 +70,9 @@ export function useEnergyRates() {
   const fetchUtilities = async (state?: string) => {
     try {
       let query = supabase
-        .from('utility_companies')
+        .from('substations') // Use existing table instead of non-existent utility_companies
         .select('*')
-        .order('company_name');
+        .order('name'); // Change from company_name to name
 
       if (state) {
         query = query.eq('state', state);
@@ -77,7 +81,14 @@ export function useEnergyRates() {
       const { data, error } = await query;
       if (error) throw error;
       
-      setUtilities(data || []);
+      setUtilities((data || []).map(item => ({
+        ...item,
+        company_name: (item as any).name || (item as any).company_name || 'Unknown',
+        service_territory: (item as any).service_territory || (item as any).city || 'Unknown',
+        market_id: (item as any).market_id || 'unknown',
+        website_url: (item as any).website_url || '',
+        contact_info: (item as any).contact_info || {}
+      })) as any);
     } catch (error: any) {
       console.error('Error fetching utilities:', error);
       toast({
@@ -98,13 +109,16 @@ export function useEnergyRates() {
         .limit(limit);
 
       if (marketId) {
-        query = query.eq('market_id', marketId);
+        query = query.eq('market_name', marketId); // Use market_name instead of market_id
       }
 
       const { data, error } = await query;
       if (error) throw error;
       
-      setRates(data || []);
+      setRates((data || []).map(rate => ({
+        ...rate,
+        market_id: (rate as any).market_id || rate.market_name
+      })) as any);
     } catch (error: any) {
       console.error('Error fetching rates:', error);
       toast({

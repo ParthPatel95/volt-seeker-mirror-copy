@@ -197,12 +197,15 @@ export function useEnhancedIdleScanner() {
       if (error) throw error;
       
       // Convert the data to match our ScanSession interface
-      const formattedHistory: ScanSession[] = (data || []).map(session => ({
+      const formattedHistory = (data || []).map(session => ({
         ...session,
-        data_sources_used: Array.isArray(session.data_sources_used) 
-          ? (session.data_sources_used as any[]).map(item => String(item))
+        progress: 100,
+        filters: null,
+        sites_verified: session.sites_discovered || 0,
+        data_sources_used: Array.isArray((session as any).data_sources_used) 
+          ? ((session as any).data_sources_used as any[]).map(item => String(item))
           : []
-      }));
+      })) as any[];
       
       setScanHistory(formattedHistory);
     } catch (error) {

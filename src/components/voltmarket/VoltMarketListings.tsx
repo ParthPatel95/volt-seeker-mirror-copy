@@ -58,7 +58,11 @@ export const VoltMarketListings: React.FC = () => {
       })) || [];
       
       console.log('Transformed listings:', transformedData);
-      setListings(transformedData);
+      setListings((transformedData || []).map(listing => ({
+        ...listing,
+        lease_rate: (listing as any).lease_rate || 0,
+        power_rate_per_kw: (listing as any).power_rate_per_kw || 0
+      })) as any);
     } catch (error) {
       console.error('Error fetching listings:', error);
     } finally {

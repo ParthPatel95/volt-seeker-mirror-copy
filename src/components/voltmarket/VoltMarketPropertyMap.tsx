@@ -118,7 +118,7 @@ export const VoltMarketPropertyMap: React.FC<VoltMarketPropertyMapProps> = ({
 
         if (data) {
           // Check if coordinates exist
-          if (data.latitude && data.longitude) {
+          if ((data as any).latitude && (data as any).longitude) {
             propertyData = [{
               id: data.id,
               title: data.title,

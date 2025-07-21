@@ -109,7 +109,11 @@ export const VoltMarketListingDetail: React.FC = () => {
         .maybeSingle();
 
       if (error) throw error;
-      setListing(data);
+      setListing({
+        ...data,
+        lease_rate: (data as any).lease_rate || 0,
+        power_rate_per_kw: (data as any).power_rate_per_kw || 0
+      } as any);
 
       // Fetch first image for social sharing
       if (data) {

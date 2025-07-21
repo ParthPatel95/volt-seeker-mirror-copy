@@ -13,7 +13,7 @@ import { ArrowLeft, Save } from 'lucide-react';
 import { VoltMarketImageUpload } from './VoltMarketImageUpload';
 import { Database } from '@/integrations/supabase/types';
 
-type VoltMarketListingType = Database['public']['Enums']['voltmarket_listing_type'];
+type VoltMarketListingType = any; // Database['public']['Enums']['voltmarket_listing_type'];
 type VoltMarketPropertyType = Database['public']['Enums']['voltmarket_property_type'];
 
 interface ListingData {

@@ -52,7 +52,15 @@ export function ScrapedPropertiesDisplay() {
       }
 
       console.log('Loaded scraped properties:', data?.length || 0);
-      setScrapedProperties(data || []);
+      setScrapedProperties((data || []).map(property => ({
+        ...property,
+        city: (property as any).city || 'Unknown',
+        state: (property as any).state || 'Unknown', 
+        transmission_access: (property as any).transmission_access || false,
+        source: property.source_website || 'Unknown',
+        scraped_at: property.created_at,
+        distance_to_substation: (property as any).distance_to_substation || null
+      })) as any);
     } catch (error: any) {
       console.error('Failed to load scraped properties:', error);
       toast({
