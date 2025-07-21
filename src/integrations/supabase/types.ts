@@ -619,6 +619,38 @@ export type Database = {
         }
         Relationships: []
       }
+      voltmarket_listing_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          listing_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          listing_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          listing_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_voltmarket_listing_images_listing_id"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "voltmarket_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       voltmarket_listings: {
         Row: {
           asking_price: number
