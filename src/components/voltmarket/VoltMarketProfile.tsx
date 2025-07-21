@@ -32,13 +32,13 @@ export const VoltMarketProfile: React.FC = () => {
     if (profile) {
       setProfileData({
         company_name: profile.company_name || '',
-        phone_number: profile.phone_number || '',
-        profile_image_url: profile.profile_image_url || '',
-        bio: profile.bio || '',
-        website: profile.website || '',
+        phone_number: profile.phone || '',
+        profile_image_url: '',
+        bio: '',
+        website: profile.website_url || '',
         linkedin_url: profile.linkedin_url || '',
-        role: profile.role === 'admin' ? 'buyer' : profile.role, // Convert admin to buyer as fallback
-        seller_type: profile.seller_type || 'site_owner'
+        role: profile.role === 'admin' ? 'buyer' : (profile.role || 'buyer'),
+        seller_type: 'site_owner'
       });
     }
   }, [profile]);
@@ -53,7 +53,13 @@ export const VoltMarketProfile: React.FC = () => {
     try {
       const { error } = await supabase
         .from('voltmarket_profiles')
-        .update(profileData)
+        .update({
+          company_name: profileData.company_name,
+          phone: profileData.phone_number,
+          website_url: profileData.website,
+          linkedin_url: profileData.linkedin_url,
+          role: profileData.role
+        })
         .eq('id', profile.id);
 
       if (error) throw error;
