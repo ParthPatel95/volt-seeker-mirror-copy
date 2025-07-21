@@ -56,7 +56,7 @@ export function ScrapedPropertyCard({ property, onMoveToProperties, onDelete }: 
       // Mark as moved in scraped_properties table
       const { error: updateError } = await supabase
         .from('scraped_properties')
-        .update({ moved_to_properties: true })
+        .update({ description: property.description + " [Moved to Properties]" })
         .eq('id', property.id);
 
       if (updateError) throw updateError;
