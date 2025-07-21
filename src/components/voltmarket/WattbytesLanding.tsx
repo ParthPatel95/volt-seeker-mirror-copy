@@ -191,7 +191,7 @@ export const WattbytesLanding: React.FC = () => {
                   Sign In
                 </Button>
               </Link>
-              <Link to="/auth">
+              <Link to="/auth?signup">
                 <Button className="bg-watt-gradient hover:opacity-90 text-white shadow-watt-glow">
                   Get Started
                 </Button>

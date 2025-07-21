@@ -253,7 +253,7 @@ export const VoltMarketNavigation: React.FC = () => {
                       <span className="sm:hidden">In</span>
                     </Button>
                   </Link>
-                  <Link to="/auth">
+                  <Link to="/auth?signup">
                     <Button size="sm" className="bg-watt-gradient hover:opacity-90 text-white text-sm">
                       <span className="hidden sm:inline">Get Started</span>
                       <span className="sm:hidden">Start</span>

@@ -143,7 +143,7 @@ export const VoltMarketHeader: React.FC = () => {
                 <Link to="/auth">
                   <Button variant="ghost">Sign In</Button>
                 </Link>
-                <Link to="/auth">
+                <Link to="/auth?signup">
                   <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                     Get Started
                   </Button>
@@ -213,7 +213,7 @@ export const VoltMarketHeader: React.FC = () => {
                   </Button>
                 </>
               ) : (
-                <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
+                <Link to="/auth?signup" onClick={() => setIsMenuOpen(false)}>
                   <Button className="w-full bg-blue-600 hover:bg-blue-700">Get Started</Button>
                 </Link>
               )}

@@ -24,7 +24,11 @@ import {
 } from 'lucide-react';
 
 export const WattbytesAuth: React.FC = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(() => {
+    // Check if URL has signup parameter to default to signup mode
+    const urlParams = new URLSearchParams(window.location.search);
+    return !urlParams.has('signup');
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
