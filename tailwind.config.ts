@@ -77,6 +77,12 @@ export default {
 				'watt-dark': 'hsl(var(--watt-dark))',
 				'watt-light': 'hsl(var(--watt-light))'
 			},
+			backgroundImage: {
+				'watt-gradient': 'var(--watt-gradient)',
+			},
+			boxShadow: {
+				'watt-glow': 'var(--watt-glow)',
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
