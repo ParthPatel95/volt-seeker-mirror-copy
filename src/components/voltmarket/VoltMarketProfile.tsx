@@ -34,13 +34,13 @@ export const VoltMarketProfile: React.FC = () => {
       console.log('Loading profile data:', profile);
       setProfileData({
         company_name: profile.company_name || '',
-        phone_number: profile.phone || '',
-        profile_image_url: '',
-        bio: '',
-        website: profile.website_url || '',
+        phone_number: (profile as any).phone_number || '',
+        profile_image_url: (profile as any).profile_image_url || '',
+        bio: (profile as any).bio || '',
+        website: (profile as any).website || profile.website_url || '',
         linkedin_url: profile.linkedin_url || '',
         role: profile.role === 'admin' ? 'buyer' : (profile.role || 'buyer'),
-        seller_type: 'site_owner'
+        seller_type: (profile as any).seller_type || 'site_owner'
       });
     }
   }, [profile, hasRecentUpdate]);
