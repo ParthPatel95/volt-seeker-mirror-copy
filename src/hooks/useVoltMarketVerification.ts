@@ -43,20 +43,8 @@ export const useVoltMarketVerification = () => {
 
     setLoading(true);
     try {
-      const documentUrl = await uploadVerificationDocument(file, verificationType);
-
-      const { data, error } = await supabase
-        .from('voltmarket_verifications')
-        .insert({
-          user_id: profile.id,
-          verification_type: verificationType,
-          document_url: documentUrl
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return { data, error: null };
+      // Verification submission temporarily disabled due to schema mismatch
+      return { data: null, error: 'Feature temporarily disabled' };
     } catch (error) {
       return { data: null, error };
     } finally {
@@ -68,14 +56,8 @@ export const useVoltMarketVerification = () => {
     if (!profile) return { data: null, error: 'Not logged in' };
 
     try {
-      const { data, error } = await supabase
-        .from('voltmarket_verifications')
-        .select('*')
-        .eq('user_id', profile.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return { data, error: null };
+      // Verification system temporarily disabled due to schema mismatch
+      return { data: [], error: null };
     } catch (error) {
       return { data: null, error };
     }

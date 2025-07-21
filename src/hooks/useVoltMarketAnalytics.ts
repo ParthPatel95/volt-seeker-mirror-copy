@@ -29,14 +29,12 @@ export const useVoltMarketAnalytics = () => {
         .from('voltmarket_analytics')
         .upsert({
           metric_type: activityType,
-          metric_value: { 
-            user_id: profile.id,
+          metric_value: 1,
+          user_id: profile.id,
+          metadata: { 
             data: activityData,
             timestamp: new Date().toISOString()
-          },
-          date_recorded: currentDate
-        }, {
-          onConflict: 'metric_type,date_recorded'
+          }
         });
     } catch (error) {
       console.error('Failed to track user activity:', error);
@@ -74,16 +72,8 @@ export const useVoltMarketAnalytics = () => {
 
       if (verifiedUsersError) throw verifiedUsersError;
 
-      // Get transactions count (fallback to 0 if table doesn't exist)
+      // Transactions table doesn't exist - set to 0
       let totalTransactions = 0;
-      try {
-        const { count } = await supabase
-          .from('voltmarket_transactions')
-          .select('*', { count: 'exact', head: true });
-        totalTransactions = count || 0;
-      } catch (error) {
-        console.warn('Transactions table not accessible:', error);
-      }
 
       // Get popular locations
       const { data: locations, error: locationsError } = await supabase

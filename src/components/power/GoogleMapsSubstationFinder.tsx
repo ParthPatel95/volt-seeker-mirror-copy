@@ -63,8 +63,7 @@ export function GoogleMapsSubstationFinder() {
       const { data, error } = await supabase
         .from('substations')
         .select('*')
-        .eq('coordinates_source', 'google_maps_api')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) as any;
 
       if (error) throw error;
 

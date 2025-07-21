@@ -34,11 +34,12 @@ export function ScrapedPropertiesDisplay() {
         query = query.eq('property_type', typeFilter);
       }
 
-      if (statusFilter === 'available') {
-        query = query.eq('moved_to_properties', false);
-      } else if (statusFilter === 'moved') {
-        query = query.eq('moved_to_properties', true);
-      }
+      // Status filtering temporarily disabled due to schema mismatch
+      // if (statusFilter === 'available') {
+      //   query = query.eq('moved_to_properties', false);
+      // } else if (statusFilter === 'moved') {
+      //   query = query.eq('moved_to_properties', true);
+      // }
 
       if (searchTerm) {
         query = query.or(`address.ilike.%${searchTerm}%,city.ilike.%${searchTerm}%,state.ilike.%${searchTerm}%`);

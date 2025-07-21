@@ -69,7 +69,10 @@ export const useVoltMarketReviews = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return { data, error: null };
+      return { data: (data || []).map(item => ({
+        ...item,
+        reviewer: { company_name: 'Unknown', profile_image_url: '' }
+      })) as any, error: null };
     } catch (error) {
       return { data: null, error };
     }

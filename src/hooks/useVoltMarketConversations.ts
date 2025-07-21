@@ -49,8 +49,8 @@ export const useVoltMarketConversations = () => {
       const { data: conversationData, error: convError } = await supabase
         .from('voltmarket_conversations')
         .select('*')
-        .or(`buyer_id.eq.${profile.id},seller_id.eq.${profile.id}`)
-        .order('updated_at', { ascending: false });
+        .contains('participant_ids', [profile.id])
+        .order('last_message_at', { ascending: false });
 
       if (convError) {
         console.error('Conversation fetch error:', convError);
@@ -81,11 +81,11 @@ export const useVoltMarketConversations = () => {
             .eq('id', conv.listing_id)
             .single();
 
-          // Fetch other party profile
-          const otherUserId = conv.buyer_id === profile.id ? conv.seller_id : conv.buyer_id;
+          // Get other party from participant_ids
+          const otherUserId = conv.participant_ids.find(id => id !== profile.id);
           const { data: otherPartyProfile } = await supabase
             .from('voltmarket_profiles')
-            .select('company_name, avatar_url')
+            .select('company_name, profile_image_url')
             .eq('user_id', otherUserId)
             .single();
 
@@ -95,6 +95,8 @@ export const useVoltMarketConversations = () => {
 
           return {
             ...conv,
+            buyer_id: conv.participant_ids[0] || profile.id,
+            seller_id: conv.participant_ids[1] || profile.id,
             listing: listing || { title: 'Unknown Listing', asking_price: 0 },
             other_party: otherPartyProfile || { company_name: 'Unknown User', profile_image_url: null },
             messages: messageList,
@@ -135,8 +137,7 @@ export const useVoltMarketConversations = () => {
         .from('voltmarket_conversations')
         .insert({
           listing_id: listingId,
-          buyer_id: profile.id,
-          seller_id: recipientId
+          participant_ids: [profile.id, recipientId]
         })
         .select('id')
         .single();

@@ -125,11 +125,11 @@ export const VoltMarketPropertyMap: React.FC<VoltMarketPropertyMapProps> = ({
               address: data.location || 'Location not specified',
               city: data.location?.split(',')[0]?.trim() || 'Unknown City',
               state: data.location?.split(',')[1]?.trim() || 'Unknown State',
-              coordinates: [data.longitude, data.latitude],
+              coordinates: [0, 0], // Coordinates not available in voltmarket_listings
               asking_price: data.asking_price,
               property_type: data.listing_type,
-              power_capacity_mw: data.power_capacity_mw,
-              size_sqft: data.square_footage,
+              power_capacity_mw: data.power_capacity_mw || 0,
+              size_sqft: 0, // Square footage not available in voltmarket_listings
               status: data.status,
               image_url: undefined // Images are handled separately in VoltMarket
             }];
@@ -159,8 +159,8 @@ export const VoltMarketPropertyMap: React.FC<VoltMarketPropertyMapProps> = ({
                   coordinates: [geocodeResult.coordinates.lng, geocodeResult.coordinates.lat],
                   asking_price: data.asking_price,
                   property_type: data.listing_type,
-                  power_capacity_mw: data.power_capacity_mw,
-                  size_sqft: data.square_footage,
+                  power_capacity_mw: data.power_capacity_mw || 0,
+                  size_sqft: 0, // Square footage not available in voltmarket_listings
                   status: data.status,
                   image_url: undefined
                 }];
@@ -179,8 +179,8 @@ export const VoltMarketPropertyMap: React.FC<VoltMarketPropertyMapProps> = ({
             }
           } else {
             console.warn('Listing found but no coordinates available:', { 
-              lat: data.latitude, 
-              lng: data.longitude,
+              lat: (data as any).latitude, 
+              lng: (data as any).longitude,
               location: data.location 
             });
             // Set empty properties and return early for fallback display
@@ -237,11 +237,11 @@ export const VoltMarketPropertyMap: React.FC<VoltMarketPropertyMapProps> = ({
           address: listing.location || 'Location not specified',
           city: listing.location?.split(',')[0]?.trim() || 'Unknown City',
           state: listing.location?.split(',')[1]?.trim() || 'Unknown State',
-          coordinates: [listing.longitude, listing.latitude],
-          asking_price: listing.asking_price,
-          property_type: listing.listing_type,
-          power_capacity_mw: listing.power_capacity_mw,
-          size_sqft: listing.square_footage,
+            coordinates: [(listing as any).longitude || 0, (listing as any).latitude || 0],
+            asking_price: listing.asking_price,
+            property_type: listing.listing_type,
+            power_capacity_mw: listing.power_capacity_mw || 0,
+            size_sqft: (listing as any).square_footage || 0,
           status: listing.status,
           image_url: undefined // Images are handled separately in VoltMarket
         }));

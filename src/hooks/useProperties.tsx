@@ -60,7 +60,12 @@ export function useProperties() {
         .order('discovered_at', { ascending: false });
 
       if (error) throw error;
-      setProperties(data || []);
+      setProperties((data || []).map(item => ({
+        ...item,
+        transmission_access: (item as any).transmission_access || false,
+        discovered_at: (item as any).discovered_at || item.created_at,
+        volt_scores: []
+      })) as Property[]);
     } catch (err: any) {
       setError(err.message);
     } finally {

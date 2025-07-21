@@ -40,7 +40,7 @@ export const useVoltMarketDocuments = () => {
       }
 
       if (documentType && documentType !== 'all') {
-        query = query.eq('document_type', documentType);
+        query = query.eq('document_type', documentType as any);
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
@@ -103,7 +103,7 @@ export const useVoltMarketDocuments = () => {
           file_url: publicUrl,
           file_size: file.size,
           file_type: file.type,
-          document_type: documentType,
+          document_type: documentType as any,
           is_private: accessLevel === 'private' || isConfidential,
           description: `${documentType} document`
         })
