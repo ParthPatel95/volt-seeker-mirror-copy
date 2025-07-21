@@ -25,7 +25,7 @@ export const LandingNavigation = () => {
         <Button 
           variant="outline" 
           size="sm"
-          onClick={() => navigate('/voltmarket/home')}
+          onClick={() => navigate('/')}
           className="border-none hover:opacity-90 text-white text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 touch-target"
           style={{ backgroundColor: '#6366f1' }}
         >

@@ -222,7 +222,7 @@ const SellerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <CardTitle className="text-lg sm:text-xl">Your Listings ({userListings.length})</CardTitle>
-            <Link to="/voltmarket/create-listing">
+            <Link to="/create-listing">
               <Button size="sm" className="w-full sm:w-auto">
                 <Plus className="mr-2 h-4 w-4" />
                 New Listing
@@ -240,7 +240,7 @@ const SellerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
                 <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No listings yet</h3>
                 <p className="text-gray-600 mb-4">Create your first listing to start selling</p>
-                <Link to="/voltmarket/create-listing">
+                <Link to="/create-listing">
                   <Button>
                     <Plus className="mr-2 h-4 w-4" />
                     Create First Listing
@@ -280,11 +280,11 @@ const SellerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
                              <><Eye className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1" /> <span className="hidden sm:inline">Show</span></>
                            )}
                          </Button>
-                         <Link to={`/voltmarket/edit-listing/${listing.id}`}>
-                           <Button variant="outline" size="sm">
-                             <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
-                           </Button>
-                         </Link>
+                          <Link to={`/edit-listing/${listing.id}`}>
+                            <Button variant="outline" size="sm">
+                              <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                            </Button>
+                          </Link>
                          <Button
                            variant="outline"
                            size="sm"
@@ -299,7 +299,7 @@ const SellerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
                  ))}
                 {userListings.length > 5 && (
                   <div className="text-center pt-4">
-                    <Link to="/voltmarket/dashboard">
+                    <Link to="/dashboard">
                       <Button variant="outline">View All Listings</Button>
                     </Link>
                   </div>
@@ -315,35 +315,35 @@ const SellerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
             <CardTitle>Seller Actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Link to="/voltmarket/create-listing">
+            <Link to="/create-listing">
               <Button className="w-full justify-start">
                 <Plus className="mr-2 h-4 w-4" />
                 Create New Listing
               </Button>
             </Link>
             
-            <Link to="/voltmarket/loi-center">
+            <Link to="/loi-center">
               <Button variant="outline" className="w-full justify-start">
                 <HandHeart className="mr-2 h-4 w-4" />
                 Manage LOIs ({pendingLOIs})
               </Button>
             </Link>
             
-            <Link to="/voltmarket/contact-messages">
+            <Link to="/contact-messages">
               <Button variant="outline" className="w-full justify-start">
                 <MessageSquare className="mr-2 h-4 w-4" />
                 View Messages ({unreadMessages})
               </Button>
             </Link>
             
-            <Link to="/voltmarket/document-requests">
+            <Link to="/document-requests">
               <Button variant="outline" className="w-full justify-start">
                 <FileCheck className="mr-2 h-4 w-4" />
                 Document Requests ({pendingDocumentRequests})
               </Button>
             </Link>
 
-            <Link to="/voltmarket/dashboard">
+            <Link to="/dashboard">
               <Button variant="outline" className="w-full justify-start">
                 <BarChart3 className="mr-2 h-4 w-4" />
                 Analytics & Reports
@@ -395,7 +395,7 @@ const SellerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
             )}
           </div>
           <div className="flex justify-end pt-4">
-            <Link to="/voltmarket/contact-messages">
+            <Link to="/contact-messages">
               <Button>View All Messages</Button>
             </Link>
           </div>
@@ -513,7 +513,7 @@ const BuyerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>New Listings</CardTitle>
-            <Link to="/voltmarket/listings">
+            <Link to="/listings">
               <Button size="sm" variant="outline">
                 <Search className="mr-2 h-4 w-4" />
                 Browse All
@@ -526,7 +526,7 @@ const BuyerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
                 <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No listings yet</h3>
                 <p className="text-gray-600 mb-4">Browse available listings to get started</p>
-                <Link to="/voltmarket/listings">
+                <Link to="/listings">
                   <Button>
                     <Search className="mr-2 h-4 w-4" />
                     Browse Listings
@@ -552,7 +552,7 @@ const BuyerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 ml-4">
-                        <Link to={`/voltmarket/listings/${listing.id}`}>
+                        <Link to={`/listings/${listing.id}`}>
                           <Button size="sm">
                             View Details
                           </Button>
@@ -572,42 +572,42 @@ const BuyerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
             <CardTitle>Buyer Actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Link to="/voltmarket/listings">
+            <Link to="/listings">
               <Button className="w-full justify-start">
                 <Search className="mr-2 h-4 w-4" />
                 Browse Listings
               </Button>
             </Link>
             
-            <Link to="/voltmarket/search">
+            <Link to="/search">
               <Button variant="outline" className="w-full justify-start">
                 <Search className="mr-2 h-4 w-4" />
                 Advanced Search
               </Button>
             </Link>
             
-            <Link to="/voltmarket/loi-center">
+            <Link to="/loi-center">
               <Button variant="outline" className="w-full justify-start">
                 <HandHeart className="mr-2 h-4 w-4" />
                 My LOIs ({activeLOIs})
               </Button>
             </Link>
             
-            <Link to="/voltmarket/watchlist">
+            <Link to="/watchlist">
               <Button variant="outline" className="w-full justify-start">
                 <Heart className="mr-2 h-4 w-4" />
                 Watchlist ({watchlistCount})
               </Button>
             </Link>
 
-            <Link to="/voltmarket/search">
+            <Link to="/search">
               <Button variant="outline" className="w-full justify-start">
                 <Star className="mr-2 h-4 w-4" />
                 Advanced Search
               </Button>
             </Link>
 
-            <Link to="/voltmarket/notifications">
+            <Link to="/notifications">
               <Button variant="outline" className="w-full justify-start">
                 <MessageSquare className="mr-2 h-4 w-4" />
                 Notifications
@@ -688,7 +688,7 @@ export const VoltMarketDashboard: React.FC = () => {
           </Button>
           <div className="text-sm text-gray-500">
             Or go to{' '}
-            <Link to="/voltmarket/profile" className="text-blue-600 hover:underline">
+            <Link to="/profile" className="text-blue-600 hover:underline">
               Profile Settings
             </Link>
           </div>
@@ -743,7 +743,7 @@ export const VoltMarketDashboard: React.FC = () => {
                     <p className="text-sm text-blue-700 mt-1">
                       Add your company information to build trust with other users.
                     </p>
-                    <Link to="/voltmarket/profile">
+                    <Link to="/profile">
                       <Button size="sm" className="mt-2">
                         Complete Profile
                       </Button>
@@ -761,7 +761,7 @@ export const VoltMarketDashboard: React.FC = () => {
                       : 'Browse available listings to find your next investment'
                     }
                   </p>
-                  <Link to={profile.role === 'seller' ? '/voltmarket/create-listing' : '/voltmarket/listings'}>
+                  <Link to={profile.role === 'seller' ? '/create-listing' : '/listings'}>
                     <Button size="sm" className="mt-2">
                       {profile.role === 'seller' ? 'Create Listing' : 'Browse Listings'}
                     </Button>

@@ -155,7 +155,7 @@ export function Auth({ onAuthStateChange }: AuthProps) {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Link 
-                    to="/voltmarket/home" 
+                    to="/" 
                     className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
                   >
                     Go to GridBazaar
