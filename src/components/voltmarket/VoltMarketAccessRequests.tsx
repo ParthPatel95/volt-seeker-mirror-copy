@@ -215,7 +215,7 @@ export const VoltMarketAccessRequests: React.FC<VoltMarketAccessRequestsProps> =
                             </Button>
                           </div>
                         )}
-                        <Link to={`/messages?user=${request.requester_id}`} className="w-full">
+                        <Link to={`/contact-messages?user=${request.requester_id}`} className="w-full">
                           <Button variant="outline" size="sm" className="w-full">
                             <MessageSquare className="w-4 h-4 mr-1" />
                             Message
