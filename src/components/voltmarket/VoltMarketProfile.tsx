@@ -25,11 +25,12 @@ export const VoltMarketProfile: React.FC = () => {
     seller_type: 'site_owner' as 'site_owner' | 'broker' | 'realtor' | 'equipment_vendor'
   });
 
-  const { profile, user } = useVoltMarketAuth();
+  const { profile, user, updateProfile } = useVoltMarketAuth();
   const { toast } = useToast();
 
   useEffect(() => {
     if (profile) {
+      console.log('Loading profile data:', profile);
       setProfileData({
         company_name: profile.company_name || '',
         phone_number: profile.phone || '',
@@ -66,6 +67,9 @@ export const VoltMarketProfile: React.FC = () => {
         .eq('id', profile.id);
 
       if (error) throw error;
+
+      // Refresh the profile to get updated data
+      await updateProfile({});
 
       toast({
         title: "Profile Updated",
