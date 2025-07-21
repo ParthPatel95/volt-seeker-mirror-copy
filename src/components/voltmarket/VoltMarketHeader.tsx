@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +30,10 @@ export const VoltMarketHeader: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const getInitials = (name: string) => {
+    return name ? name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U';
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,9 +116,14 @@ export const VoltMarketHeader: React.FC = () => {
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <User className="w-4 h-4 mr-1" />
-                      {profile?.company_name || 'Account'}
+                    <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage src={(profile as any)?.profile_image_url || ''} />
+                        <AvatarFallback className="bg-blue-100 text-blue-600 text-sm">
+                          {getInitials(profile?.company_name || 'Account')}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="hidden lg:block">{profile?.company_name || 'Account'}</span>
                       {profile?.role === 'seller' && (
                         <Badge variant="secondary" className="ml-2 text-xs">
                           Seller
