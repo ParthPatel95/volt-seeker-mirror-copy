@@ -398,6 +398,20 @@ export const WattbytesAuth: React.FC = () => {
                   </div>
                 )}
 
+                {/* Terms Agreement (Sign Up Only) */}
+                {!isLogin && (
+                  <p className="text-xs text-gray-600 text-center px-2">
+                    By creating an account you are agreeing to our{' '}
+                    <a href="/privacy-policy" className="text-watt-primary hover:text-watt-primary/80 underline">
+                      Privacy Policy
+                    </a>
+                    {' '}&{' '}
+                    <a href="/terms-of-service" className="text-watt-primary hover:text-watt-primary/80 underline">
+                      Terms of Service
+                    </a>
+                  </p>
+                )}
+
                 {/* Submit Button */}
                 <Button
                   type="submit"

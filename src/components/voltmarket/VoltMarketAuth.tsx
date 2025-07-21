@@ -227,6 +227,19 @@ export const VoltMarketAuth: React.FC = () => {
                 </>
               )}
 
+              {isSignUp && (
+                <p className="text-xs text-gray-600 text-center px-2">
+                  By creating an account you are agreeing to our{' '}
+                  <a href="/privacy-policy" className="text-blue-600 hover:text-blue-800 underline">
+                    Privacy Policy
+                  </a>
+                  {' '}&{' '}
+                  <a href="/terms-of-service" className="text-blue-600 hover:text-blue-800 underline">
+                    Terms of Service
+                  </a>
+                </p>
+              )}
+
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? 'Loading...' : (isSignUp ? 'Create Account' : 'Sign In')}
               </Button>
