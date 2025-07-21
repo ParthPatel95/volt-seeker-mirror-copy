@@ -52,7 +52,7 @@ export const VoltMarketWatchlist: React.FC = () => {
                 <p className="text-gray-600 mb-6">
                   Start exploring listings and save your favorites to keep track of them here.
                 </p>
-                <Link to="/voltmarket/listings">
+                <Link to="/listings">
                   <Button>Browse Listings</Button>
                 </Link>
               </div>
@@ -93,7 +93,7 @@ export const VoltMarketWatchlist: React.FC = () => {
                   </div>
                   
                   <div className="flex gap-2">
-                    <Link to={`/voltmarket/listings/${item.listing_id}`} className="flex-1">
+                    <Link to={`/listings/${item.listing_id}`} className="flex-1">
                       <Button variant="outline" size="sm" className="w-full">
                         <Building2 className="w-4 h-4 mr-1" />
                         View Details

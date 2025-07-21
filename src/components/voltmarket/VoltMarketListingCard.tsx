@@ -185,7 +185,7 @@ export const VoltMarketListingCard: React.FC<VoltMarketListingCardProps> = ({ li
             <Calendar className="w-4 h-4 mr-1 shrink-0" />
             <span className="truncate">{new Date(listing.created_at).toLocaleDateString()}</span>
           </div>
-          <Link to={`/voltmarket/listings/${listing.id}`} className="shrink-0">
+          <Link to={`/listings/${listing.id}`} className="shrink-0">
             <Button size="sm" className="w-full sm:w-auto">View Details</Button>
           </Link>
         </div>

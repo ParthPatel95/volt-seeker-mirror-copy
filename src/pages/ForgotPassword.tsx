@@ -168,7 +168,7 @@ export const ForgotPassword: React.FC = () => {
               {/* Back to Sign In */}
               <div className="text-center pt-4 border-t border-gray-200">
                 <Link 
-                  to="/voltmarket/auth" 
+                  to="/auth" 
                   className="inline-flex items-center gap-2 text-sm text-watt-primary hover:text-watt-primary/80 font-medium transition-colors"
                 >
                   <ArrowLeft className="h-4 w-4" />
