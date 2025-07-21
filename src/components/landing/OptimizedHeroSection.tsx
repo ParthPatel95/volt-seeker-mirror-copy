@@ -76,7 +76,7 @@ export const OptimizedHeroSection = () => {
         {/* CTA buttons with scroll reveal */}
         <ScrollReveal delay={400}>
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
-            <Link to="/app" className="w-full sm:w-auto group">
+            <Link to="/auth" className="w-full sm:w-auto group">
               <Button 
                 size="lg" 
                 className="w-full sm:w-auto bg-gradient-to-r from-electric-blue to-neon-green hover:from-bright-cyan hover:to-electric-blue text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-semibold shadow-2xl transition-all duration-300 hover:scale-105 hover-glow"
