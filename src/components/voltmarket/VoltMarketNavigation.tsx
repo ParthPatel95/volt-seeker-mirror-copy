@@ -76,7 +76,6 @@ export const VoltMarketNavigation: React.FC = () => {
 
   const userNavItems = user ? [
     { name: 'Messages', path: '/contact-messages', icon: MessageSquare, badge: 0 },
-    { name: 'Portfolio', path: '/portfolio', icon: Briefcase },
     { name: 'Documents', path: '/documents', icon: FileText },
   ] : [];
 
