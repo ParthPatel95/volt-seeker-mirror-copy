@@ -432,7 +432,7 @@ const BuyerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
       // Get recent listings for browsing
       const { data: listings } = await supabase
         .from('voltmarket_listings')
-        .select('*, voltmarket_profiles(company_name)')
+        .select('*, gridbazaar_profiles(company_name)')
         .eq('status', 'active')
         .order('created_at', { ascending: false })
         .limit(5);
@@ -548,7 +548,7 @@ const BuyerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
                           <span>${listing.asking_price?.toLocaleString()}</span>
                           <span>{listing.power_capacity_mw} MW</span>
                           <span>{listing.location}</span>
-                          <span>by {listing.voltmarket_profiles?.company_name}</span>
+                          <span>by {listing.gridbazaar_profiles?.company_name}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 ml-4">
@@ -634,7 +634,7 @@ export const VoltMarketDashboard: React.FC = () => {
       if (result.error) {
         console.error('Profile creation error:', result.error);
         const errorMessage = result.error.message || result.error.toString();
-        if (errorMessage.includes('duplicate key') || errorMessage.includes('voltmarket_profiles_user_id_key')) {
+        if (errorMessage.includes('duplicate key') || errorMessage.includes('gridbazaar_profiles_user_id_key')) {
           console.log('Profile already exists, refreshing...');
           window.location.reload();
         } else {

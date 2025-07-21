@@ -63,7 +63,7 @@ export const useVoltMarketReviews = () => {
         .from('voltmarket_reviews')
         .select(`
           *,
-          reviewer:voltmarket_profiles!reviewer_id(company_name, profile_image_url)
+          reviewer:gridbazaar_profiles!reviewer_id(company_name, profile_image_url)
         `)
         .eq('reviewed_user_id', userId)
         .order('created_at', { ascending: false });

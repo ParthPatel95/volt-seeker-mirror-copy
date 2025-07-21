@@ -84,7 +84,7 @@ export const useVoltMarketConversations = () => {
           // Get other party from participant_ids
           const otherUserId = conv.participant_ids.find(id => id !== profile.id);
           const { data: otherPartyProfile } = await supabase
-            .from('voltmarket_profiles')
+            .from('gridbazaar_profiles')
             .select('company_name, profile_image_url')
             .eq('user_id', otherUserId)
             .single();

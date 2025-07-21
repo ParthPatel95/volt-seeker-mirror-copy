@@ -52,7 +52,7 @@ export const VoltMarketProfile: React.FC = () => {
 
     try {
       const { error } = await supabase
-        .from('voltmarket_profiles')
+        .from('gridbazaar_profiles')
         .update({
           company_name: profileData.company_name,
           phone: profileData.phone_number,

@@ -22,7 +22,7 @@ interface Listing {
   created_at: string;
   status: string;
   seller_id: string;
-  voltmarket_profiles: {
+  gridbazaar_profiles: {
     company_name: string;
     is_id_verified: boolean;
   } | null;
@@ -42,7 +42,7 @@ export const VoltMarketListings: React.FC = () => {
         .from('voltmarket_listings')
         .select(`
           *,
-          voltmarket_profiles!seller_id(company_name, is_id_verified)
+          gridbazaar_profiles!seller_id(company_name, is_id_verified)
         `)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
@@ -54,7 +54,7 @@ export const VoltMarketListings: React.FC = () => {
       // Transform the data to match the expected interface
       const transformedData = data?.map(listing => ({
         ...listing,
-        voltmarket_profiles: listing.voltmarket_profiles
+        gridbazaar_profiles: listing.gridbazaar_profiles
       })) || [];
       
       console.log('Transformed listings:', transformedData);

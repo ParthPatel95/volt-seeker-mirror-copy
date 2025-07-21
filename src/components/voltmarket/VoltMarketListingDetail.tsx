@@ -55,7 +55,7 @@ interface ListingDetail {
   model?: string;
   equipment_condition?: string;
   quantity?: number;
-  voltmarket_profiles: {
+  gridbazaar_profiles: {
     company_name: string;
     is_id_verified: boolean;
     bio?: string;
@@ -103,7 +103,7 @@ export const VoltMarketListingDetail: React.FC = () => {
         .from('voltmarket_listings')
         .select(`
           *,
-          voltmarket_profiles!seller_id(company_name, is_id_verified, bio)
+          gridbazaar_profiles!seller_id(company_name, is_id_verified, bio)
         `)
         .eq('id', id)
         .maybeSingle();
@@ -293,7 +293,7 @@ export const VoltMarketListingDetail: React.FC = () => {
                 <Badge variant="secondary" className="flex-shrink-0">
                   {getListingTypeLabel(listing.listing_type)}
                 </Badge>
-                {listing.voltmarket_profiles?.is_id_verified && (
+                {listing.gridbazaar_profiles?.is_id_verified && (
                   <Badge variant="outline" className="text-green-600 flex-shrink-0">
                     Verified Seller
                   </Badge>
@@ -558,18 +558,18 @@ export const VoltMarketListingDetail: React.FC = () => {
                   <CardContent>
                     <div className="space-y-4">
                       <div>
-                        <h3 className="font-semibold text-lg">{listing.voltmarket_profiles?.company_name || 'Unknown Seller'}</h3>
-                        {listing.voltmarket_profiles?.is_id_verified && (
+                        <h3 className="font-semibold text-lg">{listing.gridbazaar_profiles?.company_name || 'Unknown Seller'}</h3>
+                        {listing.gridbazaar_profiles?.is_id_verified && (
                           <Badge variant="outline" className="text-green-600 mt-1">
                             <Shield className="w-3 h-3 mr-1" />
                             Verified
                           </Badge>
                         )}
                       </div>
-                      {listing.voltmarket_profiles?.bio && (
+                      {listing.gridbazaar_profiles?.bio && (
                         <div>
                           <h4 className="font-medium text-gray-900 mb-2">About</h4>
-                          <p className="text-gray-700">{listing.voltmarket_profiles.bio}</p>
+                          <p className="text-gray-700">{listing.gridbazaar_profiles.bio}</p>
                         </div>
                       )}
                       <div>

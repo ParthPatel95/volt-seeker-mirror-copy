@@ -52,7 +52,7 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
     try {
       console.log('Fetching profile for user:', userId);
       const { data: profileData, error } = await supabase
-        .from('voltmarket_profiles')
+        .from('gridbazaar_profiles')
         .select('*')
         .eq('user_id', userId)
         .maybeSingle();
@@ -78,9 +78,8 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
   }) => {
     try {
       // For signup, we need to ensure the profile is created with proper auth context
-      // First, let's try with the service role for initial profile creation
       const { data, error } = await supabase
-        .from('voltmarket_profiles')
+        .from('gridbazaar_profiles')
         .insert({
           user_id: userId,
           role: userData.role,
@@ -95,36 +94,6 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
 
       if (error) {
         console.error('Profile creation error:', error);
-        // If RLS error, try creating via edge function
-        if (error.message.includes('row-level security')) {
-          try {
-            const response = await fetch(`https://ktgosplhknmnyagxrgbe.supabase.co/functions/v1/create-voltmarket-profile`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Z29zcGxoa25tbnlhZ3hyZ2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTkzMDUsImV4cCI6MjA2NTI3NTMwNX0.KVs7C_7PHARS-JddBgARWFpDZE6yCeMTLgZhu2UKACE`,
-              },
-              body: JSON.stringify({
-                user_id: userId,
-                role: userData.role,
-                seller_type: userData.seller_type,
-                company_name: userData.company_name,
-                phone_number: userData.phone_number,
-              }),
-            });
-
-            if (!response.ok) {
-              const errorData = await response.json();
-              return { error: new Error(errorData.error || 'Failed to create profile via edge function') };
-            }
-
-            const profileData = await response.json();
-            return { data: profileData, error: null };
-          } catch (edgeFunctionError) {
-            console.error('Edge function error:', edgeFunctionError);
-            return { error: edgeFunctionError as Error };
-          }
-        }
         return { error };
       }
 
@@ -218,13 +187,12 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
     try {
       console.log('Starting signup process...');
       
-      // Sign up user with Supabase auth (disable automatic email confirmation)
+      // Sign up user with Supabase auth
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          // Don't send automatic verification email - we'll use our custom system
-          emailRedirectTo: undefined,
+          emailRedirectTo: `${window.location.origin}/`,
           data: {
             role: userData.role,
             company_name: userData.company_name
@@ -250,32 +218,10 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
         }
         
         console.log('Profile created successfully');
-        setProfile(profileResult.data);
-
-        // Send custom verification email
-        try {
-          const response = await fetch(`https://ktgosplhknmnyagxrgbe.supabase.co/functions/v1/send-verification-email`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Z29zcGxoa25tbnlhZ3hyZ2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTkzMDUsImV4cCI6MjA2NTI3NTMwNX0.KVs7C_7PHARS-JddBgARWFpDZE6yCeMTLgZhu2UKACE`,
-            },
-            body: JSON.stringify({
-              email: data.user.email,
-              user_id: data.user.id,
-              is_resend: false
-            }),
-          });
-
-          if (!response.ok) {
-            console.error('Failed to send verification email');
-          } else {
-            console.log('Verification email sent successfully');
-          }
-        } catch (emailError) {
-          console.error('Error sending verification email:', emailError);
-          // Don't fail signup if email sending fails
-        }
+        setProfile({
+          ...profileResult.data,
+          role: (profileResult.data?.role as 'buyer' | 'seller' | 'admin') || 'buyer'
+        } as VoltMarketProfile);
       }
 
       return { data, error: null };
@@ -323,7 +269,7 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
 
     try {
       const { data, error } = await supabase
-        .from('voltmarket_profiles')
+        .from('gridbazaar_profiles')
         .update(updates)
         .eq('user_id', user.id)
         .select()
@@ -364,22 +310,17 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
     if (!user?.email || !user?.id) return { error: new Error('No user found') };
 
     try {
-      const response = await fetch(`https://ktgosplhknmnyagxrgbe.supabase.co/functions/v1/send-verification-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Z29zcGxoa25tbnlhZ3hyZ2JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTkzMDUsImV4cCI6MjA2NTI3NTMwNX0.KVs7C_7PHARS-JddBgARWFpDZE6yCeMTLgZhu2UKACE`,
-        },
-        body: JSON.stringify({
-          email: user.email,
-          user_id: user.id,
-          is_resend: true
-        }),
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: user.email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        return { error: new Error(errorData.error || 'Failed to send verification email') };
+      if (error) {
+        console.error('Error resending verification email:', error);
+        return { error };
       }
 
       return { error: null };

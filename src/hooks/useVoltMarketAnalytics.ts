@@ -60,13 +60,13 @@ export const useVoltMarketAnalytics = () => {
 
       // Get users count
       const { count: totalUsers, error: usersError } = await supabase
-        .from('voltmarket_profiles')
+        .from('gridbazaar_profiles')
         .select('*', { count: 'exact', head: true });
 
       if (usersError) throw usersError;
 
       const { count: verifiedUsers, error: verifiedUsersError } = await supabase
-        .from('voltmarket_profiles')
+        .from('gridbazaar_profiles')
         .select('*', { count: 'exact', head: true })
         .eq('is_id_verified', true);
 

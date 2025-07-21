@@ -34,7 +34,7 @@ export function Auth({ onAuthStateChange }: AuthProps) {
       if (session?.user) {
         // Check if they have a GridBazaar profile
         const { data: gridBazaarProfile } = await supabase
-          .from('voltmarket_profiles')
+          .from('gridbazaar_profiles')
           .select('id')
           .eq('user_id', session.user.id)
           .single();
@@ -92,7 +92,7 @@ export function Auth({ onAuthStateChange }: AuthProps) {
         } else {
           // Check if they have a GridBazaar profile
           const { data: gridBazaarProfile } = await supabase
-            .from('voltmarket_profiles')
+            .from('gridbazaar_profiles')
             .select('id')
             .eq('user_id', data.user.id)
             .single();

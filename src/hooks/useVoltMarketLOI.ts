@@ -75,8 +75,8 @@ export const useVoltMarketLOI = () => {
         .select(`
           *,
           listing:voltmarket_listings(title, asking_price),
-          buyer:voltmarket_profiles!buyer_id(company_name, phone_number, bio, website),
-          seller:voltmarket_profiles!seller_id(company_name, phone_number, bio, website)
+          buyer:gridbazaar_profiles!buyer_id(company_name, phone_number, bio, website),
+          seller:gridbazaar_profiles!seller_id(company_name, phone_number, bio, website)
         `)
         .or(`buyer_id.eq.${profile.id},seller_id.eq.${profile.id}`)
         .order('submitted_at', { ascending: false });
