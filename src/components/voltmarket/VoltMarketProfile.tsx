@@ -52,6 +52,8 @@ export const VoltMarketProfile: React.FC = () => {
     setIsLoading(true);
 
     try {
+      console.log('Updating profile with data:', profileData);
+      
       const { error } = await supabase
         .from('gridbazaar_profiles')
         .update({
@@ -64,9 +66,14 @@ export const VoltMarketProfile: React.FC = () => {
           profile_image_url: profileData.profile_image_url,
           seller_type: profileData.seller_type
         })
-        .eq('id', profile.id);
+        .eq('user_id', profile.user_id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase update error:', error);
+        throw error;
+      }
+
+      console.log('Profile updated successfully');
 
       // Refresh the profile to get updated data
       await updateProfile({});
