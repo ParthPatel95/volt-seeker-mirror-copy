@@ -51,11 +51,11 @@ export const VoltMarketNavigation: React.FC = () => {
     try {
       await signOut();
       // Navigate immediately after sign out
-      navigate('/voltmarket', { replace: true });
+      navigate('/', { replace: true });
     } catch (error) {
       console.error('Sign out error:', error);
       // Navigate even if there's an error to avoid getting stuck
-      navigate('/voltmarket', { replace: true });
+      navigate('/', { replace: true });
     }
   };
 
@@ -71,13 +71,13 @@ export const VoltMarketNavigation: React.FC = () => {
 
   // Simplified navigation items for elegance
   const primaryNavItems = [
-    { name: 'Browse', path: '/voltmarket/listings', icon: Search },
+    { name: 'Browse', path: '/listings', icon: Search },
   ];
 
   const userNavItems = user ? [
-    { name: 'Messages', path: '/voltmarket/contact-messages', icon: MessageSquare, badge: 0 },
-    { name: 'Portfolio', path: '/voltmarket/portfolio', icon: Briefcase },
-    { name: 'Documents', path: '/voltmarket/documents', icon: FileText },
+    { name: 'Messages', path: '/contact-messages', icon: MessageSquare, badge: 0 },
+    { name: 'Portfolio', path: '/portfolio', icon: Briefcase },
+    { name: 'Documents', path: '/documents', icon: FileText },
   ] : [];
 
   return (
@@ -88,7 +88,7 @@ export const VoltMarketNavigation: React.FC = () => {
           <div className="flex items-center justify-between h-16 min-w-0">
             {/* Logo & Brand - Responsive Width */}
             <div className="flex-shrink-0 min-w-0">
-              <Link to="/voltmarket/home" className="flex items-center gap-2 sm:gap-3 group min-w-0">
+              <Link to="/" className="flex items-center gap-2 sm:gap-3 group min-w-0">
                 <div className="p-2 bg-watt-gradient rounded-xl group-hover:shadow-watt-glow transition-all duration-300 flex-shrink-0">
                   <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
@@ -158,7 +158,7 @@ export const VoltMarketNavigation: React.FC = () => {
                 <>
                   {/* Create Listing CTA - Simplified */}
                   {profile?.role === 'seller' && (
-                    <Link to="/voltmarket/create-listing">
+                    <Link to="/create-listing">
                       <Button size="sm" className="bg-watt-gradient hover:opacity-90 text-white shadow-sm text-sm">
                         <Plus className="w-4 h-4" />
                         <span className="hidden md:inline ml-1">List</span>
@@ -189,54 +189,54 @@ export const VoltMarketNavigation: React.FC = () => {
                          <div className="font-medium text-sm">{profile?.company_name || 'User'}</div>
                          <div className="text-xs text-muted-foreground">{user.email}</div>
                        </div>
-                       <DropdownMenuItem asChild>
-                         <Link to="/voltmarket/dashboard" className="cursor-pointer">
-                           <User className="w-4 h-4 mr-2" />
-                           Dashboard
-                         </Link>
-                       </DropdownMenuItem>
-                       <DropdownMenuItem asChild>
-                         <Link to="/voltmarket/portfolio" className="cursor-pointer">
-                           <Briefcase className="w-4 h-4 mr-2" />
-                           Portfolio
-                         </Link>
-                       </DropdownMenuItem>
-                       <DropdownMenuItem asChild>
-                         <Link to="/voltmarket/documents" className="cursor-pointer">
-                           <FileText className="w-4 h-4 mr-2" />
-                           Documents
-                         </Link>
-                       </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link to="/voltmarket/loi-center" className="cursor-pointer">
-                            <Scale className="w-4 h-4 mr-2" />
-                            LOI Center
+                          <Link to="/dashboard" className="cursor-pointer">
+                            <User className="w-4 h-4 mr-2" />
+                            Dashboard
                           </Link>
                         </DropdownMenuItem>
-                       <DropdownMenuItem asChild>
-                         <Link to="/voltmarket/verification" className="cursor-pointer">
-                           <Shield className="w-4 h-4 mr-2" />
-                           {profile?.is_id_verified ? 'Verified' : 'Get Verified'}
-                           {profile?.is_id_verified && (
-                             <Badge className="ml-auto bg-watt-success/10 text-watt-success border-watt-success/20 text-xs">
-                               ✓
-                             </Badge>
-                           )}
-                         </Link>
-                       </DropdownMenuItem>
-                       <DropdownMenuItem asChild>
-                         <Link to="/voltmarket/watchlist" className="cursor-pointer">
-                           <Heart className="w-4 h-4 mr-2" />
-                           Watchlist
-                         </Link>
-                       </DropdownMenuItem>
-                       <DropdownMenuSeparator />
-                       <DropdownMenuItem asChild>
-                         <Link to="/voltmarket/profile" className="cursor-pointer">
-                           <Settings className="w-4 h-4 mr-2" />
-                           Settings
-                         </Link>
-                       </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/portfolio" className="cursor-pointer">
+                            <Briefcase className="w-4 h-4 mr-2" />
+                            Portfolio
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/documents" className="cursor-pointer">
+                            <FileText className="w-4 h-4 mr-2" />
+                            Documents
+                          </Link>
+                        </DropdownMenuItem>
+                         <DropdownMenuItem asChild>
+                           <Link to="/loi-center" className="cursor-pointer">
+                             <Scale className="w-4 h-4 mr-2" />
+                             LOI Center
+                           </Link>
+                         </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/verification" className="cursor-pointer">
+                            <Shield className="w-4 h-4 mr-2" />
+                            {profile?.is_id_verified ? 'Verified' : 'Get Verified'}
+                            {profile?.is_id_verified && (
+                              <Badge className="ml-auto bg-watt-success/10 text-watt-success border-watt-success/20 text-xs">
+                                ✓
+                              </Badge>
+                            )}
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/watchlist" className="cursor-pointer">
+                            <Heart className="w-4 h-4 mr-2" />
+                            Watchlist
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                          <Link to="/profile" className="cursor-pointer">
+                            <Settings className="w-4 h-4 mr-2" />
+                            Settings
+                          </Link>
+                        </DropdownMenuItem>
                        <DropdownMenuSeparator />
                        <DropdownMenuItem onClick={handleSignOut} className="text-destructive cursor-pointer">
                          <LogOut className="w-4 h-4 mr-2" />
@@ -329,7 +329,7 @@ export const VoltMarketNavigation: React.FC = () => {
                     </div>
 
                     {profile?.role === 'seller' && (
-                      <Link to="/voltmarket/create-listing">
+                      <Link to="/create-listing">
                         <Button className="w-full bg-watt-gradient hover:opacity-90 text-white mb-2">
                           <Plus className="w-4 h-4 mr-2" />
                           Create Listing
@@ -349,9 +349,9 @@ export const VoltMarketNavigation: React.FC = () => {
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border/50 safe-area-pb">
           <div className="grid grid-cols-5 gap-0.5 p-1.5">
             <Link
-              to="/voltmarket/home"
+              to="/"
               className={`flex flex-col items-center gap-1 p-2 rounded-lg touch-target transition-all duration-200 ${
-                isActiveRoute('/voltmarket/home') 
+                isActiveRoute('/') 
                   ? 'text-watt-primary bg-watt-primary/10' 
                   : 'text-muted-foreground hover:text-watt-primary'
               }`}
@@ -361,9 +361,9 @@ export const VoltMarketNavigation: React.FC = () => {
             </Link>
 
             <Link
-              to="/voltmarket/listings"
+              to="/listings"
               className={`flex flex-col items-center gap-1 p-2 rounded-lg touch-target transition-all duration-200 ${
-                isActiveRoute('/voltmarket/listings') 
+                isActiveRoute('/listings') 
                   ? 'text-watt-primary bg-watt-primary/10' 
                   : 'text-muted-foreground hover:text-watt-primary'
               }`}
@@ -373,9 +373,9 @@ export const VoltMarketNavigation: React.FC = () => {
             </Link>
 
             <Link
-              to="/voltmarket/contact-messages"
+              to="/contact-messages"
               className={`relative flex flex-col items-center gap-1 p-2 rounded-lg touch-target transition-all duration-200 ${
-                isActiveRoute('/voltmarket/contact-messages') 
+                isActiveRoute('/contact-messages') 
                   ? 'text-watt-primary bg-watt-primary/10' 
                   : 'text-muted-foreground hover:text-watt-primary'
               }`}
@@ -385,9 +385,9 @@ export const VoltMarketNavigation: React.FC = () => {
             </Link>
 
             <Link
-              to="/voltmarket/watchlist"
+              to="/watchlist"
               className={`flex flex-col items-center gap-1 p-2 rounded-lg touch-target transition-all duration-200 ${
-                isActiveRoute('/voltmarket/watchlist') 
+                isActiveRoute('/watchlist') 
                   ? 'text-watt-primary bg-watt-primary/10' 
                   : 'text-muted-foreground hover:text-watt-primary'
               }`}
@@ -397,9 +397,9 @@ export const VoltMarketNavigation: React.FC = () => {
             </Link>
 
             <Link
-              to="/voltmarket/dashboard"
+              to="/dashboard"
               className={`flex flex-col items-center gap-1 p-2 rounded-lg touch-target transition-all duration-200 ${
-                isActiveRoute('/voltmarket/dashboard') 
+                isActiveRoute('/dashboard') 
                   ? 'text-watt-primary bg-watt-primary/10' 
                   : 'text-muted-foreground hover:text-watt-primary'
               }`}

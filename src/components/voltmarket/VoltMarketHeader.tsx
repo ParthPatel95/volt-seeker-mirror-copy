@@ -33,7 +33,7 @@ export const VoltMarketHeader: React.FC = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/voltmarket/listings?search=${encodeURIComponent(searchQuery)}`);
+      navigate(`/listings?search=${encodeURIComponent(searchQuery)}`);
     }
   };
 
@@ -44,8 +44,8 @@ export const VoltMarketHeader: React.FC = () => {
       if (result.error) {
         console.error('Sign out failed:', result.error);
       } else {
-        console.log('Navigating to /voltmarket after sign out');
-        navigate('/voltmarket');
+        console.log('Navigating to / after sign out');
+        navigate('/');
       }
     } catch (err) {
       console.error('Sign out handler error:', err);
@@ -58,7 +58,7 @@ export const VoltMarketHeader: React.FC = () => {
         <div className="flex justify-between items-center h-16 min-w-0">
           {/* Logo */}
           <div className="flex items-center flex-shrink-0 min-w-0">
-            <Link to="/voltmarket" className="flex items-center space-x-2 min-w-0">
+            <Link to="/" className="flex items-center space-x-2 min-w-0">
               <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
                 <span className="text-white font-bold text-sm">GB</span>
               </div>
@@ -84,26 +84,26 @@ export const VoltMarketHeader: React.FC = () => {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-2 lg:space-x-4 flex-shrink-0">
-            <Link to="/voltmarket/listings">
+            <Link to="/listings">
               <Button variant="ghost">Browse</Button>
             </Link>
             
             {user ? (
               <>
-              <Link to="/voltmarket/create-listing">
+              <Link to="/create-listing">
                 <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                   <Plus className="w-4 h-4 mr-1" />
                   List
                 </Button>
               </Link>
               
-              <Link to="/voltmarket/notifications">
+              <Link to="/notifications">
                 <Button variant="ghost" size="sm">
                   <MessageSquare className="w-4 h-4" />
                 </Button>
               </Link>
 
-              <Link to="/voltmarket/qa-test">
+              <Link to="/qa-test">
                 <Button variant="outline" size="sm" title="QA Testing">
                   <TestTube className="w-4 h-4" />
                 </Button>
@@ -123,10 +123,10 @@ export const VoltMarketHeader: React.FC = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem asChild>
-                      <Link to="/voltmarket/dashboard">Dashboard</Link>
+                      <Link to="/dashboard">Dashboard</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/voltmarket/profile">
+                      <Link to="/profile">
                         <Settings className="w-4 h-4 mr-2" />
                         Profile
                       </Link>
@@ -180,28 +180,28 @@ export const VoltMarketHeader: React.FC = () => {
                 </div>
               </form>
               
-              <Link to="/voltmarket/listings" onClick={() => setIsMenuOpen(false)}>
+              <Link to="/listings" onClick={() => setIsMenuOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start">Browse</Button>
               </Link>
               
               {user ? (
                 <>
-                  <Link to="/voltmarket/create-listing" onClick={() => setIsMenuOpen(false)}>
+                  <Link to="/create-listing" onClick={() => setIsMenuOpen(false)}>
                     <Button className="w-full bg-blue-600 hover:bg-blue-700">
                       <Plus className="w-4 h-4 mr-2" />
                       Create Listing
                     </Button>
                   </Link>
-                  <Link to="/voltmarket/dashboard" onClick={() => setIsMenuOpen(false)}>
+                  <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start">Dashboard</Button>
                   </Link>
-                  <Link to="/voltmarket/notifications" onClick={() => setIsMenuOpen(false)}>
+                  <Link to="/notifications" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start">Notifications</Button>
                   </Link>
-                  <Link to="/voltmarket/profile" onClick={() => setIsMenuOpen(false)}>
+                  <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start">Profile</Button>
                   </Link>
-                  <Link to="/voltmarket/qa-test" onClick={() => setIsMenuOpen(false)}>
+                  <Link to="/qa-test" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start">
                       <TestTube className="w-4 h-4 mr-2" />
                       QA Test
