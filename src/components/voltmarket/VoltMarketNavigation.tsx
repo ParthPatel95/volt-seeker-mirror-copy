@@ -247,13 +247,13 @@ export const VoltMarketNavigation: React.FC = () => {
                 </>
               ) : (
                 <div className="flex items-center gap-1 sm:gap-2">
-                  <Link to="/voltmarket/auth">
+                  <Link to="/auth">
                     <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-watt-primary text-sm">
                       <span className="hidden sm:inline">Sign In</span>
                       <span className="sm:hidden">In</span>
                     </Button>
                   </Link>
-                  <Link to="/voltmarket/auth">
+                  <Link to="/auth">
                     <Button size="sm" className="bg-watt-gradient hover:opacity-90 text-white text-sm">
                       <span className="hidden sm:inline">Get Started</span>
                       <span className="sm:hidden">Start</span>

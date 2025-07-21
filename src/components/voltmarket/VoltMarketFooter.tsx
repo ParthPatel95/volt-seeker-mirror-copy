@@ -75,12 +75,12 @@ export const VoltMarketFooter: React.FC = () => {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/voltmarket/auth" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/auth" className="text-gray-300 hover:text-white transition-colors">
                   Sign In
                 </Link>
               </li>
               <li>
-                <Link to="/voltmarket/auth" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/auth" className="text-gray-300 hover:text-white transition-colors">
                   Create Account
                 </Link>
               </li>

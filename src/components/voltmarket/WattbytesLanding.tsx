@@ -186,12 +186,12 @@ export const WattbytesLanding: React.FC = () => {
               <a href="#solutions" className="text-gray-600 hover:text-watt-primary transition-colors">Solutions</a>
               <a href="#features" className="text-gray-600 hover:text-watt-primary transition-colors">Features</a>
               <a href="#testimonials" className="text-gray-600 hover:text-watt-primary transition-colors">Testimonials</a>
-              <Link to="/voltmarket/auth">
+              <Link to="/auth">
                 <Button variant="outline" className="border-watt-primary text-watt-primary hover:bg-watt-primary hover:text-white">
                   Sign In
                 </Button>
               </Link>
-              <Link to="/voltmarket/auth">
+              <Link to="/auth">
                 <Button className="bg-watt-gradient hover:opacity-90 text-white shadow-watt-glow">
                   Get Started
                 </Button>
@@ -254,7 +254,7 @@ export const WattbytesLanding: React.FC = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-              <Link to="/voltmarket/auth">
+              <Link to="/auth">
                 <Button size="lg" className="group bg-watt-gradient hover:opacity-90 text-white font-semibold px-8 py-4 text-lg shadow-watt-glow hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
                   Start Free Trial
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -445,7 +445,7 @@ export const WattbytesLanding: React.FC = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/voltmarket/auth">
+              <Link to="/auth">
                 <Button size="lg" className="bg-white text-watt-primary hover:bg-gray-100 font-semibold px-8 py-4 text-lg transition-all duration-300 transform hover:scale-105 shadow-xl group">
                   Start Free Trial
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -497,7 +497,7 @@ export const WattbytesLanding: React.FC = () => {
                 <div className="hover:text-white transition-colors cursor-pointer">About Us</div>
                 <div className="hover:text-white transition-colors cursor-pointer">Careers</div>
                 <div className="hover:text-white transition-colors cursor-pointer">Contact</div>
-                <Link to="/voltmarket/auth" className="block hover:text-white transition-colors">Sign In</Link>
+                <Link to="/auth" className="block hover:text-white transition-colors">Sign In</Link>
               </div>
             </div>
           </div>

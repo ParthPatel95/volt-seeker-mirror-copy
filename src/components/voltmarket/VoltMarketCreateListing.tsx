@@ -153,7 +153,7 @@ export const VoltMarketCreateListing: React.FC = () => {
           description: "Please sign in again to create a listing",
           variant: "destructive"
         });
-        navigate('/voltmarket/auth');
+        navigate('/auth');
         return;
       }
 

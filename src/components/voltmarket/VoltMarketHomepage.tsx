@@ -661,7 +661,7 @@ export const VoltMarketHomepage: React.FC = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
-              <Link to="/voltmarket/auth">
+              <Link to="/auth">
                 <Button size="lg" className="group bg-white text-watt-primary hover:bg-gray-100 font-bold px-10 py-4 text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl rounded-2xl">
                   Start Investing Today
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />

@@ -188,7 +188,7 @@ export const VoltMarketListingDetail: React.FC = () => {
         description: `Please sign in to ${actionName}`,
         variant: "default"
       });
-      navigate('/voltmarket/auth');
+      navigate('/auth');
       return;
     }
   };
