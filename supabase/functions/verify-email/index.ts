@@ -1,7 +1,17 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
 serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -21,8 +31,8 @@ serve(async (req) => {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
             body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f9fafb; }
-            .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-            .error { color: #dc2626; text-align: center; }
+            .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; }
+            .error { color: #dc2626; }
             .btn { background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 20px; }
           </style>
         </head>
@@ -64,8 +74,8 @@ serve(async (req) => {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
             body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f9fafb; }
-            .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-            .error { color: #dc2626; text-align: center; }
+            .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; }
+            .error { color: #dc2626; }
             .btn { background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 20px; }
           </style>
         </head>
@@ -100,8 +110,8 @@ serve(async (req) => {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
             body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f9fafb; }
-            .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-            .error { color: #dc2626; text-align: center; }
+            .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; }
+            .error { color: #dc2626; }
             .btn { background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 20px; }
           </style>
         </head>
@@ -155,8 +165,8 @@ serve(async (req) => {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
             body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f9fafb; }
-            .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-            .error { color: #dc2626; text-align: center; }
+            .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; }
+            .error { color: #dc2626; }
             .btn { background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 20px; }
           </style>
         </head>
@@ -179,32 +189,106 @@ serve(async (req) => {
       );
     }
 
-    // Success! Show confirmation page that redirects to GridBazaar
+    // SUCCESS - Show GridBazaar branded success page with auto-redirect
+    console.log('Email verification successful for user:', tokenData.user_id);
+    
     return new Response(
       `<!DOCTYPE html>
       <html>
       <head>
-        <title>Email Verified Successfully</title>
+        <title>Email Verified Successfully!</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="refresh" content="3;url=https://gridbazaar.com/?verified=true">
         <style>
-          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f9fafb; }
-          .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; }
+          body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .container { 
+            max-width: 600px; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+            text-align: center;
+            border-top: 4px solid #3b82f6;
+          }
           .success { color: #16a34a; }
-          .btn { background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 20px; }
-          .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
-          @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+          .brand { 
+            color: #3b82f6; 
+            font-size: 32px; 
+            font-weight: bold; 
+            margin-bottom: 10px;
+          }
+          .tagline {
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 14px;
+          }
+          .btn { 
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white; 
+            padding: 15px 30px; 
+            text-decoration: none; 
+            border-radius: 8px; 
+            display: inline-block; 
+            margin-top: 20px;
+            font-weight: bold;
+            transition: transform 0.2s;
+          }
+          .btn:hover {
+            transform: translateY(-2px);
+          }
+          .loading { 
+            display: inline-block; 
+            width: 20px; 
+            height: 20px; 
+            border: 3px solid #f3f3f3; 
+            border-top: 3px solid #3b82f6; 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+          }
+          @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+          }
+          .redirect-info {
+            background: #f0f9ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #3b82f6;
+          }
         </style>
       </head>
       <body>
         <div class="container">
+          <div class="brand">GridBazaar</div>
+          <div class="tagline">Energy Infrastructure Marketplace</div>
+          
           <div class="success">
             <h1>✅ Email Verified Successfully!</h1>
-            <p>Your email address has been verified. You can now sign in to your account.</p>
-            <div class="loading"></div>
-            <p>Redirecting you to login page...</p>
-            <a href="https://gridbazaar.com/?verified=true" class="btn">Go to GridBazaar</a>
+            <p>Your email address has been verified. You can now sign in to your account and access all GridBazaar features.</p>
+            
+            <div class="redirect-info">
+              <div class="loading"></div>
+              <strong>Redirecting you to GridBazaar...</strong>
+              <p style="margin: 10px 0 0 0; font-size: 14px; color: #64748b;">
+                You will be automatically redirected in 3 seconds
+              </p>
+            </div>
+            
+            <a href="https://gridbazaar.com/?verified=true" class="btn">
+              Go to GridBazaar Now
+            </a>
           </div>
         </div>
       </body>
@@ -223,13 +307,13 @@ serve(async (req) => {
       `<!DOCTYPE html>
       <html>
       <head>
-        <title>Verification Error</title>
+        <title>Verification Failed</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
           body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f9fafb; }
-          .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-          .error { color: #dc2626; text-align: center; }
+          .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; }
+          .error { color: #dc2626; }
           .btn { background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 20px; }
         </style>
       </head>
