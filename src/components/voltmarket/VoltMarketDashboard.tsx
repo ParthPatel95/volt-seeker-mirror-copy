@@ -684,9 +684,11 @@ export const VoltMarketDashboard: React.FC = () => {
           <p className="text-gray-600 mb-6">
             It looks like your profile wasn't created properly. Let's set that up now.
           </p>
-          <Button onClick={handleCreateProfile} className="mb-4">
-            Create Profile
-          </Button>
+          <Link to="/profile">
+            <Button className="mb-4">
+              Create Profile
+            </Button>
+          </Link>
           <div className="text-sm text-gray-500">
             Or go to{' '}
             <Link to="/profile" className="text-blue-600 hover:underline">
