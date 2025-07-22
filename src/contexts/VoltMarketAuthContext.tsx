@@ -191,12 +191,11 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
     try {
       console.log('Starting signup process...');
       
-      // Sign up user with Supabase auth
+      // Sign up user with Supabase auth (no email confirmation - we handle it ourselves)
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
           data: {
             role: userData.role,
             company_name: userData.company_name
