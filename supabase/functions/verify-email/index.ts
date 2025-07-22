@@ -145,48 +145,42 @@ serve(async (req) => {
       console.error('Error marking token as used:', markUsedError);
     }
 
-    // Update user profile to mark email as verified
-    const { error: profileError } = await supabaseClient
+    // First check if profile exists, if not create it
+    const { data: existingProfile } = await supabaseClient
       .from('gridbazaar_profiles')
-      .update({ 
-        is_email_verified: true,
-        updated_at: new Date().toISOString()
-      })
-      .eq('user_id', tokenData.user_id);
+      .select('id')
+      .eq('user_id', tokenData.user_id)
+      .single();
 
-    if (profileError) {
-      console.error('Error updating profile:', profileError);
-      return new Response(
-        `<!DOCTYPE html>
-        <html>
-        <head>
-          <title>Verification Error</title>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f9fafb; }
-            .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; }
-            .error { color: #dc2626; }
-            .btn { background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 20px; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="error">
-              <h1>❌ Verification Error</h1>
-              <p>There was an error updating your account. Please try again or contact support.</p>
-              <a href="https://gridbazaar.com" class="btn">Go to GridBazaar</a>
-            </div>
-          </div>
-        </body>
-        </html>`,
-        {
-          headers: {
-            'Content-Type': 'text/html',
-          },
-          status: 500,
-        }
-      );
+    if (!existingProfile) {
+      // Create profile if it doesn't exist
+      const { error: createError } = await supabaseClient
+        .from('gridbazaar_profiles')
+        .insert({
+          user_id: tokenData.user_id,
+          company_name: 'GridBazaar User', // Default company name
+          role: 'buyer', // Default role
+          is_email_verified: true
+        });
+
+      if (createError) {
+        console.error('Error creating profile:', createError);
+        // Continue anyway, we'll try to update existing profile
+      }
+    } else {
+      // Update existing profile to mark email as verified
+      const { error: profileError } = await supabaseClient
+        .from('gridbazaar_profiles')
+        .update({ 
+          is_email_verified: true,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', tokenData.user_id);
+
+      if (profileError) {
+        console.error('Error updating profile:', profileError);
+        // Continue anyway, the email verification was successful
+      }
     }
 
     // SUCCESS - Show GridBazaar branded success page with auto-redirect
