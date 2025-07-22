@@ -65,9 +65,9 @@ export const VoltMarketHeader: React.FC = () => {
           <div className="flex items-center flex-shrink-0 min-w-0">
             <Link to="/" className="flex items-center space-x-2 min-w-0">
               <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-sm">GB</span>
+                <span className="hidden sm:block text-white font-bold text-sm">GB</span>
               </div>
-              <span className="text-lg sm:text-xl font-bold text-gray-900 truncate">GridBazaar</span>
+              <span className="hidden sm:block text-lg sm:text-xl font-bold text-gray-900 truncate">GridBazaar</span>
             </Link>
           </div>
 
@@ -227,9 +227,14 @@ export const VoltMarketHeader: React.FC = () => {
                   </Button>
                 </>
               ) : (
-                <Link to="/auth?signup" onClick={() => setIsMenuOpen(false)}>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">Get Started</Button>
-                </Link>
+                <div className="flex flex-col space-y-2">
+                  <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">Sign In</Button>
+                  </Link>
+                  <Link to="/auth?signup" onClick={() => setIsMenuOpen(false)}>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700">Sign Up</Button>
+                  </Link>
+                </div>
               )}
             </div>
           </div>
