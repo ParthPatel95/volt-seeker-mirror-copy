@@ -68,7 +68,7 @@ serve(async (req) => {
     }
 
     // Create verification URL - use the correct Supabase project URL
-    const verificationUrl = `https://ktgosplhknmnyagxrgbe.supabase.co/functions/v1/verify-email?token=${token}`;
+    const verificationUrl = `https://taimpwfhxqenrkumbkng.supabase.co/functions/v1/verify-email?token=${token}`;
 
     // Get user profile for name
     const { data: profile } = await supabaseClient
