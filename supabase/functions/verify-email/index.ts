@@ -137,7 +137,7 @@ serve(async (req) => {
 
     // Update user profile to mark email as verified
     const { error: profileError } = await supabaseClient
-      .from('voltmarket_profiles')
+      .from('gridbazaar_profiles')
       .update({ 
         is_email_verified: true,
         updated_at: new Date().toISOString()
