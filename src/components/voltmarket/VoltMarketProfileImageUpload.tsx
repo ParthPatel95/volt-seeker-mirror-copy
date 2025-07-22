@@ -23,12 +23,20 @@ export const VoltMarketProfileImageUpload: React.FC<VoltMarketProfileImageUpload
 
   const uploadImage = async (file: File) => {
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
       const fileExt = file.name.split('.').pop();
-      const fileName = `profile-${Date.now()}.${fileExt}`;
+      const fileName = `${user.id}/profile-${Date.now()}.${fileExt}`;
 
       const { error } = await supabase.storage
         .from('profile-images')
-        .upload(fileName, file);
+        .upload(fileName, file, {
+          upsert: true // Allow overwriting existing files
+        });
 
       if (error) throw error;
 
