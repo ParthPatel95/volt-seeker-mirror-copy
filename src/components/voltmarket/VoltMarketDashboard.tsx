@@ -622,7 +622,7 @@ const BuyerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
 
 // Main Dashboard Component
 export const VoltMarketDashboard: React.FC = () => {
-  const { profile, user, loading, createProfile } = useVoltMarketAuth();
+  const { profile, user, loading, createProfile, refreshProfile } = useVoltMarketAuth();
   const { toast } = useToast();
 
   const handleCreateProfile = async () => {
@@ -734,6 +734,12 @@ export const VoltMarketDashboard: React.FC = () => {
                       Check your email and click the verification link to complete your account setup.
                     </p>
                     <ResendVerificationButton />
+                    <button 
+                      onClick={refreshProfile}
+                      className="ml-2 px-3 py-1 bg-blue-500 text-white text-xs rounded"
+                    >
+                      Refresh Profile
+                    </button>
                   </div>
                 )}
                 

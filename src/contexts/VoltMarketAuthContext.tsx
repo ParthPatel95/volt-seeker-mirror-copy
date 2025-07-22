@@ -41,6 +41,7 @@ interface VoltMarketAuthContextType {
   updateProfile: (updates: Partial<VoltMarketProfile>) => Promise<any>;
   createProfile: (userId: string, userData: any) => Promise<any>;
   resendEmailVerification: () => Promise<any>;
+  refreshProfile: () => Promise<void>;
 }
 
 const VoltMarketAuthContext = createContext<VoltMarketAuthContextType | undefined>(undefined);
@@ -336,6 +337,24 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
     }
   };
 
+  const refreshProfile = async () => {
+    if (!user?.id) return;
+    
+    try {
+      console.log('Manually refreshing profile...');
+      const profileData = await fetchProfile(user.id);
+      if (profileData) {
+        setProfile({
+          ...profileData,
+          role: (profileData?.role as any) || 'buyer'
+        } as VoltMarketProfile);
+        console.log('Profile refreshed successfully:', profileData);
+      }
+    } catch (err) {
+      console.error('Error refreshing profile:', err);
+    }
+  };
+
   const value = {
     user,
     session,
@@ -347,6 +366,7 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
     updateProfile,
     createProfile,
     resendEmailVerification,
+    refreshProfile,
   };
 
   return (
