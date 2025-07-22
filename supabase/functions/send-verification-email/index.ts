@@ -72,7 +72,7 @@ serve(async (req) => {
 
     // Get user profile for name
     const { data: profile } = await supabaseClient
-      .from('voltmarket_profiles')
+      .from('gridbazaar_profiles')
       .select('company_name')
       .eq('user_id', user_id)
       .single();
