@@ -47,7 +47,7 @@ serve(async (req) => {
 
     // Create the profile using service role (bypasses RLS)
     const { data: profile, error: profileError } = await supabaseAdmin
-      .from('voltmarket_profiles')
+      .from('gridbazaar_profiles')
       .insert({
         user_id,
         role,
