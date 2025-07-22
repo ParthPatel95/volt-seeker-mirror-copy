@@ -31,19 +31,7 @@ serve(async (req) => {
       )
     }
 
-    // Verify the user exists in auth.users
-    const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.getUserById(user_id)
-    
-    if (authError || !authUser) {
-      console.error('Auth user verification failed:', authError)
-      return new Response(
-        JSON.stringify({ error: 'Invalid user ID' }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
-    }
+    console.log('Creating profile for user:', user_id, 'with role:', role)
 
     // Create the profile using service role (bypasses RLS)
     const { data: profile, error: profileError } = await supabaseAdmin
