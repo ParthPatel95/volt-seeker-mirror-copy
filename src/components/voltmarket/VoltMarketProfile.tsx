@@ -48,33 +48,55 @@ export const VoltMarketProfile: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!profile) return;
+    if (!user) return;
 
     setIsLoading(true);
 
     try {
       console.log('Updating profile with data:', profileData);
       
-      const { error } = await supabase
-        .from('gridbazaar_profiles')
-        .update({
-          company_name: profileData.company_name,
-          phone_number: profileData.phone_number,
-          website: profileData.website,
-          linkedin_url: profileData.linkedin_url,
-          role: profileData.role,
-          bio: profileData.bio,
-          profile_image_url: profileData.profile_image_url,
-          seller_type: profileData.seller_type
-        })
-        .eq('user_id', profile.user_id);
+      // If no profile exists, create one; otherwise update
+      if (!profile) {
+        const { error } = await supabase
+          .from('gridbazaar_profiles')
+          .insert({
+            user_id: user.id,
+            company_name: profileData.company_name,
+            phone_number: profileData.phone_number,
+            website: profileData.website,
+            linkedin_url: profileData.linkedin_url,
+            role: profileData.role,
+            bio: profileData.bio,
+            profile_image_url: profileData.profile_image_url,
+            seller_type: profileData.seller_type
+          });
 
-      if (error) {
-        console.error('Supabase update error:', error);
-        throw error;
+        if (error) {
+          console.error('Supabase insert error:', error);
+          throw error;
+        }
+      } else {
+        const { error } = await supabase
+          .from('gridbazaar_profiles')
+          .update({
+            company_name: profileData.company_name,
+            phone_number: profileData.phone_number,
+            website: profileData.website,
+            linkedin_url: profileData.linkedin_url,
+            role: profileData.role,
+            bio: profileData.bio,
+            profile_image_url: profileData.profile_image_url,
+            seller_type: profileData.seller_type
+          })
+          .eq('user_id', profile.user_id);
+
+        if (error) {
+          console.error('Supabase update error:', error);
+          throw error;
+        }
       }
 
-      console.log('Profile updated successfully');
+      console.log('Profile saved successfully');
 
       // Set flag to prevent form from being reset by useEffect
       setHasRecentUpdate(true);
@@ -86,14 +108,14 @@ export const VoltMarketProfile: React.FC = () => {
       setTimeout(() => setHasRecentUpdate(false), 1000);
 
       toast({
-        title: "Profile Updated",
-        description: "Your profile has been updated successfully"
+        title: profile ? "Profile Updated" : "Profile Created",
+        description: profile ? "Your profile has been updated successfully" : "Your profile has been created successfully"
       });
     } catch (error) {
       console.error('Error updating profile:', error);
       toast({
         title: "Error",
-        description: "Failed to update profile. Please try again.",
+        description: "Failed to save profile. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -105,7 +127,7 @@ export const VoltMarketProfile: React.FC = () => {
     setProfileData(prev => ({ ...prev, profile_image_url: imageUrl }));
   };
 
-  if (!profile) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -122,8 +144,12 @@ export const VoltMarketProfile: React.FC = () => {
     <div className="min-h-screen bg-gray-50 py-4 md:py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Profile Settings</h1>
-          <p className="text-gray-600 text-sm md:text-base">Manage your account information and preferences</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            {profile ? 'Profile Settings' : 'Create Your Profile'}
+          </h1>
+          <p className="text-gray-600 text-sm md:text-base">
+            {profile ? 'Manage your account information and preferences' : 'Set up your GridBazaar profile to get started'}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -266,7 +292,7 @@ export const VoltMarketProfile: React.FC = () => {
             {/* Submit */}
             <div className="flex gap-4">
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Saving...' : 'Save Changes'}
+                {isLoading ? 'Saving...' : (profile ? 'Save Changes' : 'Create Profile')}
               </Button>
             </div>
           </div>
