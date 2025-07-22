@@ -52,55 +52,6 @@ const ResendVerificationButton: React.FC = () => {
   );
 };
 
-// Debug component to manually mark email as verified
-const DebugEmailVerification: React.FC = () => {
-  const { updateProfile, refreshProfile } = useVoltMarketAuth();
-  const { toast } = useToast();
-  const [updating, setUpdating] = useState(false);
-
-  const handleMarkVerified = async () => {
-    setUpdating(true);
-    
-    // Update profile to mark email as verified
-    const { error } = await updateProfile({ is_email_verified: true });
-    
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Error", 
-        description: "Failed to update email verification status."
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: "Email marked as verified!"
-      });
-      // Refresh the profile to get updated data
-      await refreshProfile();
-    }
-    setUpdating(false);
-  };
-
-  return (
-    <div className="flex gap-2 mt-2">
-      <Button 
-        onClick={handleMarkVerified} 
-        disabled={updating}
-        size="sm"
-        className="bg-green-600 hover:bg-green-700"
-      >
-        {updating ? "Updating..." : "Mark as Verified"}
-      </Button>
-      <Button 
-        onClick={refreshProfile}
-        size="sm"
-        variant="outline"
-      >
-        Refresh Profile
-      </Button>
-    </div>
-  );
-};
 
 // Seller Dashboard Component
 const SellerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
@@ -784,7 +735,6 @@ export const VoltMarketDashboard: React.FC = () => {
                       Check your email and click the verification link to complete your account setup.
                     </p>
                     <ResendVerificationButton />
-                    <DebugEmailVerification />
                   </div>
                 )}
                 
