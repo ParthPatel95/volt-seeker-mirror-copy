@@ -212,20 +212,51 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
       console.log('User created:', data.user?.id);
 
       if (data.user) {
-        // Create profile
+        // Wait a moment for the auth session to be fully established
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Create profile using the edge function which has service role access
         console.log('Creating profile for user:', data.user.id);
         
-        const profileResult = await createProfile(data.user.id, userData);
-        
-        if (profileResult.error) {
-          return { error: profileResult.error };
+        try {
+          const { data: functionData, error: functionError } = await supabase.functions.invoke('create-voltmarket-profile', {
+            body: {
+              user_id: data.user.id,
+              role: userData.role,
+              seller_type: userData.seller_type,
+              company_name: userData.company_name,
+              phone_number: userData.phone_number
+            }
+          });
+          
+          if (functionError) {
+            console.error('Edge function error:', functionError);
+            return { error: functionError };
+          }
+          
+          console.log('Profile created successfully via edge function:', functionData);
+          setProfile({
+            ...functionData,
+            role: (functionData?.role as 'buyer' | 'seller' | 'admin') || 'buyer'
+          } as VoltMarketProfile);
+          
+        } catch (edgeFunctionError) {
+          console.error('Edge function failed, trying direct insert:', edgeFunctionError);
+          
+          // Fallback: Try direct profile creation (this should work if auth session is established)
+          const profileResult = await createProfile(data.user.id, userData);
+          
+          if (profileResult.error) {
+            console.error('Direct profile creation also failed:', profileResult.error);
+            return { error: profileResult.error };
+          }
+          
+          console.log('Profile created successfully via direct insert');
+          setProfile({
+            ...profileResult.data,
+            role: (profileResult.data?.role as 'buyer' | 'seller' | 'admin') || 'buyer'
+          } as VoltMarketProfile);
         }
-        
-        console.log('Profile created successfully');
-        setProfile({
-          ...profileResult.data,
-          role: (profileResult.data?.role as 'buyer' | 'seller' | 'admin') || 'buyer'
-        } as VoltMarketProfile);
       }
 
       return { data, error: null };
