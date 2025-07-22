@@ -173,7 +173,7 @@ export const EmailVerificationBanner: React.FC<EmailVerificationBannerProps> = (
                 Email Verification Required
               </p>
               <p className="text-sm text-amber-700">
-                Verify your email to unlock full access to WattBytes features
+                Verify your email to unlock full access to GridBazaar features
               </p>
             </div>
           </div>
