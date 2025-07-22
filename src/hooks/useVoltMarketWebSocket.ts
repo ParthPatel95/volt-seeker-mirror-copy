@@ -28,7 +28,7 @@ export const useVoltMarketWebSocket = (): UseWebSocketReturn => {
 
     try {
       // Use the correct WebSocket URL for Supabase Edge Functions
-      const wsUrl = `wss://ktgosplhknmnyagxrgbe.functions.supabase.co/voltmarket-chat`;
+      const wsUrl = `wss://taimpwfhxqenrkumbkng.functions.supabase.co/voltmarket-chat`;
       console.log('Attempting to connect to WebSocket:', wsUrl);
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;

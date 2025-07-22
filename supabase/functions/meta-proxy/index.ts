@@ -113,7 +113,7 @@ serve(async (req) => {
     let fullImageUrl = 'https://9fe0623a-4080-437c-aca0-ba8b38e9d029.lovableproject.com/placeholder.svg';
     
     if (imageUrl) {
-      if (imageUrl.startsWith('https://ktgosplhknmnyagxrgbe.supabase.co/storage/v1/object/public/')) {
+      if (imageUrl.startsWith('https://taimpwfhxqenrkumbkng.supabase.co/storage/v1/object/public/')) {
         // Supabase storage URL - use as is
         fullImageUrl = imageUrl;
       } else if (imageUrl.startsWith('http')) {
