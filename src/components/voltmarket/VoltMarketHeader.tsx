@@ -65,8 +65,10 @@ export const VoltMarketHeader: React.FC = () => {
           <div className="flex items-center flex-shrink-0 min-w-0">
             <Link to="/" className="flex items-center space-x-2 min-w-0">
               <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                {/* Hide GB text on mobile, show on sm+ screens */}
                 <span className="hidden sm:block text-white font-bold text-sm">GB</span>
               </div>
+              {/* Hide company name on mobile, show on sm+ screens */}
               <span className="hidden sm:block text-lg sm:text-xl font-bold text-gray-900 truncate">GridBazaar</span>
             </Link>
           </div>
