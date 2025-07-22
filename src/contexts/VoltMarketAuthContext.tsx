@@ -6,11 +6,14 @@ export interface VoltMarketProfile {
   id: string;
   user_id: string;
   role?: 'buyer' | 'seller' | 'admin';
+  seller_type?: 'site_owner' | 'broker' | 'realtor' | 'equipment_vendor';
   company_name?: string;
-  contact_person?: string;
-  phone?: string;
+  phone_number?: string;
+  profile_image_url?: string;
+  bio?: string;
+  website?: string;
   linkedin_url?: string;
-  website_url?: string;
+  contact_person?: string;
   business_license?: string;
   address?: string;
   city?: string;

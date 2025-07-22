@@ -121,11 +121,11 @@ export const VoltMarketHeader: React.FC = () => {
                     <Button variant="ghost" size="sm" className="flex items-center gap-2">
                       <Avatar className="w-8 h-8">
                         <AvatarImage 
-                          src={(profile as any)?.profile_image_url || ''} 
+                          src={profile?.profile_image_url || ''} 
                           alt="Profile"
-                          onLoad={() => console.log('Avatar image loaded successfully:', (profile as any)?.profile_image_url)}
+                          onLoad={() => console.log('Avatar image loaded successfully:', profile?.profile_image_url)}
                           onError={(e) => {
-                            console.error('Avatar image failed to load:', (profile as any)?.profile_image_url);
+                            console.error('Avatar image failed to load:', profile?.profile_image_url);
                             console.error('Error details:', e);
                           }}
                         />
