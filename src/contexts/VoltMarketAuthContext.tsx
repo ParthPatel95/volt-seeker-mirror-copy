@@ -328,6 +328,9 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
       if (freshProfile) {
         console.log('Setting fresh profile data:', freshProfile);
         console.log('Email verification status:', freshProfile.is_email_verified);
+        console.log('Full profile object:', JSON.stringify(freshProfile, null, 2));
+        
+        // Force a complete profile state refresh
         setProfile({
           ...freshProfile,
           role: (freshProfile?.role as any) || 'buyer'
