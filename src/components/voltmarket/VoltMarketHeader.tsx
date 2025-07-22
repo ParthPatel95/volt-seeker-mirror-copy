@@ -123,11 +123,12 @@ export const VoltMarketHeader: React.FC = () => {
                         <AvatarImage 
                           src={profile?.profile_image_url || ''} 
                           alt="Profile"
-                          key={profile?.profile_image_url} // Force re-render when URL changes
+                          key={`avatar-${profile?.profile_image_url}-${profile?.updated_at}`}
+                          crossOrigin="anonymous"
                           onLoad={() => console.log('✅ Avatar loaded:', profile?.profile_image_url)}
                           onError={(e) => {
                             console.error('❌ Avatar failed to load:', profile?.profile_image_url);
-                            console.error('Error event:', e);
+                            console.error('Error details:', e.currentTarget.src);
                           }}
                         />
                         <AvatarFallback className="bg-blue-100 text-blue-600 text-sm">
