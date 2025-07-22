@@ -1399,6 +1399,36 @@ export type Database = {
         }
         Relationships: []
       }
+      voltmarket_email_templates: {
+        Row: {
+          created_at: string
+          html_content: string
+          id: string
+          subject: string
+          template_type: string
+          updated_at: string
+          variables: Json | null
+        }
+        Insert: {
+          created_at?: string
+          html_content: string
+          id?: string
+          subject: string
+          template_type: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Update: {
+          created_at?: string
+          html_content?: string
+          id?: string
+          subject?: string
+          template_type?: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Relationships: []
+      }
       voltmarket_email_verification_tokens: {
         Row: {
           created_at: string

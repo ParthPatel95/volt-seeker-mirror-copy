@@ -179,15 +179,43 @@ serve(async (req) => {
       );
     }
 
-    // Success! Redirect directly to GridBazaar website
-    const redirectUrl = `https://gridbazaar.com/?verified=true`;
-    
-    return new Response(null, {
-      status: 302,
-      headers: {
-        'Location': redirectUrl,
-      },
-    });
+    // Success! Show confirmation page that redirects to GridBazaar
+    return new Response(
+      `<!DOCTYPE html>
+      <html>
+      <head>
+        <title>Email Verified Successfully</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="refresh" content="3;url=https://gridbazaar.com/?verified=true">
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f9fafb; }
+          .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; }
+          .success { color: #16a34a; }
+          .btn { background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 20px; }
+          .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
+          @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="success">
+            <h1>✅ Email Verified Successfully!</h1>
+            <p>Your email address has been verified. You can now sign in to your account.</p>
+            <div class="loading"></div>
+            <p>Redirecting you to login page...</p>
+            <a href="https://gridbazaar.com/?verified=true" class="btn">Go to GridBazaar</a>
+          </div>
+        </div>
+      </body>
+      </html>`,
+      {
+        headers: {
+          'Content-Type': 'text/html',
+        },
+        status: 200,
+      }
+    );
 
   } catch (error) {
     console.error('Error verifying email:', error);
