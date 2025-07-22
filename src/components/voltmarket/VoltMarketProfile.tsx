@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +29,7 @@ export const VoltMarketProfile: React.FC = () => {
 
   const { profile, user, updateProfile } = useVoltMarketAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (profile && !hasRecentUpdate) {
@@ -111,6 +113,13 @@ export const VoltMarketProfile: React.FC = () => {
         title: profile ? "Profile Updated" : "Profile Created",
         description: profile ? "Your profile has been updated successfully" : "Your profile has been created successfully"
       });
+
+      // If this was a profile creation (no existing profile), navigate to dashboard
+      if (!profile) {
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500); // Give time for toast to show
+      }
     } catch (error) {
       console.error('Error updating profile:', error);
       toast({

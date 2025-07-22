@@ -626,6 +626,18 @@ export const VoltMarketDashboard: React.FC = () => {
   const { profile, user, loading, createProfile, refreshProfile } = useVoltMarketAuth();
   const { toast } = useToast();
 
+  // Auto-refresh profile when dashboard loads and user exists but no profile
+  useEffect(() => {
+    const checkAndRefreshProfile = async () => {
+      if (user && !profile && !loading) {
+        console.log('Dashboard: User exists but no profile found, refreshing...');
+        await refreshProfile();
+      }
+    };
+    
+    checkAndRefreshProfile();
+  }, [user, profile, loading, refreshProfile]);
+
   const handleCreateProfile = async () => {
     if (!user) return;
     

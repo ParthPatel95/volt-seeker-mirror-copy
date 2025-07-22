@@ -321,17 +321,16 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
           ...data,
           role: (data?.role as any) || 'buyer'
         } as any);
-        
-        // Refresh profile data from database to ensure we have latest
-        setTimeout(async () => {
-          const freshProfile = await fetchProfile(user.id);
-          if (freshProfile) {
-            setProfile({
-              ...freshProfile,
-              role: (freshProfile?.role as any) || 'buyer'
-            } as any);
-          }
-        }, 100);
+      }
+
+      // Always refresh profile data from database to ensure we have latest
+      const freshProfile = await fetchProfile(user.id);
+      if (freshProfile) {
+        console.log('Setting fresh profile data:', freshProfile);
+        setProfile({
+          ...freshProfile,
+          role: (freshProfile?.role as any) || 'buyer'
+        } as any);
       }
 
       return { data, error: null };
