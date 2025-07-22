@@ -313,22 +313,25 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
     if (!user?.email || !user?.id) return { error: new Error('No user found') };
 
     try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: user.email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`
+      console.log('Sending verification email using Resend...');
+      
+      const { data, error } = await supabase.functions.invoke('send-verification-email', {
+        body: {
+          email: user.email,
+          user_id: user.id,
+          is_resend: true
         }
       });
 
       if (error) {
-        console.error('Error resending verification email:', error);
+        console.error('Error sending verification email:', error);
         return { error };
       }
 
+      console.log('Verification email sent successfully:', data);
       return { error: null };
     } catch (err) {
-      console.error('Error resending verification email:', err);
+      console.error('Error sending verification email:', err);
       return { error: err as Error };
     }
   };
