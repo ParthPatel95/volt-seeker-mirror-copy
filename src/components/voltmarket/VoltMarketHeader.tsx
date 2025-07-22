@@ -122,8 +122,12 @@ export const VoltMarketHeader: React.FC = () => {
                       <Avatar className="w-8 h-8">
                         <AvatarImage 
                           src={(profile as any)?.profile_image_url || ''} 
-                          alt="Profile" 
-                          onError={(e) => console.log('Avatar image failed to load:', (profile as any)?.profile_image_url)}
+                          alt="Profile"
+                          onLoad={() => console.log('Avatar image loaded successfully:', (profile as any)?.profile_image_url)}
+                          onError={(e) => {
+                            console.error('Avatar image failed to load:', (profile as any)?.profile_image_url);
+                            console.error('Error details:', e);
+                          }}
                         />
                         <AvatarFallback className="bg-blue-100 text-blue-600 text-sm">
                           {getInitials(profile?.company_name || 'Account')}
