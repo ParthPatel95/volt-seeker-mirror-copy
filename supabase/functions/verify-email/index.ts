@@ -145,42 +145,52 @@ serve(async (req) => {
       console.error('Error marking token as used:', markUsedError);
     }
 
-    // First check if profile exists, if not create it
-    const { data: existingProfile } = await supabaseClient
-      .from('gridbazaar_profiles')
-      .select('id')
-      .eq('user_id', tokenData.user_id)
-      .single();
-
-    if (!existingProfile) {
-      // Create profile if it doesn't exist
-      const { error: createError } = await supabaseClient
+    // Handle profile creation/update - email verification should succeed regardless
+    try {
+      // Check if profile exists
+      const { data: existingProfile } = await supabaseClient
         .from('gridbazaar_profiles')
-        .insert({
-          user_id: tokenData.user_id,
-          company_name: 'GridBazaar User', // Default company name
-          role: 'buyer', // Default role
-          is_email_verified: true
-        });
+        .select('id, is_email_verified')
+        .eq('user_id', tokenData.user_id)
+        .maybeSingle();
 
-      if (createError) {
-        console.error('Error creating profile:', createError);
-        // Continue anyway, we'll try to update existing profile
-      }
-    } else {
-      // Update existing profile to mark email as verified
-      const { error: profileError } = await supabaseClient
-        .from('gridbazaar_profiles')
-        .update({ 
-          is_email_verified: true,
-          updated_at: new Date().toISOString()
-        })
-        .eq('user_id', tokenData.user_id);
+      if (!existingProfile) {
+        // Create profile with minimal required data if it doesn't exist
+        const { error: createError } = await supabaseClient
+          .from('gridbazaar_profiles')
+          .insert({
+            user_id: tokenData.user_id,
+            company_name: 'GridBazaar User', // Default company name
+            role: 'buyer', // Default role
+            is_email_verified: true
+          });
 
-      if (profileError) {
-        console.error('Error updating profile:', profileError);
-        // Continue anyway, the email verification was successful
+        if (createError) {
+          console.error('Error creating profile during email verification:', createError);
+          // Don't fail verification if profile creation fails
+        } else {
+          console.log('Profile created during email verification for user:', tokenData.user_id);
+        }
+      } else {
+        // Update existing profile to mark email as verified
+        const { error: updateError } = await supabaseClient
+          .from('gridbazaar_profiles')
+          .update({ 
+            is_email_verified: true,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', tokenData.user_id);
+
+        if (updateError) {
+          console.error('Error updating profile during email verification:', updateError);
+          // Don't fail verification if profile update fails
+        } else {
+          console.log('Profile updated during email verification for user:', tokenData.user_id);
+        }
       }
+    } catch (profileError) {
+      console.error('Profile operation failed during email verification:', profileError);
+      // Continue with email verification success even if profile operations fail
     }
 
     // SUCCESS - Show GridBazaar branded success page with auto-redirect
