@@ -107,6 +107,13 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
   useEffect(() => {
     let mounted = true;
 
+    // Set a timeout to prevent infinite loading
+    const loadingTimeout = setTimeout(() => {
+      if (mounted) {
+        setLoading(false);
+      }
+    }, 5000); // 5 second timeout
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -125,6 +132,7 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
                   role: (profileData.role as any) || 'buyer'
                 } as any : null);
                 setLoading(false);
+                clearTimeout(loadingTimeout);
               }
             }
           }, 0);
@@ -132,6 +140,7 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
           if (mounted) {
             setProfile(null);
             setLoading(false);
+            clearTimeout(loadingTimeout);
           }
         }
       }
@@ -158,11 +167,13 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
         
         if (mounted) {
           setLoading(false);
+          clearTimeout(loadingTimeout);
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
         if (mounted) {
           setLoading(false);
+          clearTimeout(loadingTimeout);
         }
       }
     };
@@ -171,6 +182,7 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
 
     return () => {
       mounted = false;
+      clearTimeout(loadingTimeout);
       subscription.unsubscribe();
     };
   }, []); // Empty dependency array to run only once

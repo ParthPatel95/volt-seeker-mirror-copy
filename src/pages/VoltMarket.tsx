@@ -34,12 +34,21 @@ import { VoltMarketLogin } from '@/components/voltmarket/VoltMarketLogin';
 import { ComprehensiveTestSuite } from '@/components/ComprehensiveTestSuite';
 
 export const VoltMarket = () => {
-  const { user, loading } = useVoltMarketAuth();
+  let auth;
+  try {
+    auth = useVoltMarketAuth();
+  } catch (error) {
+    // Auth context not available, continue without it
+    auth = { user: null, loading: false };
+  }
+  
+  const { user, loading } = auth;
 
+  // Don't block the entire app on auth loading
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
