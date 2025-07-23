@@ -35,10 +35,9 @@ export const useVoltMarketAccessRequests = () => {
           requester_id,
           status,
           requested_at,
-          responded_at,
-          voltmarket_listings!inner(seller_id)
+          responded_at
         `)
-        .eq('voltmarket_listings.seller_id', sellerId)
+        .eq('seller_id', sellerId)
         .order('requested_at', { ascending: false });
 
       if (response.error) throw response.error;
@@ -115,6 +114,7 @@ export const useVoltMarketAccessRequests = () => {
         .insert({
           listing_id: listingId,
           requester_id: requesterId,
+          seller_id: sellerId,
           status: 'pending'
         });
 

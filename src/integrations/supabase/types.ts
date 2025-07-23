@@ -1662,6 +1662,13 @@ export type Database = {
             referencedRelation: "voltmarket_listings"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "voltmarket_nda_requests_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "gridbazaar_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       voltmarket_portfolio_items: {
