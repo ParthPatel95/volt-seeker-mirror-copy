@@ -4,6 +4,7 @@ import { VoltMarketNavigation } from './VoltMarketNavigation';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { Zap } from 'lucide-react';
+import { VoltMarketAuthProvider } from '@/contexts/VoltMarketAuthContext';
 
 interface VoltMarketLayoutProps {
   children: React.ReactNode;
@@ -149,8 +150,10 @@ const VoltMarketLayoutContent: React.FC<VoltMarketLayoutProps> = ({ children }) 
 
 export const VoltMarketLayout: React.FC<VoltMarketLayoutProps> = ({ children }) => {
   return (
-    <VoltMarketLayoutContent>
-      {children}
-    </VoltMarketLayoutContent>
+    <VoltMarketAuthProvider>
+      <VoltMarketLayoutContent>
+        {children}
+      </VoltMarketLayoutContent>
+    </VoltMarketAuthProvider>
   );
 };
