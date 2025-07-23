@@ -4,12 +4,24 @@ import { useVoltMarketAuth } from '@/contexts/VoltMarketAuthContext';
 import { Portfolio, PortfolioItem } from '@/types/portfolio';
 
 export const useVoltMarketPortfolio = () => {
-  const { profile } = useVoltMarketAuth();
+  let auth, profile;
+  try {
+    auth = useVoltMarketAuth();
+    profile = auth?.profile;
+  } catch (error) {
+    // Handle case where auth context is not available
+    auth = null;
+    profile = null;
+  }
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchPortfolios = async () => {
-    if (!profile) return;
+    if (!profile?.user_id) {
+      setLoading(false);
+      setPortfolios([]);
+      return;
+    }
 
     setLoading(true);
     try {

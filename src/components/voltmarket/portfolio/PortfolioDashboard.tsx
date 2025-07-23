@@ -15,7 +15,14 @@ import { PortfolioItemsList } from './PortfolioItemsList';
 import { PortfolioItem } from '@/types/portfolio';
 
 export const PortfolioDashboard: React.FC = () => {
-  const { portfolios, loading, getPortfolioItems, deletePortfolioItem, deletePortfolio } = useVoltMarketPortfolio();
+  const portfolioHook = useVoltMarketPortfolio();
+  const { portfolios, loading, getPortfolioItems, deletePortfolioItem, deletePortfolio } = portfolioHook || {
+    portfolios: [],
+    loading: false,
+    getPortfolioItems: async () => [],
+    deletePortfolioItem: async () => {},
+    deletePortfolio: async () => {}
+  };
   const { toast } = useToast();
   const [selectedPortfolio, setSelectedPortfolio] = useState<string | null>(null);
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);

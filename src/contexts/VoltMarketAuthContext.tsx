@@ -54,7 +54,6 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
 
   const fetchProfile = async (userId: string) => {
     try {
-      console.log('Fetching profile for user:', userId);
       const { data: profileData, error } = await supabase
         .from('gridbazaar_profiles')
         .select('*')
@@ -62,14 +61,11 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
         .maybeSingle();
       
       if (error) {
-        console.log('Profile fetch error:', error);
         return null;
       }
       
-      console.log('Profile fetched successfully:', profileData);
       return profileData;
     } catch (err) {
-      console.log('Unexpected error fetching profile:', err);
       return null;
     }
   };
@@ -116,20 +112,18 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
       async (event, session) => {
         if (!mounted) return;
 
-        console.log('Auth state changed:', event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Use setTimeout to avoid potential recursive calls
           setTimeout(async () => {
             if (mounted) {
               const profileData = await fetchProfile(session.user.id);
               if (mounted) {
-                setProfile({
+                setProfile(profileData ? {
                   ...profileData,
                   role: (profileData.role as any) || 'buyer'
-                } as any);
+                } as any : null);
                 setLoading(false);
               }
             }
@@ -149,17 +143,16 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
         const { data: { session } } = await supabase.auth.getSession();
         if (!mounted) return;
 
-        console.log('Initial session check:', session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
           const profileData = await fetchProfile(session.user.id);
           if (mounted) {
-            setProfile({
+            setProfile(profileData ? {
               ...profileData,
               role: (profileData?.role as any) || 'buyer'
-            } as any);
+            } as any : null);
           }
         }
         
