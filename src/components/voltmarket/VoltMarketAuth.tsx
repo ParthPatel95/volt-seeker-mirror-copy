@@ -74,22 +74,8 @@ export const VoltMarketAuth: React.FC = () => {
             variant: "destructive"
           });
         } else {
-          toast({
-            title: "Account Created",
-            description: "Please check your email to verify your account, then sign in."
-          });
-          // Switch to sign-in mode instead of navigating to dashboard
-          setIsSignUp(false);
-          // Clear the form
-          setFormData({
-            email: formData.email, // Keep email for convenience
-            password: '',
-            confirmPassword: '',
-            role: 'buyer',
-            sellerType: 'site_owner',
-            companyName: '',
-            phoneNumber: ''
-          });
+          // Redirect to login page with email confirmation dialog
+          navigate(`/login?from=signup&email=${encodeURIComponent(formData.email)}`);
         }
       } else {
         const { error } = await signIn(formData.email, formData.password);

@@ -30,6 +30,7 @@ import { VoltMarketPrivacyPolicy } from '@/components/voltmarket/VoltMarketPriva
 import { VoltMarketTermsOfService } from '@/components/voltmarket/VoltMarketTermsOfService';
 import { ForgotPassword } from '@/pages/ForgotPassword';
 import { ResetPassword } from '@/pages/ResetPassword';
+import { VoltMarketLogin } from '@/components/voltmarket/VoltMarketLogin';
 import { ComprehensiveTestSuite } from '@/components/ComprehensiveTestSuite';
 
 export const VoltMarket = () => {
@@ -56,6 +57,7 @@ export const VoltMarket = () => {
         </VoltMarketLayout>
       } />
       <Route path="/auth" element={<WattbytesAuth />} />
+      <Route path="/login" element={<VoltMarketLogin />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/listings" element={
