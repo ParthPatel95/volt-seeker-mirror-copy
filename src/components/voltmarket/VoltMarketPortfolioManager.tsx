@@ -81,8 +81,8 @@ export const VoltMarketPortfolioManager: React.FC = () => {
       await createPortfolio({
         name: createForm.name,
         description: createForm.description,
-        portfolio_type: createForm.portfolioType,
-        risk_tolerance: createForm.riskTolerance
+        portfolioType: createForm.portfolioType as any,
+        riskTolerance: createForm.riskTolerance as any
       });
       
       toast({
@@ -112,13 +112,14 @@ export const VoltMarketPortfolioManager: React.FC = () => {
 
     try {
       await addPortfolioItem({
-        portfolio_id: selectedPortfolio,
+        portfolioId: selectedPortfolio,
         name: addItemForm.name,
-        item_type: addItemForm.itemType as any,
-        acquisition_price: addItemForm.acquisitionPrice ? parseFloat(addItemForm.acquisitionPrice) : undefined,
-        current_value: addItemForm.currentValue ? parseFloat(addItemForm.currentValue) : undefined,
-        acquisition_date: addItemForm.acquisitionDate || undefined,
-        notes: addItemForm.notes || undefined
+        itemType: addItemForm.itemType as any,
+        acquisitionPrice: addItemForm.acquisitionPrice ? parseFloat(addItemForm.acquisitionPrice) : undefined,
+        currentValue: addItemForm.currentValue ? parseFloat(addItemForm.currentValue) : undefined,
+        acquisitionDate: addItemForm.acquisitionDate || undefined,
+        notes: addItemForm.notes || undefined,
+        listingId: addItemForm.listingId || undefined
       });
       
       toast({

@@ -4,7 +4,31 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, Target, Activity, AlertTriangle, Award, Zap } from 'lucide-react';
-import { Portfolio, PortfolioItem } from '@/types/portfolio';
+
+interface Portfolio {
+  id: string;
+  name: string;
+  total_value: number;
+  target_allocation: Record<string, number>;
+  risk_tolerance: string;
+  created_at: string;
+}
+
+interface PortfolioItem {
+  id: string;
+  name: string;
+  acquisition_price?: number;
+  current_value?: number;
+  acquisition_date?: string;
+  status: string;
+  metadata: {
+    sector?: string;
+    location?: string;
+    powerCapacity?: number;
+    riskLevel?: string;
+    expectedReturn?: number;
+  };
+}
 
 interface PortfolioAnalyticsProps {
   portfolio: Portfolio;
@@ -15,18 +39,6 @@ const SECTOR_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#
 
 export const PortfolioAnalytics: React.FC<PortfolioAnalyticsProps> = ({ portfolio, items }) => {
   const analytics = useMemo(() => {
-    if (!portfolio || !items) {
-      return {
-        totalValue: 0,
-        totalReturn: 0,
-        returnPercentage: 0,
-        activeItems: [],
-        sectorData: [],
-        riskDistribution: [],
-        performanceData: []
-      };
-    }
-
     const activeItems = items.filter(item => item.status === 'active');
     const totalAcquisitionValue = activeItems.reduce((sum, item) => sum + (item.acquisition_price || 0), 0);
     const totalCurrentValue = activeItems.reduce((sum, item) => sum + (item.current_value || 0), 0);
@@ -77,7 +89,6 @@ export const PortfolioAnalytics: React.FC<PortfolioAnalyticsProps> = ({ portfoli
       totalReturn,
       returnPercentage,
       activeItems: activeItems.length,
-      totalActiveItems: activeItems.length,
       sectorData,
       riskDistribution,
       averageReturn,
@@ -252,7 +263,7 @@ export const PortfolioAnalytics: React.FC<PortfolioAnalyticsProps> = ({ portfoli
                     <Badge variant={getRiskBadgeVariant(risk)}>{count}</Badge>
                   </div>
                   <Progress 
-                    value={analytics.totalActiveItems > 0 ? (Number(count) / analytics.totalActiveItems) * 100 : 0} 
+                    value={(count / analytics.activeItems) * 100} 
                     className="h-2"
                   />
                 </div>

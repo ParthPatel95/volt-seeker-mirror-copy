@@ -54,6 +54,7 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
 
   const fetchProfile = async (userId: string) => {
     try {
+      console.log('Fetching profile for user:', userId);
       const { data: profileData, error } = await supabase
         .from('gridbazaar_profiles')
         .select('*')
@@ -61,11 +62,14 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
         .maybeSingle();
       
       if (error) {
+        console.log('Profile fetch error:', error);
         return null;
       }
       
+      console.log('Profile fetched successfully:', profileData);
       return profileData;
     } catch (err) {
+      console.log('Unexpected error fetching profile:', err);
       return null;
     }
   };
@@ -107,32 +111,26 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
   useEffect(() => {
     let mounted = true;
 
-    // Set a timeout to prevent infinite loading
-    const loadingTimeout = setTimeout(() => {
-      if (mounted) {
-        setLoading(false);
-      }
-    }, 5000); // 5 second timeout
-
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!mounted) return;
 
+        console.log('Auth state changed:', event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
+          // Use setTimeout to avoid potential recursive calls
           setTimeout(async () => {
             if (mounted) {
               const profileData = await fetchProfile(session.user.id);
               if (mounted) {
-                setProfile(profileData ? {
+                setProfile({
                   ...profileData,
                   role: (profileData.role as any) || 'buyer'
-                } as any : null);
+                } as any);
                 setLoading(false);
-                clearTimeout(loadingTimeout);
               }
             }
           }, 0);
@@ -140,7 +138,6 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
           if (mounted) {
             setProfile(null);
             setLoading(false);
-            clearTimeout(loadingTimeout);
           }
         }
       }
@@ -152,28 +149,27 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
         const { data: { session } } = await supabase.auth.getSession();
         if (!mounted) return;
 
+        console.log('Initial session check:', session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
           const profileData = await fetchProfile(session.user.id);
           if (mounted) {
-            setProfile(profileData ? {
+            setProfile({
               ...profileData,
               role: (profileData?.role as any) || 'buyer'
-            } as any : null);
+            } as any);
           }
         }
         
         if (mounted) {
           setLoading(false);
-          clearTimeout(loadingTimeout);
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
         if (mounted) {
           setLoading(false);
-          clearTimeout(loadingTimeout);
         }
       }
     };
@@ -182,7 +178,6 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
 
     return () => {
       mounted = false;
-      clearTimeout(loadingTimeout);
       subscription.unsubscribe();
     };
   }, []); // Empty dependency array to run only once

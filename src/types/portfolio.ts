@@ -1,47 +1,39 @@
 export interface PortfolioItem {
   id: string;
-  portfolio_id?: string;
-  listing_id?: string;
   name: string;
-  item_type: string;
+  item_type: 'listing' | 'investment' | 'opportunity' | 'research';
   acquisition_price?: number;
   current_value?: number;
   acquisition_date?: string;
-  status: string;
+  status: 'active' | 'sold' | 'under_contract' | 'monitoring';
   notes?: string;
-  metadata: any;
+  metadata: {
+    location?: string;
+    powerCapacity?: number;
+    sector?: string;
+    riskLevel?: 'low' | 'moderate' | 'high';
+    expectedReturn?: number;
+    timeHorizon?: string;
+    documents?: string[];
+    lastUpdated?: string;
+  };
   added_at: string;
   updated_at: string;
-  listing?: {
-    id: string;
-    title: string;
-    asking_price: number;
-    location: string;
-    power_capacity_mw: number;
-  };
 }
 
 export interface Portfolio {
   id: string;
-  user_id: string;
   name: string;
   description?: string;
-  portfolio_type: string;
+  portfolio_type: 'investment' | 'research' | 'watchlist' | 'active';
+  risk_tolerance: 'low' | 'moderate' | 'high';
+  target_allocation?: Record<string, number>;
   total_value: number;
   total_return: number;
   return_percentage: number;
-  target_allocation?: any;
-  risk_tolerance: string;
   created_at: string;
   updated_at: string;
-  metrics?: {
-    totalItems: number;
-    totalAcquisitionValue: number;
-    totalCurrentValue: number;
-    totalReturn: number;
-    returnPercentage: number;
-    activeItems: number;
-  };
+  user_id: string;
 }
 
 export interface PortfolioMetrics {
