@@ -133,7 +133,12 @@ export const VoltMarketProfile: React.FC = () => {
   };
 
   const handleImageChange = (imageUrl: string) => {
-    setProfileData(prev => ({ ...prev, profile_image_url: imageUrl }));
+    console.log('handleImageChange called with URL:', imageUrl);
+    setProfileData(prev => {
+      const updated = { ...prev, profile_image_url: imageUrl };
+      console.log('Updated profileData:', updated);
+      return updated;
+    });
   };
 
   if (!user) {

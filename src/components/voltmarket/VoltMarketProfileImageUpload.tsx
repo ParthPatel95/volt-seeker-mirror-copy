@@ -80,6 +80,7 @@ export const VoltMarketProfileImageUpload: React.FC<VoltMarketProfileImageUpload
     try {
       const imageUrl = await uploadImage(file);
       if (imageUrl) {
+        console.log('Image uploaded successfully, URL:', imageUrl);
         onImageChange(imageUrl);
         toast({
           title: "Profile image updated",
@@ -89,6 +90,7 @@ export const VoltMarketProfileImageUpload: React.FC<VoltMarketProfileImageUpload
         throw new Error('Failed to upload image');
       }
     } catch (error) {
+      console.error('Error uploading image:', error);
       toast({
         title: "Upload failed",
         description: "Failed to upload profile image. Please try again.",
