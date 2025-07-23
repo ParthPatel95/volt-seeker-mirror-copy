@@ -35,12 +35,12 @@ export const useVoltMarketAccessRequests = () => {
           listing_id,
           requester_id,
           status,
-          requested_at,
-          responded_at,
+          created_at,
+          approved_at,
           voltmarket_listings!inner(seller_id)
         `)
         .eq('voltmarket_listings.seller_id', sellerId)
-        .order('requested_at', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (response.error) throw response.error;
       
@@ -50,8 +50,8 @@ export const useVoltMarketAccessRequests = () => {
         requester_id: item.requester_id,
         seller_id: sellerId,
         status: item.status as 'pending' | 'approved' | 'rejected',
-        created_at: item.requested_at,
-        approved_at: item.responded_at || undefined,
+        created_at: item.created_at,
+        approved_at: item.approved_at || undefined,
         requester_profile: { 
           company_name: 'Unknown Company', 
           role: 'buyer' 
@@ -78,7 +78,7 @@ export const useVoltMarketAccessRequests = () => {
         .from('voltmarket_nda_requests')
         .update({ 
           status,
-          responded_at: status === 'approved' ? new Date().toISOString() : null
+          approved_at: status === 'approved' ? new Date().toISOString() : null
         })
         .eq('id', requestId);
 
