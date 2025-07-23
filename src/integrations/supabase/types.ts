@@ -1616,6 +1616,54 @@ export type Database = {
         }
         Relationships: []
       }
+      voltmarket_nda_requests: {
+        Row: {
+          created_at: string
+          id: string
+          listing_id: string
+          requested_at: string
+          requester_id: string
+          responded_at: string | null
+          seller_id: string
+          status: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          listing_id: string
+          requested_at?: string
+          requester_id: string
+          responded_at?: string | null
+          seller_id: string
+          status?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          listing_id?: string
+          requested_at?: string
+          requester_id?: string
+          responded_at?: string | null
+          seller_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_voltmarket_nda_requests_listing"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "voltmarket_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "voltmarket_nda_requests_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "voltmarket_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       voltmarket_portfolio_items: {
         Row: {
           acquisition_date: string | null
