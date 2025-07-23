@@ -120,24 +120,11 @@ export const VoltMarketHeader: React.FC = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="flex items-center gap-2">
                       <Avatar className="w-8 h-8">
-                        {(() => {
-                          console.log('🔍 Avatar debug - profile:', profile);
-                          console.log('🔍 Avatar debug - profile_image_url:', profile?.profile_image_url);
-                          console.log('🔍 Avatar debug - condition result:', !!profile?.profile_image_url);
-                          return null;
-                        })()}
-                        {profile?.profile_image_url && (
-                          <AvatarImage 
-                            src={profile.profile_image_url} 
-                            alt="Profile"
-                            className="aspect-square h-full w-full object-cover"
-                            onLoad={() => console.log('✅ Avatar loaded:', profile.profile_image_url)}
-                            onError={(e) => {
-                              console.error('❌ Avatar failed to load:', profile.profile_image_url);
-                              console.error('Error details:', e.currentTarget.src);
-                            }}
-                          />
-                        )}
+                        <AvatarImage 
+                          src={profile?.profile_image_url || ""} 
+                          alt="Profile"
+                          className="aspect-square h-full w-full object-cover"
+                        />
                         <AvatarFallback className="bg-blue-100 text-blue-600 text-sm">
                           {getInitials(profile?.company_name || 'Account')}
                         </AvatarFallback>
