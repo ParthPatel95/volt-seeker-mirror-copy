@@ -8,8 +8,8 @@ interface AccessRequest {
   requester_id: string;
   seller_id?: string; // Will be populated from listing relationship
   status: 'pending' | 'approved' | 'rejected';
-  created_at: string; // mapped from requested_at
-  approved_at?: string; // mapped from responded_at
+  requested_at: string;
+  responded_at?: string;
   requester_profile?: {
     company_name?: string;
     role: string;
@@ -27,7 +27,6 @@ export const useVoltMarketAccessRequests = () => {
   const fetchAccessRequests = useCallback(async (sellerId: string) => {
     setLoading(true);
     try {
-      // First get all requests and then filter by seller via listing relationship
       const response = await supabase
         .from('voltmarket_nda_requests')
         .select(`
@@ -35,12 +34,12 @@ export const useVoltMarketAccessRequests = () => {
           listing_id,
           requester_id,
           status,
-          created_at,
-          approved_at,
+          requested_at,
+          responded_at,
           voltmarket_listings!inner(seller_id)
         `)
         .eq('voltmarket_listings.seller_id', sellerId)
-        .order('created_at', { ascending: false });
+        .order('requested_at', { ascending: false });
 
       if (response.error) throw response.error;
       
@@ -50,8 +49,8 @@ export const useVoltMarketAccessRequests = () => {
         requester_id: item.requester_id,
         seller_id: sellerId,
         status: item.status as 'pending' | 'approved' | 'rejected',
-        created_at: item.created_at,
-        approved_at: item.approved_at || undefined,
+        requested_at: item.requested_at,
+        responded_at: item.responded_at || undefined,
         requester_profile: { 
           company_name: 'Unknown Company', 
           role: 'buyer' 
@@ -78,7 +77,7 @@ export const useVoltMarketAccessRequests = () => {
         .from('voltmarket_nda_requests')
         .update({ 
           status,
-          approved_at: status === 'approved' ? new Date().toISOString() : null
+          responded_at: status === 'approved' ? new Date().toISOString() : null
         })
         .eq('id', requestId);
 
@@ -87,7 +86,7 @@ export const useVoltMarketAccessRequests = () => {
       setAccessRequests(prev => 
         prev.map(req => 
           req.id === requestId 
-            ? { ...req, status, approved_at: status === 'approved' ? new Date().toISOString() : req.approved_at }
+            ? { ...req, status, responded_at: status === 'approved' ? new Date().toISOString() : req.responded_at }
             : req
         )
       );

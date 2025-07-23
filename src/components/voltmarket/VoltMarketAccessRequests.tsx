@@ -176,16 +176,16 @@ export const VoltMarketAccessRequests: React.FC<VoltMarketAccessRequestsProps> =
                             <Calendar className="w-4 h-4 text-muted-foreground" />
                             <span className="text-muted-foreground">Requested:</span>
                             <span className="font-medium">
-                              {new Date(request.created_at).toLocaleDateString()}
+                              {new Date(request.requested_at).toLocaleDateString()}
                             </span>
                           </div>
                           
-                          {request.approved_at && (
+                          {request.responded_at && (
                             <div className="flex items-center gap-2">
                               <Calendar className="w-4 h-4 text-muted-foreground" />
                               <span className="text-muted-foreground">Processed:</span>
                               <span className="font-medium">
-                                {new Date(request.approved_at).toLocaleDateString()}
+                                {new Date(request.responded_at).toLocaleDateString()}
                               </span>
                             </div>
                           )}

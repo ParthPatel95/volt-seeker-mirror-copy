@@ -1633,7 +1633,15 @@ export type Database = {
           responded_at?: string | null
           status?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_voltmarket_nda_requests_listing"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "voltmarket_listings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       voltmarket_portfolio_items: {
         Row: {
