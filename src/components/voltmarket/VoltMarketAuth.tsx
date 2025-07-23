@@ -64,9 +64,13 @@ export const VoltMarketAuth: React.FC = () => {
         });
 
         if (error) {
+          // Handle rate limiting with better user messaging
+          const isRateLimit = error.message.includes('seconds') || error.message.includes('rate');
           toast({
-            title: "Sign Up Failed",
-            description: error.message,
+            title: "Sign Up Failed", 
+            description: isRateLimit 
+              ? "Too many requests. Please wait a moment before trying again."
+              : error.message,
             variant: "destructive"
           });
         } else {
