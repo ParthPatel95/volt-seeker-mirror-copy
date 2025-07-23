@@ -13,10 +13,8 @@ import { VoltMarketMessages } from '@/components/voltmarket/VoltMarketMessages';
 import { VoltMarketEnhancedMessages } from '@/components/voltmarket/VoltMarketEnhancedMessages';
 import { VoltMarketWatchlist } from '@/components/voltmarket/VoltMarketWatchlist';
 import { VoltMarketVerificationCenter } from '@/components/voltmarket/VoltMarketVerificationCenter';
-
 import { VoltMarketAdvancedSearch } from '@/components/voltmarket/VoltMarketAdvancedSearch';
 import { VoltMarketNotificationCenter } from '@/components/voltmarket/VoltMarketNotificationCenter';
-import { useVoltMarketAuth } from '@/contexts/VoltMarketAuthContext';
 import { VoltMarketQATest } from '@/components/voltmarket/VoltMarketQATest';
 import { VoltMarketDocumentCenter } from '@/components/voltmarket/VoltMarketDocumentCenter';
 import { VoltMarketAdvancedPortfolio } from '@/components/voltmarket/VoltMarketAdvancedPortfolio';
@@ -34,25 +32,6 @@ import { VoltMarketLogin } from '@/components/voltmarket/VoltMarketLogin';
 import { ComprehensiveTestSuite } from '@/components/ComprehensiveTestSuite';
 
 export const VoltMarket = () => {
-  let auth;
-  try {
-    auth = useVoltMarketAuth();
-  } catch (error) {
-    // Auth context not available, continue without it
-    auth = { user: null, loading: false };
-  }
-  
-  const { user, loading } = auth;
-
-  // Don't block the entire app on auth loading
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   return (
     <Routes>
       <Route path="/" element={
@@ -86,12 +65,12 @@ export const VoltMarket = () => {
       } />
       <Route path="/dashboard" element={
         <VoltMarketLayout>
-          {user ? <VoltMarketDashboard /> : <WattbytesAuth />}
+          <VoltMarketDashboard />
         </VoltMarketLayout>
       } />
       <Route path="/documents" element={
         <VoltMarketLayout>
-          {user ? <VoltMarketDocumentCenter /> : <WattbytesAuth />}
+          <VoltMarketDocumentCenter />
         </VoltMarketLayout>
       } />
       <Route path="/portfolio" element={
@@ -101,52 +80,52 @@ export const VoltMarket = () => {
       } />
       <Route path="/loi-center" element={
         <VoltMarketLayout>
-          {user ? <VoltMarketLOICenter /> : <WattbytesAuth />}
+          <VoltMarketLOICenter />
         </VoltMarketLayout>
       } />
       <Route path="/due-diligence" element={
         <VoltMarketLayout>
-          {user ? <VoltMarketDueDiligenceCenter /> : <WattbytesAuth />}
+          <VoltMarketDueDiligenceCenter />
         </VoltMarketLayout>
       } />
       <Route path="/profile" element={
         <VoltMarketLayout>
-          {user && !loading ? <VoltMarketProfile /> : (!loading ? <WattbytesAuth /> : <div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>)}
+          <VoltMarketProfile />
         </VoltMarketLayout>
       } />
       <Route path="/verification" element={
         <VoltMarketLayout>
-          {user && !loading ? <VoltMarketVerificationCenter /> : (!loading ? <WattbytesAuth /> : <div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>)}
+          <VoltMarketVerificationCenter />
         </VoltMarketLayout>
       } />
       <Route path="/create-listing" element={
         <VoltMarketLayout>
-          {user ? <VoltMarketCreateListing /> : <WattbytesAuth />}
+          <VoltMarketCreateListing />
         </VoltMarketLayout>
       } />
       <Route path="/edit-listing/:id" element={
         <VoltMarketLayout>
-          {user ? <VoltMarketEditListing /> : <WattbytesAuth />}
+          <VoltMarketEditListing />
         </VoltMarketLayout>
       } />
       <Route path="/contact-messages" element={
         <VoltMarketLayout>
-          {user ? <VoltMarketContactMessages /> : <WattbytesAuth />}
+          <VoltMarketContactMessages />
         </VoltMarketLayout>
       } />
       <Route path="/document-requests" element={
         <VoltMarketLayout>
-          {user ? <VoltMarketDocumentRequests /> : <WattbytesAuth />}
+          <VoltMarketDocumentRequests />
         </VoltMarketLayout>
       } />
       <Route path="/notifications" element={
         <VoltMarketLayout>
-          {user ? <VoltMarketNotificationCenter /> : <WattbytesAuth />}
+          <VoltMarketNotificationCenter />
         </VoltMarketLayout>
       } />
       <Route path="/watchlist" element={
         <VoltMarketLayout>
-          {user ? <VoltMarketWatchlist /> : <WattbytesAuth />}
+          <VoltMarketWatchlist />
         </VoltMarketLayout>
       } />
       <Route path="/calculator" element={
