@@ -1608,41 +1608,6 @@ export type Database = {
         }
         Relationships: []
       }
-      voltmarket_nda_requests: {
-        Row: {
-          id: string
-          listing_id: string
-          requested_at: string
-          requester_id: string
-          responded_at: string | null
-          status: string
-        }
-        Insert: {
-          id?: string
-          listing_id: string
-          requested_at?: string
-          requester_id: string
-          responded_at?: string | null
-          status?: string
-        }
-        Update: {
-          id?: string
-          listing_id?: string
-          requested_at?: string
-          requester_id?: string
-          responded_at?: string | null
-          status?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_voltmarket_nda_requests_listing"
-            columns: ["listing_id"]
-            isOneToOne: false
-            referencedRelation: "voltmarket_listings"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       voltmarket_portfolio_items: {
         Row: {
           acquisition_date: string | null
@@ -1706,8 +1671,10 @@ export type Database = {
           id: string
           name: string
           portfolio_type: string
+          return_percentage: number | null
           risk_tolerance: string | null
           target_allocation: Json | null
+          total_return: number | null
           total_value: number | null
           updated_at: string
           user_id: string
@@ -1718,8 +1685,10 @@ export type Database = {
           id?: string
           name: string
           portfolio_type?: string
+          return_percentage?: number | null
           risk_tolerance?: string | null
           target_allocation?: Json | null
+          total_return?: number | null
           total_value?: number | null
           updated_at?: string
           user_id: string
@@ -1730,8 +1699,10 @@ export type Database = {
           id?: string
           name?: string
           portfolio_type?: string
+          return_percentage?: number | null
           risk_tolerance?: string | null
           target_allocation?: Json | null
+          total_return?: number | null
           total_value?: number | null
           updated_at?: string
           user_id?: string
