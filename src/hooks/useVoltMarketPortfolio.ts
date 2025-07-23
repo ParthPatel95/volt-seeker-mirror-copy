@@ -56,51 +56,44 @@ export const useVoltMarketPortfolio = () => {
 
     setLoading(true);
     try {
-      // Mock data for now - replace with actual database queries later
-      const mockPortfolios = [
-        {
-          id: '1',
-          user_id: profile.user_id,
-          name: 'Energy Infrastructure Portfolio',
-          description: 'Diversified renewable energy investments',
-          portfolio_type: 'investment' as const,
-          total_value: 2500000,
-          target_allocation: { solar: 40, wind: 30, storage: 30 },
-          risk_tolerance: 'moderate' as const,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          metrics: {
-            totalItems: 5,
-            totalAcquisitionValue: 2200000,
-            totalCurrentValue: 2500000,
-            totalReturn: 300000,
-            returnPercentage: 13.6,
-            activeItems: 5
-          }
-        },
-        {
-          id: '2',
-          user_id: profile.user_id,
-          name: 'Development Projects',
-          description: 'Active development opportunities',
-          portfolio_type: 'development' as const,
-          total_value: 1800000,
-          target_allocation: { utility: 60, commercial: 40 },
-          risk_tolerance: 'aggressive' as const,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          metrics: {
-            totalItems: 3,
-            totalAcquisitionValue: 1500000,
-            totalCurrentValue: 1800000,
-            totalReturn: 300000,
-            returnPercentage: 20.0,
-            activeItems: 3
-          }
-        }
-      ];
+      const { data, error } = await supabase
+        .from('voltmarket_portfolios')
+        .select('*')
+        .eq('user_id', profile.user_id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
       
-      setPortfolios(mockPortfolios);
+      // Calculate metrics for each portfolio
+      const portfoliosWithMetrics = await Promise.all(
+        (data || []).map(async (portfolio) => {
+          const { data: items } = await supabase
+            .from('voltmarket_portfolio_items')
+            .select('*')
+            .eq('portfolio_id', portfolio.id);
+          
+          const activeItems = items?.filter(item => item.status === 'active') || [];
+          const totalAcquisitionValue = activeItems.reduce((sum, item) => sum + (item.acquisition_price || 0), 0);
+          const totalCurrentValue = activeItems.reduce((sum, item) => sum + (item.current_value || 0), 0);
+          const totalReturn = totalCurrentValue - totalAcquisitionValue;
+          const returnPercentage = totalAcquisitionValue > 0 ? (totalReturn / totalAcquisitionValue) * 100 : 0;
+          
+          return {
+            ...portfolio,
+            total_value: totalCurrentValue,
+            metrics: {
+              totalItems: items?.length || 0,
+              totalAcquisitionValue,
+              totalCurrentValue,
+              totalReturn,
+              returnPercentage,
+              activeItems: activeItems.length
+            }
+          };
+        })
+      );
+      
+      setPortfolios(portfoliosWithMetrics as Portfolio[]);
     } catch (error) {
       console.error('Error fetching portfolios:', error);
     } finally {
@@ -118,15 +111,23 @@ export const useVoltMarketPortfolio = () => {
     if (!profile) throw new Error('Must be logged in');
 
     try {
-      const { data, error } = await supabase.functions.invoke('voltmarket-portfolio-management', {
-        body: { ...portfolioData, action: 'create' },
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const { data, error } = await supabase
+        .from('voltmarket_portfolios')
+        .insert({
+          user_id: profile.user_id,
+          name: portfolioData.name,
+          description: portfolioData.description,
+          portfolio_type: portfolioData.portfolioType,
+          risk_tolerance: portfolioData.riskTolerance,
+          target_allocation: portfolioData.targetAllocation || {}
+        })
+        .select()
+        .single();
 
       if (error) throw error;
       
       await fetchPortfolios();
-      return data.portfolio;
+      return data;
     } catch (error) {
       console.error('Error creating portfolio:', error);
       throw error;
@@ -147,15 +148,26 @@ export const useVoltMarketPortfolio = () => {
     if (!profile) throw new Error('Must be logged in');
 
     try {
-      const { data, error } = await supabase.functions.invoke('voltmarket-portfolio-management', {
-        body: { ...itemData, action: 'add-item' },
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const { data, error } = await supabase
+        .from('voltmarket_portfolio_items')
+        .insert({
+          portfolio_id: itemData.portfolioId,
+          listing_id: itemData.listingId,
+          item_type: itemData.itemType,
+          name: itemData.name,
+          acquisition_price: itemData.acquisitionPrice,
+          current_value: itemData.currentValue,
+          acquisition_date: itemData.acquisitionDate,
+          notes: itemData.notes,
+          metadata: itemData.metadata || {}
+        })
+        .select()
+        .single();
 
       if (error) throw error;
       
       await fetchPortfolios();
-      return data.item;
+      return data;
     } catch (error) {
       console.error('Error adding portfolio item:', error);
       throw error;
@@ -166,13 +178,14 @@ export const useVoltMarketPortfolio = () => {
     if (!profile) return [];
 
     try {
-      const { data, error } = await supabase.functions.invoke('voltmarket-portfolio-management', {
-        body: { portfolioId, action: 'items' },
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const { data, error } = await supabase
+        .from('voltmarket_portfolio_items')
+        .select('*')
+        .eq('portfolio_id', portfolioId)
+        .order('added_at', { ascending: false });
 
       if (error) throw error;
-      return data.items || [];
+      return (data || []) as unknown as PortfolioItem[];
     } catch (error) {
       console.error('Error fetching portfolio items:', error);
       return [];
@@ -183,13 +196,22 @@ export const useVoltMarketPortfolio = () => {
     if (!profile) throw new Error('Must be logged in');
 
     try {
-      const { data, error } = await supabase.functions.invoke('voltmarket-portfolio-management', {
-        body: { portfolioId, action: 'analyze' },
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      if (error) throw error;
-      return data.analytics;
+      const items = await getPortfolioItems(portfolioId);
+      
+      // Basic analytics calculation
+      const totalAcquisitionValue = items.reduce((sum, item) => sum + (item.acquisition_price || 0), 0);
+      const totalCurrentValue = items.reduce((sum, item) => sum + (item.current_value || 0), 0);
+      const totalReturn = totalCurrentValue - totalAcquisitionValue;
+      const returnPercentage = totalAcquisitionValue > 0 ? (totalReturn / totalAcquisitionValue) * 100 : 0;
+      
+      return {
+        totalItems: items.length,
+        totalAcquisitionValue,
+        totalCurrentValue,
+        totalReturn,
+        returnPercentage,
+        activeItems: items.filter(item => item.status === 'active').length
+      };
     } catch (error) {
       console.error('Error analyzing portfolio:', error);
       throw error;
@@ -200,16 +222,64 @@ export const useVoltMarketPortfolio = () => {
     if (!profile) throw new Error('Must be logged in');
 
     try {
-      const { error } = await supabase.functions.invoke('voltmarket-portfolio-management', {
-        body: { portfolioId, action: 'delete' },
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const { error } = await supabase
+        .from('voltmarket_portfolios')
+        .delete()
+        .eq('id', portfolioId)
+        .eq('user_id', profile.user_id); // Extra security check
 
       if (error) throw error;
       
       await fetchPortfolios();
     } catch (error) {
       console.error('Error deleting portfolio:', error);
+      throw error;
+    }
+  };
+
+  const deletePortfolioItem = async (itemId: string) => {
+    if (!profile) throw new Error('Must be logged in');
+
+    try {
+      const { error } = await supabase
+        .from('voltmarket_portfolio_items')
+        .delete()
+        .eq('id', itemId);
+
+      if (error) throw error;
+      
+      await fetchPortfolios();
+    } catch (error) {
+      console.error('Error deleting portfolio item:', error);
+      throw error;
+    }
+  };
+
+  const updatePortfolioItem = async (itemId: string, updates: Partial<{
+    name: string;
+    acquisition_price: number;
+    current_value: number;
+    acquisition_date: string;
+    status: 'active' | 'sold' | 'under_contract' | 'monitoring';
+    notes: string;
+    metadata: Record<string, any>;
+  }>) => {
+    if (!profile) throw new Error('Must be logged in');
+
+    try {
+      const { data, error } = await supabase
+        .from('voltmarket_portfolio_items')
+        .update(updates)
+        .eq('id', itemId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      await fetchPortfolios();
+      return data;
+    } catch (error) {
+      console.error('Error updating portfolio item:', error);
       throw error;
     }
   };
@@ -228,6 +298,8 @@ export const useVoltMarketPortfolio = () => {
     addPortfolioItem,
     getPortfolioItems,
     analyzePortfolio,
-    deletePortfolio
+    deletePortfolio,
+    deletePortfolioItem,
+    updatePortfolioItem
   };
 };

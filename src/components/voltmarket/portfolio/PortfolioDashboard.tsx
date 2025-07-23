@@ -27,7 +27,7 @@ interface PortfolioItem {
 }
 
 export const PortfolioDashboard: React.FC = () => {
-  const { portfolios, loading, getPortfolioItems } = useVoltMarketPortfolio();
+  const { portfolios, loading, getPortfolioItems, deletePortfolioItem, deletePortfolio } = useVoltMarketPortfolio();
   const { toast } = useToast();
   const [selectedPortfolio, setSelectedPortfolio] = useState<string | null>(null);
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
@@ -61,6 +61,44 @@ export const PortfolioDashboard: React.FC = () => {
   const handleItemAdded = () => {
     setShowAddItemForm(false);
     loadPortfolioItems();
+  };
+
+  const handleDeleteItem = async (itemId: string, itemName: string) => {
+    if (confirm(`Are you sure you want to delete "${itemName}"? This action cannot be undone.`)) {
+      try {
+        await deletePortfolioItem(itemId);
+        toast({
+          title: "Success",
+          description: "Portfolio item deleted successfully"
+        });
+        loadPortfolioItems();
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete portfolio item",
+          variant: "destructive"
+        });
+      }
+    }
+  };
+
+  const handleDeletePortfolio = async (portfolioId: string, portfolioName: string) => {
+    if (confirm(`Are you sure you want to delete "${portfolioName}" and all its items? This action cannot be undone.`)) {
+      try {
+        await deletePortfolio(portfolioId);
+        toast({
+          title: "Success",
+          description: "Portfolio deleted successfully"
+        });
+        setSelectedPortfolio(null);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete portfolio",
+          variant: "destructive"
+        });
+      }
+    }
   };
 
   const formatCurrency = (amount: number) => {
@@ -258,7 +296,7 @@ export const PortfolioDashboard: React.FC = () => {
           >
             ← Back
           </Button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">
               {selectedPortfolioData?.name}
             </h1>
@@ -279,6 +317,14 @@ export const PortfolioDashboard: React.FC = () => {
               </Badge>
             </div>
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => selectedPortfolio && selectedPortfolioData && handleDeletePortfolio(selectedPortfolio, selectedPortfolioData.name)}
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
         
         <Dialog open={showAddItemForm} onOpenChange={setShowAddItemForm}>
@@ -405,37 +451,58 @@ export const PortfolioDashboard: React.FC = () => {
                           </div>
                         </div>
                         
-                        {/* Financial Info */}
-                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 lg:text-right">
-                          {item.acquisition_price && (
-                            <div className="bg-muted/50 rounded-lg p-3">
-                              <div className="text-xs text-muted-foreground mb-1">Acquired</div>
-                              <div className="font-medium text-sm">
-                                {formatCurrency(item.acquisition_price)}
+                        {/* Financial Info and Actions */}
+                        <div className="flex flex-col lg:flex-row gap-4 lg:items-center">
+                          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+                            {item.acquisition_price && (
+                              <div className="bg-muted/50 rounded-lg p-3">
+                                <div className="text-xs text-muted-foreground mb-1">Acquired</div>
+                                <div className="font-medium text-sm">
+                                  {formatCurrency(item.acquisition_price)}
+                                </div>
                               </div>
-                            </div>
-                          )}
-                          {item.current_value && (
-                            <div className="bg-muted/50 rounded-lg p-3">
-                              <div className="text-xs text-muted-foreground mb-1">Current</div>
-                              <div className="font-semibold text-base text-foreground">
-                                {formatCurrency(item.current_value)}
+                            )}
+                            {item.current_value && (
+                              <div className="bg-muted/50 rounded-lg p-3">
+                                <div className="text-xs text-muted-foreground mb-1">Current</div>
+                                <div className="font-semibold text-base text-foreground">
+                                  {formatCurrency(item.current_value)}
+                                </div>
                               </div>
-                            </div>
-                          )}
-                          {item.acquisition_price && item.current_value && (
-                            <div className="bg-muted/50 rounded-lg p-3">
-                              <div className="text-xs text-muted-foreground mb-1">Return</div>
-                              <div className={`font-bold text-sm flex items-center gap-1 ${getReturnColor(item)}`}>
-                                {calculateReturn(item) >= 0 ? 
-                                  <TrendingUp className="h-3 w-3" /> : 
-                                  <TrendingDown className="h-3 w-3" />
-                                }
-                                {calculateReturn(item) >= 0 ? '+' : ''}
-                                {calculateReturn(item).toFixed(1)}%
+                            )}
+                            {item.acquisition_price && item.current_value && (
+                              <div className="bg-muted/50 rounded-lg p-3">
+                                <div className="text-xs text-muted-foreground mb-1">Return</div>
+                                <div className={`font-bold text-sm flex items-center gap-1 ${getReturnColor(item)}`}>
+                                  {calculateReturn(item) >= 0 ? 
+                                    <TrendingUp className="h-3 w-3" /> : 
+                                    <TrendingDown className="h-3 w-3" />
+                                  }
+                                  {calculateReturn(item) >= 0 ? '+' : ''}
+                                  {calculateReturn(item).toFixed(1)}%
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
+                          </div>
+                          
+                          {/* Action Buttons */}
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-muted-foreground hover:text-foreground"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteItem(item.id, item.name)}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
                       
