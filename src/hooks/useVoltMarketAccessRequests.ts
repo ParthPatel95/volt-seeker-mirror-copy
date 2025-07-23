@@ -29,16 +29,19 @@ export const useVoltMarketAccessRequests = () => {
     try {
       const { data, error } = await supabase
         .from('voltmarket_nda_requests')
-        .select(`*`)
-        .order('created_at', { ascending: false }) as any;
+        .select('*')
+        .eq('seller_id', sellerId)
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
+      
       setAccessRequests((data || []).map(item => ({
         ...item,
-        seller_id: sellerId,
-        created_at: item.created_at,
-        requester_profile: { company_name: 'Unknown', role: 'buyer' },
-        listing: { title: 'Unknown Listing' }
+        requester_profile: { 
+          company_name: 'Unknown Company', 
+          role: 'buyer' 
+        },
+        listing: { title: 'Listing' }
       })) as AccessRequest[]);
     } catch (error) {
       console.error('Error fetching access requests:', error);
