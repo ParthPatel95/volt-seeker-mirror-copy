@@ -24,13 +24,12 @@ export const useEnhancedPortfolio = () => {
   }) => {
     try {
       const result = await addPortfolioItem({
-        portfolioId,
-        listingId: undefined,
-        itemType: itemData.itemType,
+        portfolio_id: portfolioId,
+        item_type: itemData.itemType,
         name: itemData.name,
-        acquisitionPrice: itemData.acquisitionPrice,
-        currentValue: itemData.currentValue,
-        acquisitionDate: itemData.acquisitionDate,
+        acquisition_price: itemData.acquisitionPrice,
+        current_value: itemData.currentValue,
+        acquisition_date: itemData.acquisitionDate,
         notes: itemData.notes,
         metadata: itemData.metadata || {}
       });

@@ -45,9 +45,8 @@ export const PortfolioCreationModal: React.FC<PortfolioCreationModalProps> = ({
       await createPortfolio({
         name: formData.name,
         description: formData.description,
-        portfolioType: formData.portfolioType,
-        riskTolerance: formData.riskTolerance,
-        targetAllocation: formData.targetAllocation
+        portfolio_type: formData.portfolioType,
+        risk_tolerance: formData.riskTolerance,
       });
 
       toast({

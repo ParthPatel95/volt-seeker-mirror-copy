@@ -1,26 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, TrendingUp, TrendingDown, Target, Eye, Edit, Trash2 } from 'lucide-react';
+import { Plus, Target, Eye, TrendingUp, TrendingDown } from 'lucide-react';
+import { useVoltMarketPortfolio } from '@/hooks/useVoltMarketPortfolio';
 import { useToast } from '@/hooks/use-toast';
-import { PortfolioItem } from '@/types/portfolio';
+import { PortfolioCreationModal } from './PortfolioCreationModal';
 
 export const PortfolioDashboard: React.FC = () => {
+  const { portfolios, loading, fetchPortfolios } = useVoltMarketPortfolio();
   const { toast } = useToast();
-  const [portfolios, setPortfolios] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
   const [selectedPortfolio, setSelectedPortfolio] = useState<string | null>(null);
-  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
   const [showCreatePortfolio, setShowCreatePortfolio] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
 
-  // Mock data for now to prevent white screen
   useEffect(() => {
-    setLoading(false);
-    setPortfolios([]);
+    fetchPortfolios();
   }, []);
 
   const formatCurrency = (amount: number) => {
@@ -94,34 +88,69 @@ export const PortfolioDashboard: React.FC = () => {
               className="group cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border border-border bg-card overflow-hidden"
               onClick={() => setSelectedPortfolio(portfolio.id)}
             >
-              <CardContent className="p-6">
-                <div className="space-y-4">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              <CardContent className="p-6 relative">
+                <div className="space-y-5">
+                  {/* Header */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-lg text-foreground line-clamp-2">
+                      <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors duration-200 line-clamp-2">
                         {portfolio.name}
                       </h3>
-                      <Badge 
-                        variant="secondary" 
-                        className="text-xs font-medium bg-primary/10 text-primary mt-2"
-                      >
-                        {portfolio.portfolio_type}
-                      </Badge>
+                      <div className="mt-2">
+                        <Badge 
+                          variant="secondary" 
+                          className="text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20"
+                        >
+                          {portfolio.portfolio_type}
+                        </Badge>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="space-y-3">
+                  {/* Metrics */}
+                  <div className="space-y-4">
                     <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                       <span className="text-sm font-medium text-muted-foreground">Total Value</span>
                       <span className="font-bold text-lg text-foreground">
                         {formatCurrency(portfolio.total_value || 0)}
                       </span>
                     </div>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="text-center p-3 bg-muted/30 rounded-lg">
+                        <div className="text-xs text-muted-foreground mb-1">Risk</div>
+                        <Badge 
+                          variant="outline" 
+                          className="text-xs font-medium"
+                        >
+                          {portfolio.risk_tolerance}
+                        </Badge>
+                      </div>
+                      
+                      {portfolio.metrics && (
+                        <div className="text-center p-3 bg-muted/30 rounded-lg">
+                          <div className="text-xs text-muted-foreground mb-1">Return</div>
+                          <div className={`font-bold text-sm flex items-center justify-center gap-1 ${
+                            portfolio.metrics.returnPercentage >= 0 ? 'text-emerald-600' : 'text-red-600'
+                          }`}>
+                            {portfolio.metrics.returnPercentage >= 0 ? 
+                              <TrendingUp className="h-3 w-3" /> : 
+                              <TrendingDown className="h-3 w-3" />
+                            }
+                            {portfolio.metrics.returnPercentage >= 0 ? '+' : ''}
+                            {portfolio.metrics.returnPercentage.toFixed(1)}%
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   
+                  {/* Action Button */}
                   <Button 
                     variant="outline" 
-                    className="w-full group-hover:bg-primary group-hover:text-primary-foreground"
+                    className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-200"
                     size="sm"
                   >
                     <Eye className="h-4 w-4 mr-2" />
@@ -134,25 +163,10 @@ export const PortfolioDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Placeholder for portfolio creation modal */}
-      {showCreatePortfolio && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md mx-4">
-            <CardHeader>
-              <CardTitle>Create Portfolio</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-muted-foreground">Portfolio creation coming soon...</p>
-              <Button 
-                onClick={() => setShowCreatePortfolio(false)}
-                className="w-full"
-              >
-                Close
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      <PortfolioCreationModal 
+        open={showCreatePortfolio} 
+        onOpenChange={setShowCreatePortfolio} 
+      />
     </div>
   );
 };

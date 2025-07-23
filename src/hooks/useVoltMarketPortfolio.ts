@@ -49,22 +49,24 @@ export const useVoltMarketPortfolio = () => {
           
           return {
             ...portfolio,
-            total_value: totalCurrentValue,
+            total_return: totalReturn,
+            return_percentage: returnPercentage,
             metrics: {
               totalItems: items?.length || 0,
               totalAcquisitionValue,
               totalCurrentValue,
               totalReturn,
               returnPercentage,
-              activeItems: activeItems.length
+              activeItems: activeItems.length,
             }
           };
         })
       );
-      
-      setPortfolios(portfoliosWithMetrics as Portfolio[]);
+
+      setPortfolios(portfoliosWithMetrics);
     } catch (error) {
       console.error('Error fetching portfolios:', error);
+      setPortfolios([]);
     } finally {
       setLoading(false);
     }
@@ -73,191 +75,144 @@ export const useVoltMarketPortfolio = () => {
   const createPortfolio = async (portfolioData: {
     name: string;
     description?: string;
-    portfolioType: 'investment' | 'development' | 'trading' | 'research';
-    targetAllocation?: Record<string, number>;
-    riskTolerance: 'conservative' | 'moderate' | 'aggressive' | 'speculative';
+    portfolio_type: string;
+    risk_tolerance: string;
   }) => {
-    if (!profile) throw new Error('Must be logged in');
+    if (!profile?.user_id) throw new Error('User not authenticated');
 
-    try {
-      const { data, error } = await supabase
-        .from('voltmarket_portfolios')
-        .insert({
-          user_id: profile.user_id,
-          name: portfolioData.name,
-          description: portfolioData.description,
-          portfolio_type: portfolioData.portfolioType,
-          risk_tolerance: portfolioData.riskTolerance,
-          target_allocation: portfolioData.targetAllocation || {}
-        })
-        .select()
-        .single();
+    const { data, error } = await supabase
+      .from('voltmarket_portfolios')
+      .insert({
+        ...portfolioData,
+        user_id: profile.user_id,
+        total_value: 0,
+        total_return: 0,
+        return_percentage: 0,
+      })
+      .select()
+      .single();
 
-      if (error) throw error;
-      
-      await fetchPortfolios();
-      return data;
-    } catch (error) {
-      console.error('Error creating portfolio:', error);
-      throw error;
-    }
+    if (error) throw error;
+    
+    await fetchPortfolios();
+    return data;
   };
 
   const addPortfolioItem = async (itemData: {
-    portfolioId: string;
-    listingId?: string;
-    itemType: 'listing' | 'investment' | 'opportunity' | 'research';
+    portfolio_id: string;
     name: string;
-    acquisitionPrice?: number;
-    currentValue?: number;
-    acquisitionDate?: string;
+    item_type: 'listing' | 'investment' | 'opportunity' | 'research';
+    acquisition_price?: number;
+    current_value?: number;
+    acquisition_date?: string;
+    status?: 'active' | 'sold' | 'under_contract' | 'monitoring';
     notes?: string;
-    metadata?: Record<string, any>;
+    metadata?: any;
   }) => {
-    if (!profile) throw new Error('Must be logged in');
+    if (!profile?.user_id) throw new Error('User not authenticated');
 
-    try {
-      const { data, error } = await supabase
-        .from('voltmarket_portfolio_items')
-        .insert({
-          portfolio_id: itemData.portfolioId,
-          listing_id: itemData.listingId,
-          item_type: itemData.itemType,
-          name: itemData.name,
-          acquisition_price: itemData.acquisitionPrice,
-          current_value: itemData.currentValue,
-          acquisition_date: itemData.acquisitionDate,
-          notes: itemData.notes,
-          metadata: itemData.metadata || {}
-        })
-        .select()
-        .single();
+    const { data, error } = await supabase
+      .from('voltmarket_portfolio_items')
+      .insert(itemData)
+      .select()
+      .single();
 
-      if (error) throw error;
-      
-      await fetchPortfolios();
-      return data;
-    } catch (error) {
-      console.error('Error adding portfolio item:', error);
-      throw error;
-    }
+    if (error) throw error;
+    
+    await fetchPortfolios();
+    return data;
   };
 
   const getPortfolioItems = async (portfolioId: string): Promise<PortfolioItem[]> => {
-    if (!profile) return [];
+    if (!profile?.user_id) return [];
 
-    try {
-      const { data, error } = await supabase
-        .from('voltmarket_portfolio_items')
-        .select('*')
-        .eq('portfolio_id', portfolioId)
-        .order('added_at', { ascending: false });
+    const { data, error } = await supabase
+      .from('voltmarket_portfolio_items')
+      .select('*')
+      .eq('portfolio_id', portfolioId)
+      .order('added_at', { ascending: false });
 
-      if (error) throw error;
-      return (data || []) as unknown as PortfolioItem[];
-    } catch (error) {
+    if (error) {
       console.error('Error fetching portfolio items:', error);
       return [];
     }
-  };
 
-  const analyzePortfolio = async (portfolioId: string) => {
-    if (!profile) throw new Error('Must be logged in');
-
-    try {
-      const items = await getPortfolioItems(portfolioId);
-      
-      // Basic analytics calculation
-      const totalAcquisitionValue = items.reduce((sum, item) => sum + (item.acquisition_price || 0), 0);
-      const totalCurrentValue = items.reduce((sum, item) => sum + (item.current_value || 0), 0);
-      const totalReturn = totalCurrentValue - totalAcquisitionValue;
-      const returnPercentage = totalAcquisitionValue > 0 ? (totalReturn / totalAcquisitionValue) * 100 : 0;
-      
-      return {
-        totalItems: items.length,
-        totalAcquisitionValue,
-        totalCurrentValue,
-        totalReturn,
-        returnPercentage,
-        activeItems: items.filter(item => item.status === 'active').length
-      };
-    } catch (error) {
-      console.error('Error analyzing portfolio:', error);
-      throw error;
-    }
+    return data || [];
   };
 
   const deletePortfolio = async (portfolioId: string) => {
-    if (!profile) throw new Error('Must be logged in');
+    if (!profile?.user_id) throw new Error('User not authenticated');
 
-    try {
-      const { error } = await supabase
-        .from('voltmarket_portfolios')
-        .delete()
-        .eq('id', portfolioId)
-        .eq('user_id', profile.user_id); // Extra security check
+    // First delete all portfolio items
+    await supabase
+      .from('voltmarket_portfolio_items')
+      .delete()
+      .eq('portfolio_id', portfolioId);
 
-      if (error) throw error;
-      
-      await fetchPortfolios();
-    } catch (error) {
-      console.error('Error deleting portfolio:', error);
-      throw error;
-    }
+    // Then delete the portfolio
+    const { error } = await supabase
+      .from('voltmarket_portfolios')
+      .delete()
+      .eq('id', portfolioId)
+      .eq('user_id', profile.user_id);
+
+    if (error) throw error;
+    
+    await fetchPortfolios();
   };
 
   const deletePortfolioItem = async (itemId: string) => {
-    if (!profile) throw new Error('Must be logged in');
+    if (!profile?.user_id) throw new Error('User not authenticated');
 
-    try {
-      const { error } = await supabase
-        .from('voltmarket_portfolio_items')
-        .delete()
-        .eq('id', itemId);
+    const { error } = await supabase
+      .from('voltmarket_portfolio_items')
+      .delete()
+      .eq('id', itemId);
 
-      if (error) throw error;
-      
-      await fetchPortfolios();
-    } catch (error) {
-      console.error('Error deleting portfolio item:', error);
-      throw error;
-    }
+    if (error) throw error;
+    
+    await fetchPortfolios();
   };
 
-  const updatePortfolioItem = async (itemId: string, updates: Partial<{
-    name: string;
-    acquisition_price: number;
-    current_value: number;
-    acquisition_date: string;
-    status: 'active' | 'sold' | 'under_contract' | 'monitoring';
-    notes: string;
-    metadata: Record<string, any>;
-  }>) => {
-    if (!profile) throw new Error('Must be logged in');
+  const updatePortfolioItem = async (itemId: string, updates: Partial<PortfolioItem>) => {
+    if (!profile?.user_id) throw new Error('User not authenticated');
 
-    try {
-      const { data, error } = await supabase
-        .from('voltmarket_portfolio_items')
-        .update(updates)
-        .eq('id', itemId)
-        .select()
-        .single();
+    const { data, error } = await supabase
+      .from('voltmarket_portfolio_items')
+      .update(updates)
+      .eq('id', itemId)
+      .select()
+      .single();
 
-      if (error) throw error;
-      
-      await fetchPortfolios();
-      return data;
-    } catch (error) {
-      console.error('Error updating portfolio item:', error);
-      throw error;
-    }
+    if (error) throw error;
+    
+    await fetchPortfolios();
+    return data;
+  };
+
+  const analyzePortfolio = async (portfolioId: string) => {
+    const items = await getPortfolioItems(portfolioId);
+    
+    const totalValue = items.reduce((sum, item) => sum + (item.current_value || 0), 0);
+    const totalCost = items.reduce((sum, item) => sum + (item.acquisition_price || 0), 0);
+    const totalReturn = totalValue - totalCost;
+    const returnPercentage = totalCost > 0 ? (totalReturn / totalCost) * 100 : 0;
+
+    return {
+      totalValue,
+      totalCost,
+      totalReturn,
+      returnPercentage,
+      itemCount: items.length,
+      activeItems: items.filter(item => item.status === 'active').length,
+    };
   };
 
   useEffect(() => {
-    if (profile) {
+    if (profile?.user_id) {
       fetchPortfolios();
     }
-  }, [profile]);
+  }, [profile?.user_id]);
 
   return {
     portfolios,
@@ -266,9 +221,9 @@ export const useVoltMarketPortfolio = () => {
     createPortfolio,
     addPortfolioItem,
     getPortfolioItems,
-    analyzePortfolio,
     deletePortfolio,
     deletePortfolioItem,
-    updatePortfolioItem
+    updatePortfolioItem,
+    analyzePortfolio,
   };
 };

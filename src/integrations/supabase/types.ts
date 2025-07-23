@@ -1706,8 +1706,10 @@ export type Database = {
           id: string
           name: string
           portfolio_type: string
+          return_percentage: number | null
           risk_tolerance: string | null
           target_allocation: Json | null
+          total_return: number | null
           total_value: number | null
           updated_at: string
           user_id: string
@@ -1718,8 +1720,10 @@ export type Database = {
           id?: string
           name: string
           portfolio_type?: string
+          return_percentage?: number | null
           risk_tolerance?: string | null
           target_allocation?: Json | null
+          total_return?: number | null
           total_value?: number | null
           updated_at?: string
           user_id: string
@@ -1730,8 +1734,10 @@ export type Database = {
           id?: string
           name?: string
           portfolio_type?: string
+          return_percentage?: number | null
           risk_tolerance?: string | null
           target_allocation?: Json | null
+          total_return?: number | null
           total_value?: number | null
           updated_at?: string
           user_id?: string
