@@ -17,6 +17,9 @@ template = {
 [functions.crypto-details]
 verify_jwt = false
 
+[functions.fetch-btc-data]
+verify_jwt = false
+
 [functions.verify-email]
 verify_jwt = false
 
