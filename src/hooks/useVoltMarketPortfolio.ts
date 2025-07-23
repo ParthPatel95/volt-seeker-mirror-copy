@@ -56,13 +56,51 @@ export const useVoltMarketPortfolio = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('voltmarket-portfolio-management', {
-        body: {},
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      if (error) throw error;
-      setPortfolios(data.portfolios || []);
+      // Mock data for now - replace with actual database queries later
+      const mockPortfolios = [
+        {
+          id: '1',
+          user_id: profile.user_id,
+          name: 'Energy Infrastructure Portfolio',
+          description: 'Diversified renewable energy investments',
+          portfolio_type: 'investment' as const,
+          total_value: 2500000,
+          target_allocation: { solar: 40, wind: 30, storage: 30 },
+          risk_tolerance: 'moderate' as const,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          metrics: {
+            totalItems: 5,
+            totalAcquisitionValue: 2200000,
+            totalCurrentValue: 2500000,
+            totalReturn: 300000,
+            returnPercentage: 13.6,
+            activeItems: 5
+          }
+        },
+        {
+          id: '2',
+          user_id: profile.user_id,
+          name: 'Development Projects',
+          description: 'Active development opportunities',
+          portfolio_type: 'development' as const,
+          total_value: 1800000,
+          target_allocation: { utility: 60, commercial: 40 },
+          risk_tolerance: 'aggressive' as const,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          metrics: {
+            totalItems: 3,
+            totalAcquisitionValue: 1500000,
+            totalCurrentValue: 1800000,
+            totalReturn: 300000,
+            returnPercentage: 20.0,
+            activeItems: 3
+          }
+        }
+      ];
+      
+      setPortfolios(mockPortfolios);
     } catch (error) {
       console.error('Error fetching portfolios:', error);
     } finally {
