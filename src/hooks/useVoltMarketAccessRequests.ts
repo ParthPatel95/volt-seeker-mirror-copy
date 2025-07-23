@@ -6,10 +6,10 @@ interface AccessRequest {
   id: string;
   listing_id: string;
   requester_id: string;
-  seller_id: string;
+  seller_id?: string; // Will be populated from listing relationship
   status: 'pending' | 'approved' | 'rejected';
-  created_at: string;
-  approved_at?: string;
+  created_at: string; // mapped from requested_at
+  approved_at?: string; // mapped from responded_at
   requester_profile?: {
     company_name?: string;
     role: string;
@@ -27,22 +27,39 @@ export const useVoltMarketAccessRequests = () => {
   const fetchAccessRequests = useCallback(async (sellerId: string) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      // First get all requests and then filter by seller via listing relationship
+      const response = await supabase
         .from('voltmarket_nda_requests')
-        .select('*')
-        .eq('seller_id', sellerId)
-        .order('created_at', { ascending: false });
+        .select(`
+          id,
+          listing_id,
+          requester_id,
+          status,
+          requested_at,
+          responded_at,
+          voltmarket_listings!inner(seller_id)
+        `)
+        .eq('voltmarket_listings.seller_id', sellerId)
+        .order('requested_at', { ascending: false });
 
-      if (error) throw error;
+      if (response.error) throw response.error;
       
-      setAccessRequests((data || []).map(item => ({
-        ...item,
+      const mappedRequests: AccessRequest[] = (response.data || []).map((item: any) => ({
+        id: item.id,
+        listing_id: item.listing_id,
+        requester_id: item.requester_id,
+        seller_id: sellerId,
+        status: item.status as 'pending' | 'approved' | 'rejected',
+        created_at: item.requested_at,
+        approved_at: item.responded_at || undefined,
         requester_profile: { 
           company_name: 'Unknown Company', 
           role: 'buyer' 
         },
         listing: { title: 'Listing' }
-      })) as AccessRequest[]);
+      }));
+      
+      setAccessRequests(mappedRequests);
     } catch (error) {
       console.error('Error fetching access requests:', error);
       toast({
@@ -61,7 +78,7 @@ export const useVoltMarketAccessRequests = () => {
         .from('voltmarket_nda_requests')
         .update({ 
           status,
-          approved_at: status === 'approved' ? new Date().toISOString() : null
+          responded_at: status === 'approved' ? new Date().toISOString() : null
         })
         .eq('id', requestId);
 
@@ -99,7 +116,6 @@ export const useVoltMarketAccessRequests = () => {
         .insert({
           listing_id: listingId,
           requester_id: requesterId,
-          seller_id: sellerId,
           status: 'pending'
         });
 
