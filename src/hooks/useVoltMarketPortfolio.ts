@@ -1,50 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useVoltMarketAuth } from '@/contexts/VoltMarketAuthContext';
-
-interface Portfolio {
-  id: string;
-  user_id: string;
-  name: string;
-  description?: string;
-  portfolio_type: 'investment' | 'development' | 'trading' | 'research';
-  total_value: number;
-  target_allocation: Record<string, number>;
-  risk_tolerance: 'conservative' | 'moderate' | 'aggressive' | 'speculative';
-  created_at: string;
-  updated_at: string;
-  metrics?: {
-    totalItems: number;
-    totalAcquisitionValue: number;
-    totalCurrentValue: number;
-    totalReturn: number;
-    returnPercentage: number;
-    activeItems: number;
-  };
-}
-
-interface PortfolioItem {
-  id: string;
-  portfolio_id: string;
-  listing_id?: string;
-  item_type: 'listing' | 'investment' | 'opportunity' | 'research';
-  name: string;
-  acquisition_price?: number;
-  current_value?: number;
-  acquisition_date?: string;
-  status: 'active' | 'sold' | 'under_contract' | 'monitoring';
-  notes?: string;
-  metadata: Record<string, any>;
-  added_at: string;
-  updated_at: string;
-  listing?: {
-    id: string;
-    title: string;
-    asking_price: number;
-    location: string;
-    power_capacity_mw: number;
-  };
-}
+import { Portfolio, PortfolioItem } from '@/types/portfolio';
 
 export const useVoltMarketPortfolio = () => {
   const { profile } = useVoltMarketAuth();

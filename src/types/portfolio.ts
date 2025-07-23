@@ -1,5 +1,7 @@
 export interface PortfolioItem {
   id: string;
+  portfolio_id?: string;
+  listing_id?: string;
   name: string;
   item_type: 'listing' | 'investment' | 'opportunity' | 'research';
   acquisition_price?: number;
@@ -16,24 +18,40 @@ export interface PortfolioItem {
     timeHorizon?: string;
     documents?: string[];
     lastUpdated?: string;
+    [key: string]: any; // Allow additional metadata
   };
   added_at: string;
   updated_at: string;
+  listing?: {
+    id: string;
+    title: string;
+    asking_price: number;
+    location: string;
+    power_capacity_mw: number;
+  };
 }
 
 export interface Portfolio {
   id: string;
+  user_id: string;
   name: string;
   description?: string;
-  portfolio_type: 'investment' | 'research' | 'watchlist' | 'active';
-  risk_tolerance: 'low' | 'moderate' | 'high';
-  target_allocation?: Record<string, number>;
+  portfolio_type: 'investment' | 'development' | 'trading' | 'research' | 'watchlist' | 'active';
   total_value: number;
   total_return: number;
   return_percentage: number;
+  target_allocation?: Record<string, number>;
+  risk_tolerance: 'conservative' | 'moderate' | 'aggressive' | 'speculative' | 'low' | 'high';
   created_at: string;
   updated_at: string;
-  user_id: string;
+  metrics?: {
+    totalItems: number;
+    totalAcquisitionValue: number;
+    totalCurrentValue: number;
+    totalReturn: number;
+    returnPercentage: number;
+    activeItems: number;
+  };
 }
 
 export interface PortfolioMetrics {
