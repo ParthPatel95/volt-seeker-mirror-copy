@@ -1292,7 +1292,15 @@ export type Database = {
           sender_name?: string
           sender_phone?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_voltmarket_contact_messages_listing"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "voltmarket_listings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       voltmarket_conversations: {
         Row: {
