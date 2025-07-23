@@ -630,7 +630,7 @@ export const VoltMarketDashboard: React.FC = () => {
   useEffect(() => {
     const checkAndRefreshProfile = async () => {
       if (user && !profile && !loading) {
-        console.log('Dashboard: User exists but no profile found, refreshing...');
+        // User exists but no profile found, refreshing...
         await refreshProfile();
       }
     };
@@ -648,13 +648,13 @@ export const VoltMarketDashboard: React.FC = () => {
         console.error('Profile creation error:', result.error);
         const errorMessage = result.error.message || result.error.toString();
         if (errorMessage.includes('duplicate key') || errorMessage.includes('gridbazaar_profiles_user_id_key')) {
-          console.log('Profile already exists, refreshing...');
+          // Profile already exists, refreshing...
           window.location.reload();
         } else {
           alert(`Error creating profile: ${errorMessage}`);
         }
       } else {
-        console.log('Profile created successfully');
+        // Profile created successfully
         window.location.reload();
       }
     } catch (error) {
