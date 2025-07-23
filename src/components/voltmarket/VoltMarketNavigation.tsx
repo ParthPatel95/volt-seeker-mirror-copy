@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -169,9 +170,16 @@ export const VoltMarketNavigation: React.FC = () => {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="flex items-center gap-1 sm:gap-2 p-1 hover:bg-muted/50 rounded-full min-w-0">
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 bg-watt-gradient rounded-full flex items-center justify-center text-white font-medium text-xs sm:text-sm flex-shrink-0">
-                          {getInitials(profile?.company_name || 'User')}
-                        </div>
+                        <Avatar className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0">
+                          <AvatarImage 
+                            src={profile?.profile_image_url || ""} 
+                            alt="Profile"
+                            className="aspect-square h-full w-full object-cover"
+                          />
+                          <AvatarFallback className="bg-watt-gradient text-white font-medium text-xs sm:text-sm">
+                            {getInitials(profile?.company_name || 'User')}
+                          </AvatarFallback>
+                        </Avatar>
                         <div className="hidden lg:block text-left min-w-0">
                           <div className="text-sm font-medium leading-none truncate max-w-20 xl:max-w-32">
                             {profile?.company_name?.split(' ')[0] || 'User'}
