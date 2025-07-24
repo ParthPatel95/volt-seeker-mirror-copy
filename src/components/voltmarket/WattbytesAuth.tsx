@@ -125,6 +125,15 @@ export const WattbytesAuth: React.FC = () => {
             type: 'success', 
             text: 'Account created successfully! Please check your email to verify your account.' 
           });
+          
+          // Clear form data
+          resetForm();
+          
+          // Switch to login mode after 2 seconds
+          setTimeout(() => {
+            setIsLogin(true);
+            setMessage({ type: '', text: '' });
+          }, 2000);
         }
       }
     } catch (error) {
