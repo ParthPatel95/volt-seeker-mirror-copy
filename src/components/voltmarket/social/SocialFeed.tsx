@@ -6,13 +6,12 @@ import { useState } from 'react';
 import { useVoltMarketSocial } from '@/hooks/useVoltMarketSocial';
 import { useVoltMarketAuth } from '@/contexts/VoltMarketAuthContext';
 import { formatDistanceToNow } from 'date-fns';
+import { SocialComments } from './SocialComments';
 
 export const SocialFeed = () => {
   const { profile } = useVoltMarketAuth();
-  const { posts, loading, createPost, toggleLike, addComment } = useVoltMarketSocial();
+  const { posts, loading, createPost, toggleLike, refreshPosts } = useVoltMarketSocial();
   const [newPostContent, setNewPostContent] = useState('');
-  const [commentingOnPost, setCommentingOnPost] = useState<string | null>(null);
-  const [commentContent, setCommentContent] = useState('');
 
   const handleCreatePost = async () => {
     if (!newPostContent.trim()) return;
@@ -24,12 +23,8 @@ export const SocialFeed = () => {
     setNewPostContent('');
   };
 
-  const handleAddComment = async (postId: string) => {
-    if (!commentContent.trim()) return;
-    
-    await addComment(postId, commentContent);
-    setCommentContent('');
-    setCommentingOnPost(null);
+  const handleCommentAdded = () => {
+    refreshPosts();
   };
 
   if (!profile) {
@@ -142,15 +137,10 @@ export const SocialFeed = () => {
                   <span>{post.likes_count || 0}</span>
                 </Button>
                 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setCommentingOnPost(post.id)}
-                  className="space-x-2"
-                >
+                <span className="flex items-center space-x-1 text-sm text-muted-foreground">
                   <MessageCircle className="w-4 h-4" />
                   <span>{post.comments_count || 0}</span>
-                </Button>
+                </span>
                 
                 <Button variant="ghost" size="sm" className="space-x-2">
                   <Share2 className="w-4 h-4" />
@@ -158,36 +148,11 @@ export const SocialFeed = () => {
                 </Button>
               </div>
 
-              {/* Comment Section */}
-              {commentingOnPost === post.id && (
-                <div className="space-y-3 pt-3 border-t">
-                  <Textarea
-                    placeholder="Write a comment..."
-                    value={commentContent}
-                    onChange={(e) => setCommentContent(e.target.value)}
-                    className="min-h-[80px] resize-none"
-                  />
-                  <div className="flex justify-end space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setCommentingOnPost(null);
-                        setCommentContent('');
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => handleAddComment(post.id)}
-                      disabled={!commentContent.trim()}
-                    >
-                      Comment
-                    </Button>
-                  </div>
-                </div>
-              )}
+              {/* Comments Section */}
+              <SocialComments 
+                postId={post.id} 
+                onCommentAdded={handleCommentAdded}
+              />
             </CardContent>
           </Card>
         ))

@@ -3,8 +3,11 @@ import { SocialFeed } from './SocialFeed';
 import { SocialExplore } from './SocialExplore';
 import { SocialNotifications } from './SocialNotifications';
 import { MessageSquare, Compass, Bell } from 'lucide-react';
+import { useVoltMarketListingAnnouncements } from '@/hooks/useVoltMarketListingAnnouncements';
 
 export const SocialPage = () => {
+  // Initialize automatic listing announcements
+  useVoltMarketListingAnnouncements();
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="mb-6">

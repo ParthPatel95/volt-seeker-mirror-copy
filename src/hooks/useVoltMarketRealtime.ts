@@ -26,6 +26,8 @@ export const useVoltMarketRealtime = () => {
   const [messages, setMessages] = useState<RealtimeMessage[]>([]);
   const [conversations, setConversations] = useState<RealtimeConversation[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+  const [newSocialPosts, setNewSocialPosts] = useState<any[]>([]);
+  const [socialNotifications, setSocialNotifications] = useState<any[]>([]);
 
   useEffect(() => {
     if (!profile) return;
@@ -84,6 +86,51 @@ export const useVoltMarketRealtime = () => {
       )
       .subscribe();
 
+    // Subscribe to social posts
+    const socialPostsChannel = supabase
+      .channel('voltmarket-social-posts')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'voltmarket_social_posts'
+        },
+        (payload) => {
+          const newPost = payload.new;
+          setNewSocialPosts(prev => [...prev, newPost]);
+        }
+      )
+      .subscribe();
+
+    // Subscribe to social interactions (for notifications)
+    const socialInteractionsChannel = supabase
+      .channel('voltmarket-social-interactions')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'voltmarket_social_interactions'
+        },
+        (payload) => {
+          const interaction = payload.new;
+          // Only notify if someone else interacted with current user's content
+          if (interaction.user_id !== profile.id) {
+            setSocialNotifications(prev => [...prev, {
+              id: interaction.id,
+              type: interaction.interaction_type,
+              user_id: interaction.user_id,
+              post_id: interaction.post_id,
+              content: interaction.content,
+              created_at: interaction.created_at,
+              read: false
+            }]);
+          }
+        }
+      )
+      .subscribe();
+
     // User presence tracking
     const presenceChannel = supabase
       .channel('voltmarket-presence')
@@ -115,6 +162,8 @@ export const useVoltMarketRealtime = () => {
     return () => {
       supabase.removeChannel(messageChannel);
       supabase.removeChannel(conversationChannel);
+      supabase.removeChannel(socialPostsChannel);
+      supabase.removeChannel(socialInteractionsChannel);
       supabase.removeChannel(presenceChannel);
     };
   }, [profile]);
@@ -123,6 +172,16 @@ export const useVoltMarketRealtime = () => {
     messages,
     conversations,
     onlineUsers,
-    isUserOnline: (userId: string) => onlineUsers.has(userId)
+    newSocialPosts,
+    socialNotifications,
+    isUserOnline: (userId: string) => onlineUsers.has(userId),
+    clearNewSocialPosts: () => setNewSocialPosts([]),
+    markSocialNotificationAsRead: (notificationId: string) => {
+      setSocialNotifications(prev => 
+        prev.map(notif => 
+          notif.id === notificationId ? { ...notif, read: true } : notif
+        )
+      );
+    }
   };
 };
