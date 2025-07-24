@@ -2997,9 +2997,21 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      increment: {
+        Args: { table_name: string; row_id: string; column_name: string }
+        Returns: undefined
+      }
+      increment_user_points: {
+        Args: { p_user_id: string; p_points: number }
+        Returns: undefined
+      }
       is_voltscout_approved: {
         Args: { user_id: string }
         Returns: boolean
+      }
+      update_user_progress: {
+        Args: { p_user_id: string; p_action_type: string; p_points: number }
+        Returns: undefined
       }
     }
     Enums: {
