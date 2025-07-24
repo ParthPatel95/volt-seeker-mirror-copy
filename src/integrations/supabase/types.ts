@@ -452,6 +452,45 @@ export type Database = {
         }
         Relationships: []
       }
+      energy_price_predictions: {
+        Row: {
+          confidence_score: number
+          created_at: string
+          created_by: string | null
+          factors_analyzed: Json
+          id: string
+          market_name: string
+          model_version: string
+          predicted_price_mwh: number
+          prediction_date: string
+          prediction_horizon_days: number
+        }
+        Insert: {
+          confidence_score: number
+          created_at?: string
+          created_by?: string | null
+          factors_analyzed?: Json
+          id?: string
+          market_name: string
+          model_version?: string
+          predicted_price_mwh: number
+          prediction_date: string
+          prediction_horizon_days: number
+        }
+        Update: {
+          confidence_score?: number
+          created_at?: string
+          created_by?: string | null
+          factors_analyzed?: Json
+          id?: string
+          market_name?: string
+          model_version?: string
+          predicted_price_mwh?: number
+          prediction_date?: string
+          prediction_horizon_days?: number
+        }
+        Relationships: []
+      }
       energy_rates: {
         Row: {
           created_at: string
@@ -635,6 +674,54 @@ export type Database = {
         }
         Relationships: []
       }
+      investment_recommendations: {
+        Row: {
+          action: string
+          created_at: string
+          created_by: string
+          expected_roi: number | null
+          id: string
+          market_factors: Json
+          priority_score: number
+          property_id: string | null
+          reasoning: Json
+          recommendation_type: string
+          risk_level: string
+          timing_analysis: Json
+          valid_until: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          created_by: string
+          expected_roi?: number | null
+          id?: string
+          market_factors?: Json
+          priority_score: number
+          property_id?: string | null
+          reasoning: Json
+          recommendation_type: string
+          risk_level: string
+          timing_analysis?: Json
+          valid_until: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          created_by?: string
+          expected_roi?: number | null
+          id?: string
+          market_factors?: Json
+          priority_score?: number
+          property_id?: string | null
+          reasoning?: Json
+          recommendation_type?: string
+          risk_level?: string
+          timing_analysis?: Json
+          valid_until?: string
+        }
+        Relationships: []
+      }
       linkedin_intelligence: {
         Row: {
           company: string
@@ -662,6 +749,48 @@ export type Database = {
           keywords?: string[] | null
           post_date?: string
           signals?: string[] | null
+        }
+        Relationships: []
+      }
+      market_intelligence: {
+        Row: {
+          analysis_data: Json
+          analysis_type: string
+          confidence_level: number
+          created_at: string
+          created_by: string | null
+          id: string
+          insights: Json
+          market_region: string
+          opportunities: Json
+          risk_factors: Json
+          valid_until: string
+        }
+        Insert: {
+          analysis_data: Json
+          analysis_type: string
+          confidence_level: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          insights?: Json
+          market_region: string
+          opportunities?: Json
+          risk_factors?: Json
+          valid_until: string
+        }
+        Update: {
+          analysis_data?: Json
+          analysis_type?: string
+          confidence_level?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          insights?: Json
+          market_region?: string
+          opportunities?: Json
+          risk_factors?: Json
+          valid_until?: string
         }
         Relationships: []
       }
@@ -2113,6 +2242,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_old_predictions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       is_voltscout_approved: {
         Args: { user_id: string }
         Returns: boolean
