@@ -135,6 +135,10 @@ export const SocialExplore = () => {
                 <Button 
                   size="sm" 
                   variant="outline"
+                  onClick={() => {
+                    // TODO: Implement follow functionality
+                    console.log('Following:', company.name);
+                  }}
                   className="border-watt-primary/20 text-watt-primary hover:bg-watt-primary hover:text-white transition-all"
                 >
                   Follow

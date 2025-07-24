@@ -219,6 +219,11 @@ export const SocialFeed = () => {
                 {post.post_type === 'listing_announcement' && (
                   <Button
                     size="sm"
+                    onClick={() => {
+                      if (post.related_listing_id) {
+                        window.open(`/listings/${post.related_listing_id}`, '_blank');
+                      }
+                    }}
                     className="bg-watt-gradient hover:opacity-90 text-white shadow-md hover:shadow-watt-glow/30 transition-all"
                   >
                     View Listing
