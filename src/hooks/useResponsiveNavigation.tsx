@@ -27,7 +27,7 @@ export function useResponsiveNavigation(items: NavigationItem[]) {
       setVisibleItems(items);
       setHiddenItems([]);
     }
-  }, [isMobile, items]);
+  }, [isMobile, JSON.stringify(items)]);
 
   return {
     visibleItems,

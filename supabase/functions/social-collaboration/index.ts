@@ -83,7 +83,7 @@ async function getFeed(supabase: any, data: any) {
     .from('social_posts')
     .select(`
       *,
-      profiles!social_posts_user_id_fkey(full_name, avatar_url)
+      gridbazaar_profiles!social_posts_user_id_fkey(company_name, profile_image_url)
     `)
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1);
@@ -168,7 +168,7 @@ async function getMessages(supabase: any, data: any) {
     .from('real_time_messages')
     .select(`
       *,
-      sender:profiles!real_time_messages_sender_id_fkey(full_name, avatar_url)
+      sender:gridbazaar_profiles!real_time_messages_sender_id_fkey(company_name, profile_image_url)
     `)
     .order('created_at', { ascending: false })
     .limit(limit);
