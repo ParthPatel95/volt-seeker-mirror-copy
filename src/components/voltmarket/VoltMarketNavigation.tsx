@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { useVoltMarketAuth } from '@/contexts/VoltMarketAuthContext';
 import { useVoltMarketRealtime } from '@/hooks/useVoltMarketRealtime';
+import { useResponsiveNavigation, NavigationItem } from '@/hooks/useResponsiveNavigation';
 
 export const VoltMarketNavigation: React.FC = () => {
   const { user, profile, signOut } = useVoltMarketAuth();
@@ -73,18 +74,20 @@ export const VoltMarketNavigation: React.FC = () => {
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
-  // Simplified navigation items for elegance
-  const primaryNavItems = [
-    { name: 'Browse', path: '/listings', icon: Search },
-    { name: 'Network', path: '/social-hub', icon: Users },
+  // All navigation items for responsive navigation
+  const allNavItems: NavigationItem[] = user ? [
+    { id: 'browse', label: 'Browse', icon: Search, priority: 1, path: '/listings' },
+    { id: 'network', label: 'Network', icon: Users, priority: 2, path: '/social-hub' },
+    { id: 'messages', label: 'Messages', icon: MessageSquare, priority: 3, path: '/contact-messages', badge: unreadCount },
+    { id: 'documents', label: 'Documents', icon: FileText, priority: 4, path: '/documents' },
+    { id: 'analytics', label: 'Analytics', icon: TrendingUp, priority: 5, path: '/financial-intelligence' },
+    { id: 'achievements', label: 'Achievements', icon: Trophy, priority: 6, path: '/achievements' },
+  ] : [
+    { id: 'browse', label: 'Browse', icon: Search, priority: 1, path: '/listings' },
+    { id: 'network', label: 'Network', icon: Users, priority: 2, path: '/social-hub' },
   ];
 
-  const userNavItems = user ? [
-    { name: 'Messages', path: '/contact-messages', icon: MessageSquare, badge: 0 },
-    { name: 'Documents', path: '/documents', icon: FileText },
-    { name: 'Analytics', path: '/financial-intelligence', icon: TrendingUp },
-    { name: 'Achievements', path: '/achievements', icon: Trophy },
-  ] : [];
+  const { visibleItems, hiddenItems, hasHiddenItems } = useResponsiveNavigation(allNavItems);
 
   return (
     <>
@@ -108,55 +111,69 @@ export const VoltMarketNavigation: React.FC = () => {
               </Link>
             </div>
 
-            {/* Right-aligned Navigation - Only show when user is logged in */}
-            {user && (
-              <div className="hidden lg:flex items-center justify-end flex-1 mr-2 min-w-0">
-                <nav className="flex items-center gap-1 overflow-hidden">
-                  {primaryNavItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = isActiveRoute(item.path);
-                    return (
-                      <Link
-                        key={item.name}
-                        to={item.path}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                          isActive 
-                            ? 'text-watt-primary bg-watt-primary/5' 
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                        }`}
-                      >
-                        <Icon className="w-4 h-4" />
-                        <span>{item.name}</span>
-                      </Link>
-                    );
-                  })}
+            {/* Responsive Navigation - Show on medium screens and up */}
+            <div className="hidden md:flex items-center justify-end flex-1 mr-2 min-w-0">
+              <nav className="flex items-center gap-1 overflow-hidden">
+                {/* Visible navigation items */}
+                {visibleItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = isActiveRoute((item as any).path);
+                  return (
+                    <Link
+                      key={item.id}
+                      to={(item as any).path}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        isActive 
+                          ? 'text-watt-primary bg-watt-primary/5' 
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span className="hidden lg:inline">{item.label}</span>
+                      {(item as any).badge > 0 && (
+                        <span className="bg-watt-warning text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
+                          {(item as any).badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
 
-                  {userNavItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = isActiveRoute(item.path);
-                    return (
-                      <Link
-                        key={item.name}
-                        to={item.path}
-                        className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                          isActive 
-                            ? 'text-watt-primary bg-watt-primary/5' 
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                        }`}
-                      >
-                        <Icon className="w-4 h-4" />
-                        <span>{item.name}</span>
-                        {item.badge > 0 && (
-                          <span className="absolute -top-1 -right-1 bg-watt-warning text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
-                            {item.badge}
-                          </span>
-                        )}
-                      </Link>
-                    );
-                  })}
-                </nav>
-              </div>
-            )}
+                {/* More dropdown for hidden items */}
+                {hasHiddenItems && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50">
+                        <Menu className="w-4 h-4" />
+                        <span className="hidden lg:inline ml-2">More</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      {hiddenItems.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = isActiveRoute((item as any).path);
+                        return (
+                          <DropdownMenuItem key={item.id} asChild>
+                            <Link 
+                              to={(item as any).path} 
+                              className={`cursor-pointer ${isActive ? 'text-watt-primary bg-watt-primary/5' : ''}`}
+                            >
+                              <Icon className="w-4 h-4 mr-2" />
+                              {item.label}
+                              {(item as any).badge > 0 && (
+                                <Badge className="ml-auto bg-watt-warning text-white text-xs">
+                                  {(item as any).badge}
+                                </Badge>
+                              )}
+                            </Link>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </nav>
+            </div>
 
             {/* Right Actions - Dynamic width */}
             <div className="flex items-center justify-end gap-2 sm:gap-3 flex-shrink-0 min-w-0">
@@ -279,7 +296,7 @@ export const VoltMarketNavigation: React.FC = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="lg:hidden p-2"
+                className="md:hidden p-2"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Toggle mobile menu"
               >
@@ -290,66 +307,42 @@ export const VoltMarketNavigation: React.FC = () => {
 
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
-            <div className="lg:hidden py-4 border-t border-border/50 bg-background/95 backdrop-blur-sm max-h-96 overflow-y-auto">
+            <div className="md:hidden py-4 border-t border-border/50 bg-background/95 backdrop-blur-sm max-h-96 overflow-y-auto">
               <div className="space-y-2 px-2">
-                {/* Primary Navigation */}
-                {primaryNavItems.map((item) => {
+                {/* All Navigation Items in Mobile */}
+                {allNavItems.map((item) => {
                   const Icon = item.icon;
-                  const isActive = isActiveRoute(item.path);
+                  const isActive = isActiveRoute((item as any).path);
                   return (
                     <Link
-                      key={item.name}
-                      to={item.path}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+                      key={item.id}
+                      to={(item as any).path}
+                      className={`relative flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
                         isActive 
                           ? 'text-watt-primary bg-watt-primary/5' 
                           : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                       }`}
                     >
                       <Icon className="w-5 h-5" />
-                      {item.name}
+                      {item.label}
+                      {(item as any).badge > 0 && (
+                        <Badge className="ml-auto bg-watt-warning text-white text-xs">
+                          {(item as any).badge}
+                        </Badge>
+                      )}
                     </Link>
                   );
                 })}
 
-                {/* User Navigation */}
-                {user && (
-                  <>
-                    <div className="border-t border-border/50 my-2 pt-2">
-                      {userNavItems.map((item) => {
-                        const Icon = item.icon;
-                        const isActive = isActiveRoute(item.path);
-                        return (
-                          <Link
-                            key={item.name}
-                            to={item.path}
-                            className={`relative flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
-                              isActive 
-                                ? 'text-watt-primary bg-watt-primary/10' 
-                                : 'text-muted-foreground hover:text-watt-primary hover:bg-muted/50'
-                            }`}
-                          >
-                            <Icon className="w-5 h-5" />
-                            {item.name}
-                            {item.badge > 0 && (
-                              <Badge className="ml-auto bg-watt-warning text-white text-xs">
-                                {item.badge}
-                              </Badge>
-                            )}
-                          </Link>
-                        );
-                      })}
-                    </div>
-
-                    {profile?.role === 'seller' && (
-                      <Link to="/create-listing">
-                        <Button className="w-full bg-watt-gradient hover:opacity-90 text-white mb-2">
-                          <Plus className="w-4 h-4 mr-2" />
-                          Create Listing
-                        </Button>
-                      </Link>
-                    )}
-                  </>
+                {user && profile?.role === 'seller' && (
+                  <div className="border-t border-border/50 mt-2 pt-2">
+                    <Link to="/create-listing">
+                      <Button className="w-full bg-watt-gradient hover:opacity-90 text-white">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Create Listing
+                      </Button>
+                    </Link>
+                  </div>
                 )}
               </div>
             </div>

@@ -7,6 +7,8 @@ export interface NavigationItem {
   label: string;
   icon: React.ComponentType<any>;
   priority: number; // 1 = highest priority (always visible on mobile)
+  path?: string;
+  badge?: number;
 }
 
 export function useResponsiveNavigation(items: NavigationItem[]) {
