@@ -143,6 +143,62 @@ export type Database = {
         }
         Relationships: []
       }
+      automated_valuations: {
+        Row: {
+          comparable_properties: Json
+          confidence_score: number
+          created_at: string
+          created_by: string | null
+          estimated_value: number
+          id: string
+          market_adjustments: Json
+          methodology_details: Json
+          property_id: string | null
+          valid_until: string
+          valuation_factors: Json
+          valuation_method: string
+          valuation_range: Json
+        }
+        Insert: {
+          comparable_properties?: Json
+          confidence_score: number
+          created_at?: string
+          created_by?: string | null
+          estimated_value: number
+          id?: string
+          market_adjustments?: Json
+          methodology_details?: Json
+          property_id?: string | null
+          valid_until?: string
+          valuation_factors?: Json
+          valuation_method: string
+          valuation_range?: Json
+        }
+        Update: {
+          comparable_properties?: Json
+          confidence_score?: number
+          created_at?: string
+          created_by?: string | null
+          estimated_value?: number
+          id?: string
+          market_adjustments?: Json
+          methodology_details?: Json
+          property_id?: string | null
+          valid_until?: string
+          valuation_factors?: Json
+          valuation_method?: string
+          valuation_range?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automated_valuations_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "verified_heavy_power_sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       btc_roi_calculations: {
         Row: {
           calculation_type: string
@@ -944,6 +1000,48 @@ export type Database = {
         }
         Relationships: []
       }
+      market_sentiment: {
+        Row: {
+          analysis_date: string
+          confidence_level: number
+          created_at: string
+          expert_opinions: Json
+          id: string
+          market_impact_forecast: Json
+          market_segment: string
+          news_analysis: Json
+          sentiment_indicators: Json
+          sentiment_score: number
+          social_media_analysis: Json
+        }
+        Insert: {
+          analysis_date?: string
+          confidence_level: number
+          created_at?: string
+          expert_opinions?: Json
+          id?: string
+          market_impact_forecast?: Json
+          market_segment: string
+          news_analysis?: Json
+          sentiment_indicators?: Json
+          sentiment_score: number
+          social_media_analysis?: Json
+        }
+        Update: {
+          analysis_date?: string
+          confidence_level?: number
+          created_at?: string
+          expert_opinions?: Json
+          id?: string
+          market_impact_forecast?: Json
+          market_segment?: string
+          news_analysis?: Json
+          sentiment_indicators?: Json
+          sentiment_score?: number
+          social_media_analysis?: Json
+        }
+        Relationships: []
+      }
       news_intelligence: {
         Row: {
           content: string
@@ -974,6 +1072,48 @@ export type Database = {
           source?: string
           title?: string
           url?: string | null
+        }
+        Relationships: []
+      }
+      portfolio_optimizations: {
+        Row: {
+          created_at: string
+          current_portfolio: Json
+          expected_performance: Json
+          id: string
+          optimization_metrics: Json
+          optimization_type: string
+          optimized_portfolio: Json
+          rebalancing_suggestions: Json
+          risk_analysis: Json
+          user_id: string
+          valid_until: string
+        }
+        Insert: {
+          created_at?: string
+          current_portfolio?: Json
+          expected_performance?: Json
+          id?: string
+          optimization_metrics?: Json
+          optimization_type: string
+          optimized_portfolio?: Json
+          rebalancing_suggestions?: Json
+          risk_analysis?: Json
+          user_id: string
+          valid_until?: string
+        }
+        Update: {
+          created_at?: string
+          current_portfolio?: Json
+          expected_performance?: Json
+          id?: string
+          optimization_metrics?: Json
+          optimization_type?: string
+          optimized_portfolio?: Json
+          rebalancing_suggestions?: Json
+          risk_analysis?: Json
+          user_id?: string
+          valid_until?: string
         }
         Relationships: []
       }
@@ -1100,6 +1240,57 @@ export type Database = {
         }
         Relationships: []
       }
+      risk_assessments: {
+        Row: {
+          assessment_date: string
+          confidence_level: number
+          created_at: string
+          created_by: string | null
+          entity_id: string | null
+          entity_type: string
+          financial_metrics: Json
+          id: string
+          market_conditions: Json
+          overall_risk_score: number
+          recommendations: Json
+          risk_factors: Json
+          stress_test_results: Json
+          valid_until: string
+        }
+        Insert: {
+          assessment_date?: string
+          confidence_level: number
+          created_at?: string
+          created_by?: string | null
+          entity_id?: string | null
+          entity_type: string
+          financial_metrics?: Json
+          id?: string
+          market_conditions?: Json
+          overall_risk_score: number
+          recommendations?: Json
+          risk_factors?: Json
+          stress_test_results?: Json
+          valid_until?: string
+        }
+        Update: {
+          assessment_date?: string
+          confidence_level?: number
+          created_at?: string
+          created_by?: string | null
+          entity_id?: string | null
+          entity_type?: string
+          financial_metrics?: Json
+          id?: string
+          market_conditions?: Json
+          overall_risk_score?: number
+          recommendations?: Json
+          risk_factors?: Json
+          stress_test_results?: Json
+          valid_until?: string
+        }
+        Relationships: []
+      }
       scraped_properties: {
         Row: {
           address: string | null
@@ -1223,6 +1414,51 @@ export type Database = {
           sites_discovered?: number | null
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      stress_tests: {
+        Row: {
+          baseline_metrics: Json
+          created_at: string
+          created_by: string | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          mitigation_strategies: Json
+          resilience_score: number
+          stress_results: Json
+          stress_scenarios: Json
+          test_name: string
+          vulnerability_analysis: Json
+        }
+        Insert: {
+          baseline_metrics?: Json
+          created_at?: string
+          created_by?: string | null
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          mitigation_strategies?: Json
+          resilience_score: number
+          stress_results?: Json
+          stress_scenarios?: Json
+          test_name: string
+          vulnerability_analysis?: Json
+        }
+        Update: {
+          baseline_metrics?: Json
+          created_at?: string
+          created_by?: string | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          mitigation_strategies?: Json
+          resilience_score?: number
+          stress_results?: Json
+          stress_scenarios?: Json
+          test_name?: string
+          vulnerability_analysis?: Json
         }
         Relationships: []
       }
