@@ -27,6 +27,7 @@ import { VoltMarketContactMessages } from '@/components/voltmarket/VoltMarketCon
 import { VoltMarketDocumentRequests } from '@/components/voltmarket/VoltMarketDocumentRequests';
 import { SocialPage } from '@/components/voltmarket/social/SocialPage';
 import { CompanyProfile } from '@/components/voltmarket/social/CompanyProfile';
+import { AIIntelligenceHub } from '@/components/ai-intelligence/AIIntelligenceHub';
 import { SocialFeaturesTest } from '@/components/voltmarket/social/SocialFeaturesTest';
 import { VoltMarketInvestmentCalculator } from '@/components/voltmarket/VoltMarketInvestmentCalculator';
 import { VoltMarketMarketReports } from '@/components/voltmarket/VoltMarketMarketReports';
@@ -187,6 +188,11 @@ export const VoltMarket = () => {
       <Route path="/terms-of-service" element={
         <VoltMarketLayout>
           <VoltMarketTermsOfService />
+        </VoltMarketLayout>
+      } />
+      <Route path="/ai-intelligence" element={
+        <VoltMarketLayout>
+          {user ? <AIIntelligenceHub /> : <WattbytesAuth />}
         </VoltMarketLayout>
       } />
     </Routes>
