@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useIsMobile } from './use-mobile';
 
 export interface NavigationItem {
@@ -15,19 +15,22 @@ export function useResponsiveNavigation(items: NavigationItem[]) {
   const isMobile = useIsMobile();
   const [visibleItems, setVisibleItems] = useState<NavigationItem[]>([]);
   const [hiddenItems, setHiddenItems] = useState<NavigationItem[]>([]);
+  
+  // Memoize items to prevent unnecessary re-renders
+  const memoizedItems = useMemo(() => items, [JSON.stringify(items)]);
 
   useEffect(() => {
     if (isMobile) {
       // On mobile, show only top 3 priority items, rest go to dropdown
-      const sorted = [...items].sort((a, b) => a.priority - b.priority);
+      const sorted = [...memoizedItems].sort((a, b) => a.priority - b.priority);
       setVisibleItems(sorted.slice(0, 3));
       setHiddenItems(sorted.slice(3));
     } else {
       // On desktop, show all items
-      setVisibleItems(items);
+      setVisibleItems(memoizedItems);
       setHiddenItems([]);
     }
-  }, [isMobile, JSON.stringify(items)]);
+  }, [isMobile, memoizedItems]);
 
   return {
     visibleItems,

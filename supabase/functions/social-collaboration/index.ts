@@ -79,25 +79,16 @@ async function createPost(supabase: any, data: any) {
 async function getFeed(supabase: any, data: any) {
   const { user_id, post_type, limit = 20, offset = 0 } = data;
 
-  let query = supabase
-    .from('social_posts')
-    .select(`
-      *,
-      gridbazaar_profiles!social_posts_user_id_fkey(company_name, profile_image_url)
-    `)
-    .order('created_at', { ascending: false })
-    .range(offset, offset + limit - 1);
-
-  if (post_type) {
-    query = query.eq('post_type', post_type);
-  }
-
-  const { data: posts, error } = await query;
-
-  if (error) throw error;
-
+  // Since social_posts table doesn't exist yet, return empty feed for now
+  // This prevents the edge function from crashing
+  console.log('Social posts functionality not yet implemented - returning empty feed');
+  
   return new Response(
-    JSON.stringify({ success: true, posts }),
+    JSON.stringify({ 
+      success: true, 
+      posts: [],
+      message: 'Social posts functionality coming soon'
+    }),
     { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
   );
 }
