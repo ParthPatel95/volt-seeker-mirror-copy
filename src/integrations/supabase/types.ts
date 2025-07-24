@@ -1467,6 +1467,27 @@ export type Database = {
         }
         Relationships: []
       }
+      voltmarket_follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
       voltmarket_listing_images: {
         Row: {
           created_at: string
@@ -1913,6 +1934,72 @@ export type Database = {
           search_criteria?: Json
           search_name?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      voltmarket_social_interactions: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          interaction_type: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          interaction_type: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      voltmarket_social_posts: {
+        Row: {
+          content: string
+          created_at: string
+          hashtags: string[] | null
+          id: string
+          media_urls: string[] | null
+          post_type: string
+          related_listing_id: string | null
+          updated_at: string
+          user_id: string
+          visibility: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          hashtags?: string[] | null
+          id?: string
+          media_urls?: string[] | null
+          post_type?: string
+          related_listing_id?: string | null
+          updated_at?: string
+          user_id: string
+          visibility?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          hashtags?: string[] | null
+          id?: string
+          media_urls?: string[] | null
+          post_type?: string
+          related_listing_id?: string | null
+          updated_at?: string
+          user_id?: string
+          visibility?: string
         }
         Relationships: []
       }

@@ -73,6 +73,7 @@ export const VoltMarketNavigation: React.FC = () => {
   // Simplified navigation items for elegance
   const primaryNavItems = [
     { name: 'Browse', path: '/listings', icon: Search },
+    { name: 'Network', path: '/social', icon: MessageSquare },
   ];
 
   const userNavItems = user ? [
@@ -380,15 +381,15 @@ export const VoltMarketNavigation: React.FC = () => {
             </Link>
 
             <Link
-              to="/contact-messages"
+              to="/social"
               className={`relative flex flex-col items-center gap-1 p-2 rounded-lg touch-target transition-all duration-200 ${
-                isActiveRoute('/contact-messages') 
+                isActiveRoute('/social') 
                   ? 'text-watt-primary bg-watt-primary/10' 
                   : 'text-muted-foreground hover:text-watt-primary'
               }`}
             >
               <MessageSquare className="w-4 h-4" />
-              <span className="text-xs font-medium leading-none">Messages</span>
+              <span className="text-xs font-medium leading-none">Network</span>
             </Link>
 
             <Link
