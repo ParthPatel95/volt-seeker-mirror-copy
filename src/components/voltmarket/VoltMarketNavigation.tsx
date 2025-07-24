@@ -117,11 +117,11 @@ export const VoltMarketNavigation: React.FC = () => {
                 {/* Visible navigation items */}
                 {visibleItems.map((item) => {
                   const Icon = item.icon;
-                  const isActive = isActiveRoute((item as any).path);
+                  const isActive = isActiveRoute(item.path || '');
                   return (
                     <Link
                       key={item.id}
-                      to={(item as any).path}
+                      to={item.path || '/'}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                         isActive 
                           ? 'text-watt-primary bg-watt-primary/5' 
@@ -130,9 +130,9 @@ export const VoltMarketNavigation: React.FC = () => {
                     >
                       <Icon className="w-4 h-4" />
                       <span className="hidden lg:inline">{item.label}</span>
-                      {(item as any).badge > 0 && (
+                      {item.badge && item.badge > 0 && (
                         <span className="bg-watt-warning text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
-                          {(item as any).badge}
+                          {item.badge}
                         </span>
                       )}
                     </Link>
@@ -151,18 +151,18 @@ export const VoltMarketNavigation: React.FC = () => {
                     <DropdownMenuContent align="end" className="w-48">
                       {hiddenItems.map((item) => {
                         const Icon = item.icon;
-                        const isActive = isActiveRoute((item as any).path);
+                        const isActive = isActiveRoute(item.path || '');
                         return (
                           <DropdownMenuItem key={item.id} asChild>
                             <Link 
-                              to={(item as any).path} 
+                              to={item.path || '/'} 
                               className={`cursor-pointer ${isActive ? 'text-watt-primary bg-watt-primary/5' : ''}`}
                             >
                               <Icon className="w-4 h-4 mr-2" />
                               {item.label}
-                              {(item as any).badge > 0 && (
+                              {item.badge && item.badge > 0 && (
                                 <Badge className="ml-auto bg-watt-warning text-white text-xs">
-                                  {(item as any).badge}
+                                  {item.badge}
                                 </Badge>
                               )}
                             </Link>
@@ -312,11 +312,11 @@ export const VoltMarketNavigation: React.FC = () => {
                 {/* All Navigation Items in Mobile */}
                 {allNavItems.map((item) => {
                   const Icon = item.icon;
-                  const isActive = isActiveRoute((item as any).path);
+                  const isActive = isActiveRoute(item.path || '');
                   return (
                     <Link
                       key={item.id}
-                      to={(item as any).path}
+                      to={item.path || '/'}
                       className={`relative flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
                         isActive 
                           ? 'text-watt-primary bg-watt-primary/5' 
@@ -325,9 +325,9 @@ export const VoltMarketNavigation: React.FC = () => {
                     >
                       <Icon className="w-5 h-5" />
                       {item.label}
-                      {(item as any).badge > 0 && (
+                      {item.badge && item.badge > 0 && (
                         <Badge className="ml-auto bg-watt-warning text-white text-xs">
-                          {(item as any).badge}
+                          {item.badge}
                         </Badge>
                       )}
                     </Link>
