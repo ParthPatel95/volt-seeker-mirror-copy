@@ -350,6 +350,53 @@ export type Database = {
         }
         Relationships: []
       }
+      construction_monitoring: {
+        Row: {
+          construction_features: Json
+          created_at: string
+          created_by: string | null
+          detected_changes: Json
+          id: string
+          monitoring_date: string
+          progress_percentage: number
+          property_id: string | null
+          satellite_comparison: Json
+          timeline_analysis: Json
+        }
+        Insert: {
+          construction_features?: Json
+          created_at?: string
+          created_by?: string | null
+          detected_changes?: Json
+          id?: string
+          monitoring_date: string
+          progress_percentage: number
+          property_id?: string | null
+          satellite_comparison?: Json
+          timeline_analysis?: Json
+        }
+        Update: {
+          construction_features?: Json
+          created_at?: string
+          created_by?: string | null
+          detected_changes?: Json
+          id?: string
+          monitoring_date?: string
+          progress_percentage?: number
+          property_id?: string | null
+          satellite_comparison?: Json
+          timeline_analysis?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "construction_monitoring_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "verified_heavy_power_sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       corporate_insights: {
         Row: {
           company_name: string
@@ -379,6 +426,59 @@ export type Database = {
           source?: string
         }
         Relationships: []
+      }
+      cv_property_analysis: {
+        Row: {
+          analysis_results: Json
+          analysis_type: string
+          analysis_version: string
+          confidence_level: number
+          created_at: string
+          created_by: string | null
+          cv_scores: Json
+          detected_features: Json
+          id: string
+          property_id: string | null
+          recommendations: Json
+          satellite_image_url: string | null
+        }
+        Insert: {
+          analysis_results?: Json
+          analysis_type: string
+          analysis_version?: string
+          confidence_level: number
+          created_at?: string
+          created_by?: string | null
+          cv_scores?: Json
+          detected_features?: Json
+          id?: string
+          property_id?: string | null
+          recommendations?: Json
+          satellite_image_url?: string | null
+        }
+        Update: {
+          analysis_results?: Json
+          analysis_type?: string
+          analysis_version?: string
+          confidence_level?: number
+          created_at?: string
+          created_by?: string | null
+          cv_scores?: Json
+          detected_features?: Json
+          id?: string
+          property_id?: string | null
+          recommendations?: Json
+          satellite_image_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cv_property_analysis_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "verified_heavy_power_sites"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       distress_alerts: {
         Row: {
@@ -523,6 +623,56 @@ export type Database = {
           timestamp?: string
         }
         Relationships: []
+      }
+      environmental_analysis: {
+        Row: {
+          analysis_date: string
+          created_at: string
+          created_by: string | null
+          environmental_score: number
+          id: string
+          impact_factors: Json
+          land_use_changes: Json
+          property_id: string | null
+          sustainability_metrics: Json
+          vegetation_analysis: Json
+          water_proximity: Json
+        }
+        Insert: {
+          analysis_date: string
+          created_at?: string
+          created_by?: string | null
+          environmental_score: number
+          id?: string
+          impact_factors?: Json
+          land_use_changes?: Json
+          property_id?: string | null
+          sustainability_metrics?: Json
+          vegetation_analysis?: Json
+          water_proximity?: Json
+        }
+        Update: {
+          analysis_date?: string
+          created_at?: string
+          created_by?: string | null
+          environmental_score?: number
+          id?: string
+          impact_factors?: Json
+          land_use_changes?: Json
+          property_id?: string | null
+          sustainability_metrics?: Json
+          vegetation_analysis?: Json
+          water_proximity?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "environmental_analysis_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "verified_heavy_power_sites"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gridbazaar_profiles: {
         Row: {
