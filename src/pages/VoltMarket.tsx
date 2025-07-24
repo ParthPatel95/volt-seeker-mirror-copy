@@ -14,6 +14,7 @@ import { VoltMarketEnhancedMessages } from '@/components/voltmarket/VoltMarketEn
 import { VoltMarketWatchlist } from '@/components/voltmarket/VoltMarketWatchlist';
 import { VoltMarketVerificationCenter } from '@/components/voltmarket/VoltMarketVerificationCenter';
 
+import { VoltMarketUnifiedListings } from '@/components/voltmarket/VoltMarketUnifiedListings';
 import { VoltMarketAdvancedSearch } from '@/components/voltmarket/VoltMarketAdvancedSearch';
 import { VoltMarketNotificationCenter } from '@/components/voltmarket/VoltMarketNotificationCenter';
 import { useVoltMarketAuth } from '@/contexts/VoltMarketAuthContext';
@@ -62,7 +63,7 @@ export const VoltMarket = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/listings" element={
         <VoltMarketLayout>
-          <VoltMarketListings />
+          <VoltMarketUnifiedListings />
         </VoltMarketLayout>
       } />
       <Route path="/listings/:id" element={
@@ -72,7 +73,7 @@ export const VoltMarket = () => {
       } />
       <Route path="/search" element={
         <VoltMarketLayout>
-          <VoltMarketAdvancedSearch />
+          <VoltMarketUnifiedListings />
         </VoltMarketLayout>
       } />
       <Route path="/dashboard" element={

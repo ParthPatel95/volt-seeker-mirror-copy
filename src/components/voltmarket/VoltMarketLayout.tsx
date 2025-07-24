@@ -61,10 +61,7 @@ const VoltMarketLayoutContent: React.FC<VoltMarketLayoutProps> = ({ children }) 
                 </h3>
                 <nav className="space-y-3">
                   <Link to="/listings" className="block text-sm text-muted-foreground hover:text-watt-primary transition-all duration-200 hover:translate-x-1 transform">
-                    Browse Listings
-                  </Link>
-                  <Link to="/search" className="block text-sm text-muted-foreground hover:text-watt-primary transition-all duration-200 hover:translate-x-1 transform">
-                    Advanced Search
+                    Browse & Search Listings
                   </Link>
                   <Link to="/portfolio" className="block text-sm text-muted-foreground hover:text-watt-primary transition-all duration-200 hover:translate-x-1 transform">
                     Portfolio Manager
