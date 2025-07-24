@@ -301,11 +301,11 @@ async function getLeaderboard(supabase: any, data: any) {
     .from('leaderboards')
     .select(`
       *,
-      profiles!leaderboards_user_id_fkey(full_name, avatar_url)
+      gridbazaar_profiles!inner(company_name, profile_image_url)
     `)
     .eq('category', category)
     .eq('period_type', period_type)
-    .order('rank_position', { ascending: true })
+    .order('score', { ascending: false })
     .limit(limit);
 
   if (error) throw error;
