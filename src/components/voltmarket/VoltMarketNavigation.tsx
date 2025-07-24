@@ -27,7 +27,10 @@ import {
   ChevronDown,
   Briefcase,
   FileText,
-  Scale
+  Scale,
+  Trophy,
+  TrendingUp,
+  Users
 } from 'lucide-react';
 import { useVoltMarketAuth } from '@/contexts/VoltMarketAuthContext';
 import { useVoltMarketRealtime } from '@/hooks/useVoltMarketRealtime';
@@ -73,12 +76,14 @@ export const VoltMarketNavigation: React.FC = () => {
   // Simplified navigation items for elegance
   const primaryNavItems = [
     { name: 'Browse', path: '/listings', icon: Search },
-    { name: 'Network', path: '/social', icon: MessageSquare },
+    { name: 'Network', path: '/social-hub', icon: Users },
   ];
 
   const userNavItems = user ? [
     { name: 'Messages', path: '/contact-messages', icon: MessageSquare, badge: 0 },
     { name: 'Documents', path: '/documents', icon: FileText },
+    { name: 'Analytics', path: '/financial-intelligence', icon: TrendingUp },
+    { name: 'Achievements', path: '/achievements', icon: Trophy },
   ] : [];
 
   return (
@@ -381,14 +386,14 @@ export const VoltMarketNavigation: React.FC = () => {
             </Link>
 
             <Link
-              to="/social"
+              to="/social-hub"
               className={`relative flex flex-col items-center gap-1 p-2 rounded-lg touch-target transition-all duration-200 ${
-                isActiveRoute('/social') 
+                isActiveRoute('/social-hub') 
                   ? 'text-watt-primary bg-watt-primary/10' 
                   : 'text-muted-foreground hover:text-watt-primary'
               }`}
             >
-              <MessageSquare className="w-4 h-4" />
+              <Users className="w-4 h-4" />
               <span className="text-xs font-medium leading-none">Network</span>
             </Link>
 
