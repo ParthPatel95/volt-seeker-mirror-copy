@@ -92,7 +92,7 @@ export const VoltMarketNavigation: React.FC = () => {
   return (
     <>
       {/* Main Navigation Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm">
+      <header className="sticky top-0 z-50 bg-background border-b border-border shadow-lg">
         <div className="max-w-7xl mx-auto px-4 lg:px-6">
           <div className="flex items-center justify-between h-18 min-w-0">
             {/* Logo & Brand - Enhanced */}
@@ -114,7 +114,7 @@ export const VoltMarketNavigation: React.FC = () => {
 
             {/* Responsive Navigation - Enhanced Design */}
             <div className="hidden md:flex items-center justify-center flex-1 min-w-0">
-              <nav className="flex items-center gap-1 bg-muted/30 rounded-full p-1 backdrop-blur-sm border border-border/30">
+              <nav className="flex items-center gap-1 bg-muted/50 rounded-full p-1 border border-border/50">
                 {/* Visible navigation items */}
                 {visibleItems.map((item) => {
                   const Icon = item.icon;
