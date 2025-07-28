@@ -133,52 +133,8 @@ export const VoltMarketHomepage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-background">
-      {/* Elegant Navigation with Original Branding */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100/20 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* GridBazaar Logo Section */}
-            <Link to="/" className="flex items-center space-x-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-watt-primary to-watt-secondary shadow-lg">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <span className="text-xl font-bold text-gray-900">GridBazaar</span>
-                <p className="text-xs text-gray-500 leading-tight">Energy Infrastructure Marketplace</p>
-              </div>
-            </Link>
-
-            {/* Navigation Links - Hidden on mobile, shown on desktop */}
-            <div className="hidden lg:flex items-center space-x-8">
-              <Link to="/listings" className="text-gray-600 hover:text-watt-primary transition-colors duration-200 font-medium">
-                Browse
-              </Link>
-              <Link to="/calculator" className="text-gray-600 hover:text-watt-primary transition-colors duration-200 font-medium">
-                Calculator
-              </Link>
-              <Link to="/reports" className="text-gray-600 hover:text-watt-primary transition-colors duration-200 font-medium">
-                Reports
-              </Link>
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="flex items-center space-x-3 flex-shrink-0">
-              <Link to="/auth">
-                <Button variant="ghost" className="text-gray-600 hover:text-watt-primary transition-colors">
-                  Sign In
-                </Button>
-              </Link>
-              <Link to="/create-listing">
-                <Button className="bg-watt-gradient hover:opacity-90 shadow-lg px-4 py-2 transition-all duration-200 hover:scale-105">
-                  List Asset
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
       {/* Hero Section */}
-      <section className="relative pt-20 pb-20 overflow-hidden">
+      <section className="relative pt-8 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-watt-gradient opacity-5" />
         <div className="absolute inset-0 bg-grid-black/[0.02] bg-[size:60px_60px]" />
         
