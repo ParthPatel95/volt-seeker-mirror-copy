@@ -92,28 +92,29 @@ export const VoltMarketNavigation: React.FC = () => {
   return (
     <>
       {/* Main Navigation Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-watt-primary/10 shadow-sm">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-          <div className="flex items-center justify-between h-16 min-w-0">
-            {/* Logo & Brand - Responsive Width */}
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 lg:px-6">
+          <div className="flex items-center justify-between h-18 min-w-0">
+            {/* Logo & Brand - Enhanced */}
             <div className="flex-shrink-0 min-w-0">
-              <Link to="/" className="flex items-center gap-2 sm:gap-3 group min-w-0">
-                <div className="p-2 bg-watt-gradient rounded-xl group-hover:shadow-watt-glow transition-all duration-300 flex-shrink-0">
-                  <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              <Link to="/" className="flex items-center gap-3 group min-w-0 py-2">
+                <div className="relative p-2.5 bg-gradient-to-br from-watt-primary to-watt-secondary rounded-2xl group-hover:scale-105 transition-all duration-300 flex-shrink-0 shadow-lg">
+                  <Zap className="w-6 h-6 text-white" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-watt-primary to-watt-secondary rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                 </div>
                 <div className="hidden sm:flex flex-col min-w-0">
-                  <span className="text-lg lg:text-xl font-bold bg-gradient-to-r from-watt-primary to-watt-secondary bg-clip-text text-transparent truncate">
+                  <span className="text-xl font-bold bg-gradient-to-r from-watt-primary via-watt-secondary to-watt-primary bg-clip-text text-transparent truncate">
                     GridBazaar
                   </span>
-                  <span className="text-xs text-muted-foreground -mt-1 hidden lg:block truncate">Energy Infrastructure Marketplace</span>
+                  <span className="text-xs text-muted-foreground/80 -mt-0.5 hidden lg:block truncate font-medium">Energy Infrastructure Marketplace</span>
                 </div>
-                <span className="sm:hidden text-lg font-bold text-watt-primary">GB</span>
+                <span className="sm:hidden text-xl font-bold bg-gradient-to-r from-watt-primary to-watt-secondary bg-clip-text text-transparent">GB</span>
               </Link>
             </div>
 
-            {/* Responsive Navigation - Show on medium screens and up */}
-            <div className="hidden md:flex items-center justify-end flex-1 mr-2 min-w-0">
-              <nav className="flex items-center gap-1 overflow-hidden">
+            {/* Responsive Navigation - Enhanced Design */}
+            <div className="hidden md:flex items-center justify-center flex-1 min-w-0">
+              <nav className="flex items-center gap-1 bg-muted/30 rounded-full p-1 backdrop-blur-sm border border-border/30">
                 {/* Visible navigation items */}
                 {visibleItems.map((item) => {
                   const Icon = item.icon;
@@ -122,18 +123,21 @@ export const VoltMarketNavigation: React.FC = () => {
                     <Link
                       key={item.id}
                       to={item.path || '/'}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      className={`relative flex items-center gap-2.5 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300 group ${
                         isActive 
-                          ? 'text-watt-primary bg-watt-primary/5' 
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                          ? 'text-watt-primary bg-background shadow-md scale-105' 
+                          : 'text-muted-foreground hover:text-foreground hover:bg-background/60'
                       }`}
                     >
-                      <Icon className="w-4 h-4" />
-                      <span className="hidden lg:inline">{item.label}</span>
+                      <Icon className={`w-4 h-4 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-105'}`} />
+                      <span className="hidden lg:inline font-medium">{item.label}</span>
                       {item.badge && item.badge > 0 && (
-                        <span className="bg-watt-warning text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
+                        <span className="absolute -top-1 -right-1 bg-gradient-to-r from-watt-warning to-orange-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold shadow-lg animate-pulse">
                           {item.badge}
                         </span>
+                      )}
+                      {isActive && (
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-watt-primary/10 to-watt-secondary/10 -z-10"></div>
                       )}
                     </Link>
                   );
@@ -143,12 +147,12 @@ export const VoltMarketNavigation: React.FC = () => {
                 {hasHiddenItems && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50">
+                      <Button variant="ghost" size="sm" className="px-4 py-2.5 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-background/60">
                         <Menu className="w-4 h-4" />
                         <span className="hidden lg:inline ml-2">More</span>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuContent align="end" className="w-56 bg-background/95 backdrop-blur-xl border border-border/50 shadow-xl">
                       {hiddenItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = isActiveRoute(item.path || '');
@@ -156,12 +160,12 @@ export const VoltMarketNavigation: React.FC = () => {
                           <DropdownMenuItem key={item.id} asChild>
                             <Link 
                               to={item.path || '/'} 
-                              className={`cursor-pointer ${isActive ? 'text-watt-primary bg-watt-primary/5' : ''}`}
+                              className={`cursor-pointer flex items-center gap-3 px-3 py-2.5 transition-all duration-200 ${isActive ? 'text-watt-primary bg-watt-primary/10' : 'hover:bg-muted/50'}`}
                             >
-                              <Icon className="w-4 h-4 mr-2" />
+                              <Icon className="w-4 h-4" />
                               {item.label}
                               {item.badge && item.badge > 0 && (
-                                <Badge className="ml-auto bg-watt-warning text-white text-xs">
+                                <Badge className="ml-auto bg-gradient-to-r from-watt-warning to-orange-500 text-white text-xs shadow-lg">
                                   {item.badge}
                                 </Badge>
                               )}
@@ -179,12 +183,13 @@ export const VoltMarketNavigation: React.FC = () => {
             <div className="flex items-center justify-end gap-2 sm:gap-3 flex-shrink-0 min-w-0">
               {user ? (
                 <>
-                  {/* Create Listing CTA - Simplified */}
+                  {/* Create Listing CTA - Enhanced */}
                   {profile?.role === 'seller' && (
                     <Link to="/create-listing">
-                      <Button size="sm" className="bg-watt-gradient hover:opacity-90 text-white shadow-sm text-sm">
+                      <Button size="sm" className="relative bg-gradient-to-r from-watt-primary to-watt-secondary hover:shadow-lg hover:scale-105 text-white shadow-md text-sm font-medium transition-all duration-300 rounded-full px-4 py-2.5">
                         <Plus className="w-4 h-4" />
-                        <span className="hidden md:inline ml-1">List</span>
+                        <span className="hidden md:inline ml-1.5">List</span>
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-watt-primary/20 to-watt-secondary/20 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                       </Button>
                     </Link>
                   )}
