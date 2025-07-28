@@ -131,6 +131,47 @@ export const VoltMarketHomepage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-background">
+      {/* Clean Homepage Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-watt-primary to-watt-secondary shadow-lg">
+                <Zap className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-bold text-gray-900">GridBazaar</span>
+            </Link>
+
+            {/* Navigation Links */}
+            <div className="hidden md:flex items-center space-x-8">
+              <Link to="/listings" className="text-gray-600 hover:text-watt-primary transition-colors">
+                Browse
+              </Link>
+              <Link to="/calculator" className="text-gray-600 hover:text-watt-primary transition-colors">
+                Calculator
+              </Link>
+              <Link to="/reports" className="text-gray-600 hover:text-watt-primary transition-colors">
+                Reports
+              </Link>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex items-center space-x-4">
+              <Link to="/auth">
+                <Button variant="ghost" className="text-gray-600 hover:text-watt-primary">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/create-listing">
+                <Button className="bg-watt-gradient hover:opacity-90 shadow-lg">
+                  List Asset
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
       {/* Hero Section */}
       <section className="relative pt-12 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-watt-gradient opacity-5" />
