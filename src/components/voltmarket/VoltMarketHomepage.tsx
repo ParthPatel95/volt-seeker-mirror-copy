@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { VoltMarketHostingCalculator } from './VoltMarketHostingCalculator';
 import { VoltMarketEnergyData } from './VoltMarketEnergyData';
 import { CryptoMarketData } from './CryptoMarketData';
+import { EnhancedLogo } from '../EnhancedLogo';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   Building2, 
@@ -48,6 +49,7 @@ interface CryptoData {
 }
 
 export const VoltMarketHomepage: React.FC = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [btcData, setBtcData] = useState<BTCData | null>(null);
   const [cryptoData, setCryptoData] = useState<CryptoData | null>(null);
@@ -131,49 +133,66 @@ export const VoltMarketHomepage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-background">
-      {/* Clean Homepage Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+      {/* Elegant Navigation with Original Branding */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/90 backdrop-blur-sm border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-watt-primary to-watt-secondary shadow-lg">
-                <Zap className="w-5 h-5 text-white" />
+            {/* Logo Section with Original Branding */}
+            <div className="flex items-center space-x-3 min-w-0">
+              <EnhancedLogo className="w-10 h-10 md:w-12 md:h-12 object-contain flex-shrink-0" />
+              <div className="min-w-0">
+                <h1 className="text-xl md:text-2xl font-bold text-white flex items-center">
+                  <span className="truncate">Watt</span>
+                  <Bitcoin className="inline w-5 h-5 md:w-6 md:h-6 -mx-0.5 flex-shrink-0" style={{ color: '#f7af14' }} />
+                  <span className="truncate">yte</span>
+                </h1>
+                <p className="text-sm truncate" style={{ color: '#00ff88' }}>Infrastructure Fund</p>
               </div>
-              <span className="text-xl font-bold text-gray-900">GridBazaar</span>
-            </Link>
+            </div>
 
-            {/* Navigation Links */}
-            <div className="hidden md:flex items-center space-x-8">
-              <Link to="/listings" className="text-gray-600 hover:text-watt-primary transition-colors">
+            {/* Navigation Links - Hidden on mobile, shown on desktop */}
+            <div className="hidden lg:flex items-center space-x-8">
+              <Link to="/listings" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
                 Browse
               </Link>
-              <Link to="/calculator" className="text-gray-600 hover:text-watt-primary transition-colors">
+              <Link to="/calculator" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
                 Calculator
               </Link>
-              <Link to="/reports" className="text-gray-600 hover:text-watt-primary transition-colors">
+              <Link to="/reports" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
                 Reports
+              </Link>
+              <Link to="/auth" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
+                Sign In
               </Link>
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex items-center space-x-4">
-              <Link to="/auth">
-                <Button variant="ghost" className="text-gray-600 hover:text-watt-primary">
-                  Sign In
-                </Button>
-              </Link>
-              <Link to="/create-listing">
-                <Button className="bg-watt-gradient hover:opacity-90 shadow-lg">
-                  List Asset
-                </Button>
-              </Link>
+            {/* CTA Buttons with Original Colors */}
+            <div className="flex items-center space-x-2 flex-shrink-0">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/listings')}
+                className="border-none hover:opacity-90 text-white text-sm md:text-base px-3 md:px-4 py-2 transition-all duration-200 hover:scale-105"
+                style={{ backgroundColor: '#6366f1' }}
+              >
+                GridBazaar
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/app')}
+                className="border-none hover:opacity-90 text-white text-sm md:text-base px-3 md:px-4 py-2 transition-all duration-200 hover:scale-105"
+                style={{ backgroundColor: '#f7af14' }}
+              >
+                VoltScout
+              </Button>
             </div>
           </div>
         </div>
       </nav>
       {/* Hero Section */}
-      <section className="relative pt-12 pb-20 overflow-hidden">
+      <section className="relative pt-20 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-watt-gradient opacity-5" />
         <div className="absolute inset-0 bg-grid-black/[0.02] bg-[size:60px_60px]" />
         
