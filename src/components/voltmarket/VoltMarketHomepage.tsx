@@ -134,59 +134,45 @@ export const VoltMarketHomepage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-background">
       {/* Elegant Navigation with Original Branding */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/90 backdrop-blur-sm border-b border-slate-800">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100/20 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo Section with Original Branding */}
-            <div className="flex items-center space-x-3 min-w-0">
-              <EnhancedLogo className="w-10 h-10 md:w-12 md:h-12 object-contain flex-shrink-0" />
-              <div className="min-w-0">
-                <h1 className="text-xl md:text-2xl font-bold text-white flex items-center">
-                  <span className="truncate">Watt</span>
-                  <Bitcoin className="inline w-5 h-5 md:w-6 md:h-6 -mx-0.5 flex-shrink-0" style={{ color: '#f7af14' }} />
-                  <span className="truncate">yte</span>
-                </h1>
-                <p className="text-sm truncate" style={{ color: '#00ff88' }}>Infrastructure Fund</p>
+            {/* GridBazaar Logo Section */}
+            <Link to="/" className="flex items-center space-x-3">
+              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-watt-primary to-watt-secondary shadow-lg">
+                <Zap className="w-5 h-5 text-white" />
               </div>
-            </div>
+              <div>
+                <span className="text-xl font-bold text-gray-900">GridBazaar</span>
+                <p className="text-xs text-gray-500 leading-tight">Energy Infrastructure Marketplace</p>
+              </div>
+            </Link>
 
             {/* Navigation Links - Hidden on mobile, shown on desktop */}
             <div className="hidden lg:flex items-center space-x-8">
-              <Link to="/listings" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
+              <Link to="/listings" className="text-gray-600 hover:text-watt-primary transition-colors duration-200 font-medium">
                 Browse
               </Link>
-              <Link to="/calculator" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
+              <Link to="/calculator" className="text-gray-600 hover:text-watt-primary transition-colors duration-200 font-medium">
                 Calculator
               </Link>
-              <Link to="/reports" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
+              <Link to="/reports" className="text-gray-600 hover:text-watt-primary transition-colors duration-200 font-medium">
                 Reports
-              </Link>
-              <Link to="/auth" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
-                Sign In
               </Link>
             </div>
 
-            {/* CTA Buttons with Original Colors */}
-            <div className="flex items-center space-x-2 flex-shrink-0">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => navigate('/listings')}
-                className="border-none hover:opacity-90 text-white text-sm md:text-base px-3 md:px-4 py-2 transition-all duration-200 hover:scale-105"
-                style={{ backgroundColor: '#6366f1' }}
-              >
-                GridBazaar
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => navigate('/app')}
-                className="border-none hover:opacity-90 text-white text-sm md:text-base px-3 md:px-4 py-2 transition-all duration-200 hover:scale-105"
-                style={{ backgroundColor: '#f7af14' }}
-              >
-                VoltScout
-              </Button>
+            {/* CTA Buttons */}
+            <div className="flex items-center space-x-3 flex-shrink-0">
+              <Link to="/auth">
+                <Button variant="ghost" className="text-gray-600 hover:text-watt-primary transition-colors">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/create-listing">
+                <Button className="bg-watt-gradient hover:opacity-90 shadow-lg px-4 py-2 transition-all duration-200 hover:scale-105">
+                  List Asset
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
