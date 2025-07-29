@@ -154,36 +154,6 @@ export const VoltMarketHeader: React.FC = () => {
               );
             })}
 
-            {/* More dropdown for additional items */}
-            {hasDropdownItems && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="whitespace-nowrap">
-                    <MoreHorizontal className="w-4 h-4" />
-                    <span className="hidden lg:inline ml-1">More</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 bg-white border shadow-lg z-50">
-                  {dropdownItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = isActiveRoute(item.path!);
-                    return (
-                      <DropdownMenuItem key={item.id} asChild>
-                        <Link to={item.path!} className={`cursor-pointer ${isActive ? 'bg-blue-50 text-blue-600' : ''}`}>
-                          <Icon className="w-4 h-4 mr-2" />
-                          {item.label}
-                          {item.badge && item.badge > 0 && (
-                            <Badge className="ml-auto bg-red-500 text-white text-xs">
-                              {item.badge}
-                            </Badge>
-                          )}
-                        </Link>
-                      </DropdownMenuItem>
-                    );
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
             
             {user && (
               <>
@@ -232,13 +202,31 @@ export const VoltMarketHeader: React.FC = () => {
                         Profile
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/watchlist" className="cursor-pointer">
-                        <Heart className="w-4 h-4 mr-2" />
-                        Watchlist
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
+                     <DropdownMenuItem asChild>
+                       <Link to="/watchlist" className="cursor-pointer">
+                         <Heart className="w-4 h-4 mr-2" />
+                         Watchlist
+                       </Link>
+                     </DropdownMenuItem>
+                     <DropdownMenuSeparator />
+                     {dropdownItems.map((item) => {
+                       const Icon = item.icon;
+                       const isActive = isActiveRoute(item.path!);
+                       return (
+                         <DropdownMenuItem key={item.id} asChild>
+                           <Link to={item.path!} className={`cursor-pointer ${isActive ? 'bg-blue-50 text-blue-600' : ''}`}>
+                             <Icon className="w-4 h-4 mr-2" />
+                             {item.label}
+                             {item.badge && item.badge > 0 && (
+                               <Badge className="ml-auto bg-red-500 text-white text-xs">
+                                 {item.badge}
+                               </Badge>
+                             )}
+                           </Link>
+                         </DropdownMenuItem>
+                       );
+                     })}
+                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600">
                       <LogOut className="w-4 h-4 mr-2" />
                       Sign Out
