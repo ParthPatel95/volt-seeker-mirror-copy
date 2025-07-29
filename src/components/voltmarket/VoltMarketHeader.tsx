@@ -26,7 +26,10 @@ import {
   TrendingUp,
   Trophy,
   Users,
-  MoreHorizontal
+  MoreHorizontal,
+  Shield,
+  Briefcase,
+  CheckCircle
 } from 'lucide-react';
 import { useVoltMarketAuth } from '@/contexts/VoltMarketAuthContext';
 import { useResponsiveNavigation, NavigationItem } from '@/hooks/useResponsiveNavigation';
@@ -43,19 +46,27 @@ export const VoltMarketHeader: React.FC = () => {
   // Count unread messages
   const unreadCount = messages.filter(m => !m.is_read && m.recipient_id === profile?.id).length;
 
-  // All navigation items for responsive navigation
-  const allNavItems: NavigationItem[] = user ? [
+  // Visible navigation items (only show Browse and Messages prominently)
+  const visibleNavItems: NavigationItem[] = user ? [
     { id: 'browse', label: 'Browse', icon: Search, priority: 1, path: '/listings' },
-    { id: 'network', label: 'Network', icon: Users, priority: 2, path: '/social-hub' },
-    { id: 'messages', label: 'Messages', icon: MessageSquare, priority: 3, path: '/contact-messages', badge: unreadCount },
-    { id: 'documents', label: 'Documents', icon: FileText, priority: 4, path: '/documents' },
-    { id: 'analytics', label: 'Analytics', icon: TrendingUp, priority: 5, path: '/financial-intelligence' },
-    { id: 'achievements', label: 'Achievements', icon: Trophy, priority: 6, path: '/achievements' },
+    { id: 'messages', label: 'Messages', icon: MessageSquare, priority: 2, path: '/contact-messages', badge: unreadCount },
   ] : [
     { id: 'browse', label: 'Browse', icon: Search, priority: 1, path: '/listings' },
   ];
 
-  const { visibleItems, hiddenItems, hasHiddenItems } = useResponsiveNavigation(allNavItems);
+  // Items that go in the dropdown
+  const dropdownItems: NavigationItem[] = user ? [
+    { id: 'network', label: 'Network', icon: Users, priority: 3, path: '/social-hub' },
+    { id: 'documents', label: 'Documents', icon: FileText, priority: 4, path: '/documents' },
+    { id: 'analytics', label: 'Analytics', icon: TrendingUp, priority: 5, path: '/financial-intelligence' },
+    { id: 'achievements', label: 'Achievements', icon: Trophy, priority: 6, path: '/achievements' },
+    { id: 'loi-center', label: 'LOI Center', icon: FileText, priority: 7, path: '/loi-center' },
+    { id: 'getting-verified', label: 'Getting Verified', icon: CheckCircle, priority: 8, path: '/getting-verified' },
+    { id: 'portfolio', label: 'Portfolio', icon: Briefcase, priority: 9, path: '/portfolio' },
+  ] : [];
+
+  // Use our custom visible items instead of responsive navigation hook for better control
+  const hasDropdownItems = dropdownItems.length > 0;
 
   // Check if route is active
   const isActiveRoute = (path: string) => {
@@ -119,9 +130,9 @@ export const VoltMarketHeader: React.FC = () => {
           </div>
 
           {/* Responsive Navigation */}
-          <nav className="hidden md:flex items-center space-x-1 lg:space-x-2 flex-shrink-0 overflow-hidden">
-            {/* Visible navigation items */}
-            {visibleItems.map((item) => {
+          <nav className="hidden md:flex items-center space-x-1 lg:space-x-2 flex-shrink-0">
+            {/* Always visible navigation items */}
+            {visibleNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = isActiveRoute(item.path!);
               return (
@@ -129,7 +140,7 @@ export const VoltMarketHeader: React.FC = () => {
                   <Button 
                     variant={isActive ? "secondary" : "ghost"} 
                     size="sm"
-                    className={`relative ${isActive ? 'bg-blue-50 text-blue-600' : ''}`}
+                    className={`relative whitespace-nowrap ${isActive ? 'bg-blue-50 text-blue-600' : ''}`}
                   >
                     <Icon className="w-4 h-4" />
                     <span className="hidden lg:inline ml-1">{item.label}</span>
@@ -143,17 +154,17 @@ export const VoltMarketHeader: React.FC = () => {
               );
             })}
 
-            {/* More dropdown for hidden items */}
-            {hasHiddenItems && (
+            {/* More dropdown for additional items */}
+            {hasDropdownItems && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="whitespace-nowrap">
                     <MoreHorizontal className="w-4 h-4" />
                     <span className="hidden lg:inline ml-1">More</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48 bg-white border shadow-lg z-50">
-                  {hiddenItems.map((item) => {
+                  {dropdownItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = isActiveRoute(item.path!);
                     return (
@@ -280,7 +291,7 @@ export const VoltMarketHeader: React.FC = () => {
               </form>
               
               {/* All navigation items in mobile */}
-              {allNavItems.map((item) => {
+              {[...visibleNavItems, ...dropdownItems].map((item) => {
                 const Icon = item.icon;
                 const isActive = isActiveRoute(item.path!);
                 return (
