@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { VoltMarketNavigation } from './VoltMarketNavigation';
+import { VoltMarketHeader } from './VoltMarketHeader';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { Zap } from 'lucide-react';
@@ -12,8 +12,8 @@ interface VoltMarketLayoutProps {
 const VoltMarketLayoutContent: React.FC<VoltMarketLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-watt-light/20 to-background">
-      {/* Use GridBazaar/VoltMarket Navigation */}
-      <VoltMarketNavigation />
+      {/* Use Original VoltMarket Header */}
+      <VoltMarketHeader />
 
       {/* Main Content with mobile bottom navigation spacing */}
       <main className="pb-20 lg:pb-0 px-2 sm:px-4 lg:px-6">
