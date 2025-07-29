@@ -10,6 +10,7 @@ interface VoltMarketLayoutProps {
 }
 
 const VoltMarketLayoutContent: React.FC<VoltMarketLayoutProps> = ({ children }) => {
+  console.log('VoltMarketLayoutContent rendering - should only see VoltMarketNavigation');
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-watt-light/20 to-background">
       {/* New Unified Navigation */}
