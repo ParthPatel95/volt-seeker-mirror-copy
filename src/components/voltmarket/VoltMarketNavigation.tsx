@@ -89,7 +89,6 @@ export const VoltMarketNavigation: React.FC = () => {
 
   const { visibleItems, hiddenItems, hasHiddenItems } = useResponsiveNavigation(allNavItems);
 
-  console.log('VoltMarketNavigation rendering - this should be the ONLY navigation');
   return (
     <>
       {/* Main Navigation Header */}
