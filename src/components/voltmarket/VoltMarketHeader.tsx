@@ -113,21 +113,6 @@ export const VoltMarketHeader: React.FC = () => {
             </Link>
           </div>
 
-          {/* Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-md lg:max-w-lg mx-4 lg:mx-8">
-            <form onSubmit={handleSearch} className="w-full">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  type="text"
-                  placeholder="Search listings..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-full text-sm"
-                />
-              </div>
-            </form>
-          </div>
 
           {/* Responsive Navigation */}
           <nav className="hidden md:flex items-center space-x-1 lg:space-x-2 flex-shrink-0">
@@ -265,18 +250,6 @@ export const VoltMarketHeader: React.FC = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t bg-white">
             <div className="flex flex-col space-y-4">
-              <form onSubmit={handleSearch} className="w-full">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <Input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 w-full"
-                  />
-                </div>
-              </form>
               
               {/* All navigation items in mobile */}
               {[...visibleNavItems, ...dropdownItems].map((item) => {
