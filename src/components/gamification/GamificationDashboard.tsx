@@ -60,48 +60,6 @@ export const GamificationDashboard = () => {
         </p>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid md:grid-cols-4 gap-6 mb-8">
-        <Card className="border-watt-primary/10 shadow-lg">
-          <CardContent className="p-6 text-center">
-            <div className="flex items-center justify-center w-12 h-12 bg-watt-gradient rounded-full mx-auto mb-3">
-              <Zap className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="font-bold text-2xl">{progress?.total_points || 0}</h3>
-            <p className="text-sm text-muted-foreground">Total Points</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-watt-primary/10 shadow-lg">
-          <CardContent className="p-6 text-center">
-            <div className="flex items-center justify-center w-12 h-12 bg-watt-gradient rounded-full mx-auto mb-3">
-              <Star className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="font-bold text-2xl">{progress?.current_level || 1}</h3>
-            <p className="text-sm text-muted-foreground">Current Level</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-watt-primary/10 shadow-lg">
-          <CardContent className="p-6 text-center">
-            <div className="flex items-center justify-center w-12 h-12 bg-watt-gradient rounded-full mx-auto mb-3">
-              <Flame className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="font-bold text-2xl">{progress?.streak_days || 0}</h3>
-            <p className="text-sm text-muted-foreground">Day Streak</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-watt-primary/10 shadow-lg">
-          <CardContent className="p-6 text-center">
-            <div className="flex items-center justify-center w-12 h-12 bg-watt-gradient rounded-full mx-auto mb-3">
-              <Award className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="font-bold text-2xl">{achievements.length}</h3>
-            <p className="text-sm text-muted-foreground">Achievements</p>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Level Progress */}
       {progress && (
