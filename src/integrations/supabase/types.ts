@@ -1596,6 +1596,99 @@ export type Database = {
         }
         Relationships: []
       }
+      social_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          likes_count: number | null
+          parent_comment_id: string | null
+          post_id: string
+          replies_count: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          likes_count?: number | null
+          parent_comment_id?: string | null
+          post_id: string
+          replies_count?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          likes_count?: number | null
+          parent_comment_id?: string | null
+          post_id?: string
+          replies_count?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "social_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "social_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      social_follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      social_hashtags: {
+        Row: {
+          created_at: string
+          id: string
+          posts_count: number | null
+          tag: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          posts_count?: number | null
+          tag: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          posts_count?: number | null
+          tag?: string
+        }
+        Relationships: []
+      }
       social_interactions: {
         Row: {
           content: string | null
@@ -1626,19 +1719,107 @@ export type Database = {
         }
         Relationships: []
       }
+      social_notifications: {
+        Row: {
+          comment_id: string | null
+          content: string | null
+          created_at: string
+          from_user_id: string | null
+          id: string
+          is_read: boolean | null
+          post_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          comment_id?: string | null
+          content?: string | null
+          created_at?: string
+          from_user_id?: string | null
+          id?: string
+          is_read?: boolean | null
+          post_id?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          comment_id?: string | null
+          content?: string | null
+          created_at?: string
+          from_user_id?: string | null
+          id?: string
+          is_read?: boolean | null
+          post_id?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_notifications_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "social_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_notifications_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "social_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      social_post_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "social_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       social_posts: {
         Row: {
           attachments: Json | null
           comments_count: number | null
           content: string
           created_at: string
+          hashtags: string[] | null
           id: string
+          is_pinned: boolean | null
           likes_count: number | null
+          mentions: string[] | null
           post_type: string
+          replies_count: number | null
+          reply_to_id: string | null
+          repost_of_id: string | null
+          reposts_count: number | null
           shares_count: number | null
           tags: string[] | null
           updated_at: string
           user_id: string
+          views_count: number | null
           visibility: string | null
         }
         Insert: {
@@ -1646,13 +1827,21 @@ export type Database = {
           comments_count?: number | null
           content: string
           created_at?: string
+          hashtags?: string[] | null
           id?: string
+          is_pinned?: boolean | null
           likes_count?: number | null
+          mentions?: string[] | null
           post_type?: string
+          replies_count?: number | null
+          reply_to_id?: string | null
+          repost_of_id?: string | null
+          reposts_count?: number | null
           shares_count?: number | null
           tags?: string[] | null
           updated_at?: string
           user_id: string
+          views_count?: number | null
           visibility?: string | null
         }
         Update: {
@@ -1660,16 +1849,128 @@ export type Database = {
           comments_count?: number | null
           content?: string
           created_at?: string
+          hashtags?: string[] | null
           id?: string
+          is_pinned?: boolean | null
           likes_count?: number | null
+          mentions?: string[] | null
           post_type?: string
+          replies_count?: number | null
+          reply_to_id?: string | null
+          repost_of_id?: string | null
+          reposts_count?: number | null
           shares_count?: number | null
           tags?: string[] | null
           updated_at?: string
           user_id?: string
+          views_count?: number | null
           visibility?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "social_posts_reply_to_id_fkey"
+            columns: ["reply_to_id"]
+            isOneToOne: false
+            referencedRelation: "social_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_posts_repost_of_id_fkey"
+            columns: ["repost_of_id"]
+            isOneToOne: false
+            referencedRelation: "social_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      social_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string
+          followers_count: number | null
+          following_count: number | null
+          header_url: string | null
+          id: string
+          likes_count: number | null
+          location: string | null
+          posts_count: number | null
+          updated_at: string
+          user_id: string
+          username: string
+          verified: boolean | null
+          website: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name: string
+          followers_count?: number | null
+          following_count?: number | null
+          header_url?: string | null
+          id?: string
+          likes_count?: number | null
+          location?: string | null
+          posts_count?: number | null
+          updated_at?: string
+          user_id: string
+          username: string
+          verified?: boolean | null
+          website?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string
+          followers_count?: number | null
+          following_count?: number | null
+          header_url?: string | null
+          id?: string
+          likes_count?: number | null
+          location?: string | null
+          posts_count?: number | null
+          updated_at?: string
+          user_id?: string
+          username?: string
+          verified?: boolean | null
+          website?: string | null
+        }
         Relationships: []
+      }
+      social_reposts: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_reposts_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "social_posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       stress_tests: {
         Row: {
