@@ -150,11 +150,6 @@ export const VoltMarket = () => {
           {user ? <VoltMarketWatchlist /> : <WattbytesAuth />}
         </VoltMarketLayout>
       } />
-      <Route path="/social" element={
-        <VoltMarketLayout>
-          {user ? <SocialPage /> : <WattbytesAuth />}
-        </VoltMarketLayout>
-      } />
       <Route path="/company/:companyId" element={
         <VoltMarketLayout>
           <CompanyProfile />
@@ -214,7 +209,7 @@ export const VoltMarket = () => {
         {/* Social & Collaboration */}
         <Route path="/social-hub" element={
           <VoltMarketLayout>
-            {user ? <EnhancedSocialHub /> : <WattbytesAuth />}
+            {user ? <SocialNetworkTest /> : <WattbytesAuth />}
           </VoltMarketLayout>
         } />
         
