@@ -160,7 +160,7 @@ export const PostCard = ({ post }: PostCardProps) => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-green-500 hover:bg-green-500/10 h-8 px-2"
+                className="text-muted-foreground hover:text-accent hover:bg-accent/10 h-8 px-2"
                 onClick={handleRepost}
               >
                 <Repeat2 className="w-4 h-4 mr-1" />
@@ -172,8 +172,8 @@ export const PostCard = ({ post }: PostCardProps) => {
                 size="sm"
                 className={`h-8 px-2 ${
                   post.is_liked
-                    ? 'text-red-500 hover:text-red-600 hover:bg-red-500/10'
-                    : 'text-muted-foreground hover:text-red-500 hover:bg-red-500/10'
+                    ? 'text-destructive hover:text-destructive hover:bg-destructive/10'
+                    : 'text-muted-foreground hover:text-destructive hover:bg-destructive/10'
                 }`}
                 onClick={handleLike}
               >
