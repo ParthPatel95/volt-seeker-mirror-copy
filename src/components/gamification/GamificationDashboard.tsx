@@ -134,15 +134,8 @@ export const GamificationDashboard = () => {
         </Card>
       )}
 
-      <Tabs defaultValue="achievements" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 bg-card border border-watt-primary/10 rounded-xl p-1 shadow-lg">
-          <TabsTrigger 
-            value="achievements" 
-            className="flex items-center space-x-2 data-[state=active]:bg-watt-gradient data-[state=active]:text-white rounded-lg"
-          >
-            <Medal className="w-4 h-4" />
-            <span>Achievements</span>
-          </TabsTrigger>
+      <Tabs defaultValue="leaderboard" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2 bg-card border border-watt-primary/10 rounded-xl p-1 shadow-lg">
           <TabsTrigger 
             value="leaderboard" 
             className="flex items-center space-x-2 data-[state=active]:bg-watt-gradient data-[state=active]:text-white rounded-lg"
@@ -158,41 +151,6 @@ export const GamificationDashboard = () => {
             <span>Rewards</span>
           </TabsTrigger>
         </TabsList>
-
-        {/* Achievements */}
-        <TabsContent value="achievements" className="space-y-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {achievements.map((achievement) => (
-              <Card key={achievement.id} className="border-watt-primary/10 shadow-lg hover:shadow-xl transition-shadow">
-                <CardContent className="p-6 text-center">
-                  <div className="text-4xl mb-4">{achievement.badge_icon || '🏆'}</div>
-                  <h3 className="font-bold text-lg mb-2">{achievement.achievement_name}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">{achievement.description}</p>
-                  <div className="flex items-center justify-between">
-                    <Badge className="bg-watt-gradient">
-                      +{achievement.points_earned} XP
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(achievement.earned_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {achievements.length === 0 && (
-            <Card className="border-watt-primary/10 shadow-lg">
-              <CardContent className="p-12 text-center">
-                <Award className="w-16 h-16 mx-auto mb-4 text-muted-foreground/50" />
-                <h3 className="font-semibold text-lg mb-2">No Achievements Yet</h3>
-                <p className="text-muted-foreground">
-                  Start using the platform to unlock your first achievements!
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
 
         {/* Leaderboard */}
         <TabsContent value="leaderboard" className="space-y-6">
