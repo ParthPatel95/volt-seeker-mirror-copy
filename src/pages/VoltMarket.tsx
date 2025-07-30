@@ -45,6 +45,7 @@ import { ComprehensiveTestSuite } from '@/components/ComprehensiveTestSuite';
 
 export const VoltMarket = () => {
   const { user, loading } = useVoltMarketAuth();
+  console.log('VoltMarket component loaded correctly');
 
   if (loading) {
     return (
