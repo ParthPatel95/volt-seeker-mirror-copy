@@ -100,22 +100,22 @@ export const VoltMarketHeader: React.FC = () => {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b">
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-        <div className="flex justify-between items-center h-16 min-w-0">
+    <header className="bg-white shadow-sm border-b sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+        <div className="flex justify-between items-center h-14 sm:h-16 min-w-0">
           {/* Logo */}
           <div className="flex items-center flex-shrink-0 min-w-0">
-            <Link to="/" className="flex items-center space-x-2 min-w-0">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                <span className="hidden sm:block text-white font-bold text-sm">GB</span>
+            <Link to="/" className="flex items-center space-x-2 min-w-0 touch-target">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-xs sm:text-sm">GB</span>
               </div>
-              <span className="hidden sm:block text-lg sm:text-xl font-bold text-gray-900 truncate">GridBazaar</span>
+              <span className="hidden xs:block text-base sm:text-lg lg:text-xl font-bold text-gray-900 truncate">GridBazaar</span>
             </Link>
           </div>
 
 
           {/* Responsive Navigation */}
-          <nav className="hidden md:flex items-center space-x-1 lg:space-x-2 flex-shrink-0">
+          <nav className="hidden sm:flex items-center space-x-1 lg:space-x-2 flex-shrink-0">
             {/* Always visible navigation items */}
             {visibleNavItems.map((item) => {
               const Icon = item.icon;
@@ -125,7 +125,7 @@ export const VoltMarketHeader: React.FC = () => {
                   <Button 
                     variant={isActive ? "secondary" : "ghost"} 
                     size="sm"
-                    className={`relative whitespace-nowrap ${isActive ? 'bg-blue-50 text-blue-600' : ''}`}
+                    className={`relative whitespace-nowrap touch-target min-h-[40px] ${isActive ? 'bg-blue-50 text-blue-600' : ''}`}
                   >
                     <Icon className="w-4 h-4" />
                     <span className="hidden lg:inline ml-1">{item.label}</span>
@@ -143,16 +143,16 @@ export const VoltMarketHeader: React.FC = () => {
             {user && (
               <>
                 <Link to="/create-listing">
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 touch-target min-h-[40px]">
                     <Plus className="w-4 h-4" />
-                    <span className="hidden lg:inline ml-1">List</span>
+                    <span className="hidden md:inline ml-1">List</span>
                   </Button>
                 </Link>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                      <Avatar className="w-8 h-8">
+                    <Button variant="ghost" size="sm" className="flex items-center gap-2 touch-target min-h-[40px] px-2">
+                      <Avatar className="w-8 h-8 sm:w-9 sm:h-9">
                         <AvatarImage 
                           src={profile?.profile_image_url || ""} 
                           alt="Profile"
@@ -162,9 +162,9 @@ export const VoltMarketHeader: React.FC = () => {
                           {getInitials(profile?.company_name || 'Account')}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="hidden lg:block">{profile?.company_name || 'Account'}</span>
+                      <span className="hidden md:block text-sm truncate max-w-32">{profile?.company_name || 'Account'}</span>
                       {profile?.role === 'seller' && (
-                        <Badge variant="secondary" className="ml-2 text-xs">
+                        <Badge variant="secondary" className="hidden lg:flex ml-2 text-xs">
                           Seller
                         </Badge>
                       )}
@@ -239,7 +239,7 @@ export const VoltMarketHeader: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            className="md:hidden"
+            className="sm:hidden touch-target min-h-[40px] min-w-[40px]"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <Menu className="w-5 h-5" />
@@ -248,8 +248,8 @@ export const VoltMarketHeader: React.FC = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t bg-white">
-            <div className="flex flex-col space-y-4">
+          <div className="sm:hidden py-3 border-t bg-white safe-area-pb">
+            <div className="flex flex-col space-y-2">
               
               {/* All navigation items in mobile */}
               {[...visibleNavItems, ...dropdownItems].map((item) => {
@@ -259,7 +259,7 @@ export const VoltMarketHeader: React.FC = () => {
                   <Link key={item.id} to={item.path!} onClick={() => setIsMenuOpen(false)}>
                     <Button 
                       variant="ghost" 
-                      className={`w-full justify-start ${isActive ? 'bg-blue-50 text-blue-600' : ''}`}
+                      className={`w-full justify-start touch-target min-h-[44px] text-base ${isActive ? 'bg-blue-50 text-blue-600' : ''}`}
                     >
                       <Icon className="w-4 h-4 mr-2" />
                       {item.label}
@@ -276,35 +276,35 @@ export const VoltMarketHeader: React.FC = () => {
               {user ? (
                 <>
                   <Link to="/create-listing" onClick={() => setIsMenuOpen(false)}>
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                      <Plus className="w-4 h-4 mr-2" />
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 touch-target min-h-[44px] text-base">
+                      <Plus className="w-5 h-5 mr-2" />
                       Create Listing
                     </Button>
                   </Link>
                   <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start">
-                      <User className="w-4 h-4 mr-2" />
+                    <Button variant="ghost" className="w-full justify-start touch-target min-h-[44px] text-base">
+                      <User className="w-5 h-5 mr-3" />
                       Dashboard
                     </Button>
                   </Link>
                   <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start">
-                      <Settings className="w-4 h-4 mr-2" />
+                    <Button variant="ghost" className="w-full justify-start touch-target min-h-[44px] text-base">
+                      <Settings className="w-5 h-5 mr-3" />
                       Profile
                     </Button>
                   </Link>
-                  <Button variant="ghost" className="w-full justify-start text-red-600" onClick={handleSignOut}>
-                    <LogOut className="w-4 h-4 mr-2" />
+                  <Button variant="ghost" className="w-full justify-start text-red-600 touch-target min-h-[44px] text-base" onClick={handleSignOut}>
+                    <LogOut className="w-5 h-5 mr-3" />
                     Sign Out
                   </Button>
                 </>
               ) : (
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col space-y-3">
                   <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start">Sign In</Button>
+                    <Button variant="ghost" className="w-full justify-start touch-target min-h-[44px] text-base">Sign In</Button>
                   </Link>
                   <Link to="/auth?signup" onClick={() => setIsMenuOpen(false)}>
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">Sign Up</Button>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 touch-target min-h-[44px] text-base">Sign Up</Button>
                   </Link>
                 </div>
               )}

@@ -51,7 +51,7 @@ export const SocialNetworkHub = () => {
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto flex">
         {/* Left Sidebar Navigation */}
-        <div className="w-64 fixed h-full border-r bg-card/50 backdrop-blur-sm p-4 hidden lg:block">
+        <div className="w-56 xl:w-64 fixed h-full border-r bg-card/50 backdrop-blur-sm p-3 xl:p-4 hidden lg:block z-30">
           <div className="space-y-2">
             <div className="px-4 py-2 font-bold text-xl bg-watt-gradient bg-clip-text text-transparent">
               VoltMarket Social
@@ -89,20 +89,20 @@ export const SocialNetworkHub = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 lg:ml-64">
+        <div className="flex-1 lg:ml-56 xl:ml-64">
           <div className="flex">
             {/* Center Content */}
-            <div className="flex-1 max-w-2xl mx-auto border-x min-h-screen">
+            <div className="flex-1 max-w-2xl mx-auto lg:border-x min-h-screen">
               {/* Mobile Header */}
-              <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b p-4 lg:hidden">
+              <div className="sticky top-0 bg-background/95 backdrop-blur-md border-b p-3 sm:p-4 lg:hidden z-20 safe-area-pt">
                 <div className="flex items-center justify-between">
-                  <h1 className="font-bold text-xl bg-watt-gradient bg-clip-text text-transparent">
+                  <h1 className="font-bold text-lg sm:text-xl bg-watt-gradient bg-clip-text text-transparent">
                     VoltMarket Social
                   </h1>
                   <Button
                     onClick={() => setCurrentView('compose')}
                     size="sm"
-                    className="bg-watt-gradient"
+                    className="bg-watt-gradient touch-target min-h-[40px] min-w-[40px]"
                   >
                     <Plus className="w-4 h-4" />
                   </Button>
@@ -110,8 +110,8 @@ export const SocialNetworkHub = () => {
               </div>
 
               {/* Mobile Navigation */}
-              <div className="sticky top-16 bg-background/80 backdrop-blur-sm border-b p-2 lg:hidden">
-                <div className="flex space-x-1">
+              <div className="sticky top-[60px] sm:top-[68px] bg-background/95 backdrop-blur-md border-b p-2 lg:hidden z-10">
+                <div className="flex justify-center space-x-1">
                   {navigationItems.map((item) => {
                     const Icon = item.icon;
                     return (
@@ -119,10 +119,10 @@ export const SocialNetworkHub = () => {
                         key={item.id}
                         variant={currentView === item.id ? 'default' : 'ghost'}
                         size="sm"
-                        className={currentView === item.id ? 'bg-watt-gradient text-white' : ''}
+                        className={`touch-target min-h-[44px] min-w-[44px] flex-1 max-w-[80px] ${currentView === item.id ? 'bg-watt-gradient text-white' : ''}`}
                         onClick={() => setCurrentView(item.id as ViewType)}
                       >
-                        <Icon className="w-4 h-4" />
+                        <Icon className="w-5 h-5" />
                       </Button>
                     );
                   })}
@@ -130,13 +130,13 @@ export const SocialNetworkHub = () => {
               </div>
 
               {/* Content Area */}
-              <div className="min-h-screen">
+              <div className="min-h-screen pb-safe lg:pb-0">
                 {renderCurrentView()}
               </div>
             </div>
 
             {/* Right Sidebar */}
-            <div className="w-80 p-4 hidden xl:block">
+            <div className="w-72 xl:w-80 p-3 xl:p-4 hidden xl:block">
               <TrendingSidebar />
             </div>
           </div>
