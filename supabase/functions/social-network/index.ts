@@ -113,6 +113,18 @@ async function createPost(supabase: any, data: any) {
 async function getFeed(supabase: any, data: any) {
   const { user_id, limit = 20, offset = 0 } = data;
 
+  // First get the list of users this user follows
+  const { data: follows } = await supabase
+    .from('social_follows')
+    .select('following_id')
+    .eq('follower_id', user_id);
+
+  // Create array of user IDs to include (user's own posts + followed users)
+  const userIds = [user_id];
+  if (follows) {
+    userIds.push(...follows.map((f: any) => f.following_id));
+  }
+
   // Get posts from followed users + user's own posts
   const { data: posts, error } = await supabase
     .from('social_posts')
@@ -121,7 +133,7 @@ async function getFeed(supabase: any, data: any) {
       social_post_likes!left(user_id),
       social_reposts!left(user_id)
     `)
-    .or(`user_id.eq.${user_id},user_id.in.(select following_id from social_follows where follower_id = ${user_id})`)
+    .in('user_id', userIds)
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1);
 
