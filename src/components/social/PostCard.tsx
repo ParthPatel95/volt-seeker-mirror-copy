@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSocialNetwork, type SocialPost } from '@/hooks/useSocialNetwork';
+import { CommentSection } from './CommentSection';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -193,13 +194,11 @@ export const PostCard = ({ post }: PostCardProps) => {
             </div>
 
             {/* Comments Section */}
-            {showComments && (
-              <div className="mt-4 pt-4 border-t">
-                <div className="text-sm text-muted-foreground">
-                  Comments feature coming soon...
-                </div>
-              </div>
-            )}
+            <CommentSection 
+              postId={post.id} 
+              isOpen={showComments} 
+              onClose={() => setShowComments(false)}
+            />
           </div>
         </div>
       </div>
