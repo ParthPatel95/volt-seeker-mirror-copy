@@ -118,8 +118,6 @@ async function getFeed(supabase: any, data: any) {
     .from('social_posts')
     .select(`
       *,
-      profiles!social_posts_user_id_fkey(full_name, avatar_url),
-      social_profiles(username, display_name, avatar_url, verified),
       social_post_likes!left(user_id),
       social_reposts!left(user_id)
     `)
@@ -135,15 +133,25 @@ async function getFeed(supabase: any, data: any) {
     );
   }
 
-  // Process posts to include interaction status
-  const processedPosts = posts.map(post => ({
-    ...post,
-    is_liked: post.social_post_likes?.some((like: any) => like.user_id === user_id) || false,
-    is_reposted: post.social_reposts?.some((repost: any) => repost.user_id === user_id) || false
+  // Get user info for posts by joining with gridbazaar_profiles
+  const postsWithUserInfo = await Promise.all(posts.map(async (post: any) => {
+    const { data: userProfile } = await supabase
+      .from('gridbazaar_profiles')
+      .select('company_name, profile_image_url')
+      .eq('user_id', post.user_id)
+      .single();
+    
+    return {
+      ...post,
+      user_name: userProfile?.company_name || 'Unknown User',
+      user_avatar: userProfile?.profile_image_url || null,
+      is_liked: post.social_post_likes?.some((like: any) => like.user_id === user_id) || false,
+      is_reposted: post.social_reposts?.some((repost: any) => repost.user_id === user_id) || false
+    };
   }));
 
   return new Response(
-    JSON.stringify({ success: true, posts: processedPosts }),
+    JSON.stringify({ success: true, posts: postsWithUserInfo }),
     { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
   );
 }
@@ -524,8 +532,6 @@ async function getNotifications(supabase: any, data: any) {
     .from('social_notifications')
     .select(`
       *,
-      from_user:profiles!social_notifications_from_user_id_fkey(full_name, avatar_url),
-      from_user_profile:social_profiles!social_notifications_from_user_id_fkey(username, display_name, avatar_url),
       post:social_posts(id, content)
     `)
     .eq('user_id', user_id)
@@ -540,8 +546,23 @@ async function getNotifications(supabase: any, data: any) {
     );
   }
 
+  // Get user info for notifications by joining with gridbazaar_profiles
+  const notificationsWithUserInfo = await Promise.all(notifications.map(async (notification: any) => {
+    const { data: userProfile } = await supabase
+      .from('gridbazaar_profiles')
+      .select('company_name, profile_image_url')
+      .eq('user_id', notification.from_user_id)
+      .single();
+    
+    return {
+      ...notification,
+      from_user_name: userProfile?.company_name || 'Unknown User',
+      from_user_avatar: userProfile?.profile_image_url || null
+    };
+  }));
+
   return new Response(
-    JSON.stringify({ success: true, notifications }),
+    JSON.stringify({ success: true, notifications: notificationsWithUserInfo }),
     { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
   );
 }
