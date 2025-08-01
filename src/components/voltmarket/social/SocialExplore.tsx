@@ -62,7 +62,7 @@ export const SocialExplore = () => {
                 <span className="text-2xl">{insight.icon}</span>
                 <TrendingUp className="w-4 h-4 text-watt-success" />
               </div>
-              <div className="text-2xl font-bold bg-watt-gradient bg-clip-text text-transparent">
+              <div className="text-2xl font-bold text-watt-primary">
                 {insight.value}
               </div>
               <p className="text-xs text-muted-foreground mt-1">{insight.description}</p>

@@ -53,7 +53,7 @@ export const SocialNetworkHub = () => {
         {/* Left Sidebar Navigation */}
         <div className="w-56 xl:w-64 fixed h-full border-r bg-card/50 backdrop-blur-sm p-3 xl:p-4 hidden lg:block z-30">
           <div className="space-y-2">
-            <div className="px-4 py-2 font-bold text-xl bg-watt-gradient bg-clip-text text-transparent">
+            <div className="px-4 py-2 font-bold text-xl text-watt-primary">
               VoltMarket Social
             </div>
             <Separator className="my-4" />
@@ -96,7 +96,7 @@ export const SocialNetworkHub = () => {
               {/* Mobile Header */}
               <div className="sticky top-0 bg-background/95 backdrop-blur-md border-b p-3 sm:p-4 lg:hidden z-20 safe-area-pt">
                 <div className="flex items-center justify-between">
-                  <h1 className="font-bold text-lg sm:text-xl bg-watt-gradient bg-clip-text text-transparent">
+                  <h1 className="font-bold text-lg sm:text-xl text-watt-primary">
                     VoltMarket Social
                   </h1>
                   <Button

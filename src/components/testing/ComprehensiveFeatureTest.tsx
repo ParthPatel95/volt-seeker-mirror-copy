@@ -226,7 +226,7 @@ export const ComprehensiveFeatureTest: React.FC = () => {
   return (
     <div className="container-responsive py-6">
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold bg-watt-gradient bg-clip-text text-transparent mb-2">
+        <h1 className="text-4xl font-bold text-watt-primary mb-2">
           Feature Test Suite
         </h1>
         <p className="text-muted-foreground text-lg">

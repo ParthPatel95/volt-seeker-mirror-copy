@@ -102,7 +102,7 @@ export const EnhancedSocialHub = () => {
         <div className="inline-flex items-center justify-center p-3 bg-watt-gradient rounded-2xl mb-4 shadow-watt-glow">
           <Users className="w-8 h-8 text-white" />
         </div>
-        <h1 className="text-4xl font-bold bg-watt-gradient bg-clip-text text-transparent mb-2">
+        <h1 className="text-4xl font-bold text-watt-primary mb-2">
           Social Collaboration Hub
         </h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
