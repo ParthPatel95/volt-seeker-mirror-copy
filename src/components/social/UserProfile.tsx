@@ -89,90 +89,93 @@ export const UserProfile = () => {
   const avatarUrl = profile?.avatar_url || currentUser?.user_metadata?.avatar_url;
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="w-full max-w-2xl mx-auto">
       {/* Header */}
-      <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b p-4 lg:hidden">
+      <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b p-4 lg:hidden z-10">
         <h2 className="text-xl font-bold">Profile</h2>
       </div>
 
       {/* Cover Image */}
-      <div className="relative h-48 bg-gradient-to-br from-watt-primary/10 to-watt-secondary/10 border-b">
+      <div className="relative h-32 sm:h-48 bg-gradient-to-br from-watt-primary/10 to-watt-secondary/10 border-b">
         <div className="absolute inset-0 bg-gradient-to-br from-background/20 to-muted/40"></div>
       </div>
 
       {/* Profile Info */}
-      <div className="p-4 -mt-16 relative">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-4">
-          <div className="flex items-end space-x-4">
-            <Avatar className="w-24 h-24 border-4 border-background">
-              <AvatarImage src={avatarUrl} alt={displayName} />
-              <AvatarFallback className="text-2xl">
-                {displayName.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            
-            <div className="mb-2">
-              <h1 className="text-2xl font-bold">{displayName}</h1>
-              <p className="text-muted-foreground">@{username}</p>
-            </div>
-          </div>
-
-          <Dialog open={isEditing} onOpenChange={setIsEditing}>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="mt-4 sm:mt-0">
-                <Edit3 className="w-4 h-4 mr-2" />
-                Edit Profile
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Edit Profile</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium">Display Name</label>
-                  <Input
-                    value={editedProfile.display_name}
-                    onChange={(e) => setEditedProfile(prev => ({ ...prev, display_name: e.target.value }))}
-                    placeholder="Your display name"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Bio</label>
-                  <Textarea
-                    value={editedProfile.bio}
-                    onChange={(e) => setEditedProfile(prev => ({ ...prev, bio: e.target.value }))}
-                    placeholder="Tell us about yourself"
-                    rows={3}
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Location</label>
-                  <Input
-                    value={editedProfile.location}
-                    onChange={(e) => setEditedProfile(prev => ({ ...prev, location: e.target.value }))}
-                    placeholder="Your location"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Website</label>
-                  <Input
-                    value={editedProfile.website}
-                    onChange={(e) => setEditedProfile(prev => ({ ...prev, website: e.target.value }))}
-                    placeholder="https://your-website.com"
-                  />
-                </div>
-                <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setIsEditing(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleProfileUpdate} className="bg-watt-gradient hover:opacity-90">
-                    Save Changes
-                  </Button>
-                </div>
+      <div className="p-4 -mt-12 sm:-mt-16 relative">
+        <div className="flex flex-col space-y-4 mb-6">
+          {/* Avatar and Basic Info */}
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-end space-y-3 sm:space-y-0 sm:space-x-4">
+              <Avatar className="w-20 h-20 sm:w-24 sm:h-24 border-4 border-background self-start">
+                <AvatarImage src={avatarUrl} alt={displayName} />
+                <AvatarFallback className="text-xl sm:text-2xl">
+                  {displayName.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold truncate">{displayName}</h1>
+                <p className="text-muted-foreground text-sm sm:text-base">@{username}</p>
               </div>
-            </DialogContent>
-          </Dialog>
+            </div>
+
+            <Dialog open={isEditing} onOpenChange={setIsEditing}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="mt-4 sm:mt-0 self-start">
+                  <Edit3 className="w-4 h-4 mr-2" />
+                  Edit Profile
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Edit Profile</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">Display Name</label>
+                    <Input
+                      value={editedProfile.display_name}
+                      onChange={(e) => setEditedProfile(prev => ({ ...prev, display_name: e.target.value }))}
+                      placeholder="Your display name"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Bio</label>
+                    <Textarea
+                      value={editedProfile.bio}
+                      onChange={(e) => setEditedProfile(prev => ({ ...prev, bio: e.target.value }))}
+                      placeholder="Tell us about yourself"
+                      rows={3}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Location</label>
+                    <Input
+                      value={editedProfile.location}
+                      onChange={(e) => setEditedProfile(prev => ({ ...prev, location: e.target.value }))}
+                      placeholder="Your location"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Website</label>
+                    <Input
+                      value={editedProfile.website}
+                      onChange={(e) => setEditedProfile(prev => ({ ...prev, website: e.target.value }))}
+                      placeholder="https://your-website.com"
+                    />
+                  </div>
+                  <div className="flex justify-end space-x-2">
+                    <Button variant="outline" onClick={() => setIsEditing(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleProfileUpdate} className="bg-watt-gradient hover:opacity-90">
+                      Save Changes
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
         {/* Bio and Details */}
