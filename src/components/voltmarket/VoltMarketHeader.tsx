@@ -49,7 +49,7 @@ export const VoltMarketHeader: React.FC = () => {
   // Visible navigation items (only show Browse and Messages prominently)
   const visibleNavItems: NavigationItem[] = user ? [
     { id: 'browse', label: 'Browse', icon: Search, priority: 1, path: '/listings' },
-    { id: 'messages', label: 'Messages', icon: MessageSquare, priority: 2, path: '/contact-messages', badge: unreadCount },
+    { id: 'messages', label: 'Messages', icon: MessageSquare, priority: 2, path: '/contact-messages' },
   ] : [
     { id: 'browse', label: 'Browse', icon: Search, priority: 1, path: '/listings' },
   ];
