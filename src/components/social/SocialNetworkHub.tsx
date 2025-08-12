@@ -51,7 +51,7 @@ export const SocialNetworkHub = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <div className="max-w-6xl mx-auto flex">
         {/* Left Sidebar Navigation */}
-        <div className="w-56 xl:w-64 fixed top-14 sm:top-16 h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)] border-r bg-card/50 backdrop-blur-sm p-3 xl:p-4 hidden lg:block z-30">
+        <aside className="w-56 xl:w-64 hidden lg:block sticky top-16 h-[calc(100vh-64px)] overflow-y-auto border-r bg-card/50 backdrop-blur-sm p-3 xl:p-4 z-10">
           <div className="space-y-2">
             <div className="px-4 py-2 font-bold text-xl text-watt-primary">
               VoltMarket Social
@@ -86,10 +86,10 @@ export const SocialNetworkHub = () => {
               Post
             </Button>
           </div>
-        </div>
+        </aside>
 
         {/* Main Content */}
-        <div className="flex-1 lg:ml-56 xl:ml-64">
+        <div className="flex-1">
           <div className="flex">
             {/* Center Content */}
             <div className="flex-1 max-w-2xl mx-auto lg:border-x min-h-full">
