@@ -9,7 +9,7 @@ export const SocialPage = () => {
   // Initialize automatic listing announcements
   useVoltMarketListingAnnouncements();
   return (
-    <div className="container-responsive py-6 animate-fade-in">
+    <div className="container-responsive min-h-screen pt-6 pb-24 animate-fade-in">
       {/* Hero Header */}
       <div className="mb-8 text-center">
         <div className="inline-flex items-center justify-center p-3 bg-watt-gradient rounded-2xl mb-4 shadow-watt-glow">

@@ -48,10 +48,10 @@ export const SocialNetworkHub = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
       <div className="max-w-6xl mx-auto flex">
         {/* Left Sidebar Navigation */}
-        <div className="w-56 xl:w-64 fixed h-full border-r bg-card/50 backdrop-blur-sm p-3 xl:p-4 hidden lg:block z-30">
+        <div className="w-56 xl:w-64 fixed top-14 sm:top-16 h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)] border-r bg-card/50 backdrop-blur-sm p-3 xl:p-4 hidden lg:block z-30">
           <div className="space-y-2">
             <div className="px-4 py-2 font-bold text-xl text-watt-primary">
               VoltMarket Social
@@ -92,9 +92,9 @@ export const SocialNetworkHub = () => {
         <div className="flex-1 lg:ml-56 xl:ml-64">
           <div className="flex">
             {/* Center Content */}
-            <div className="flex-1 max-w-2xl mx-auto lg:border-x min-h-screen">
+            <div className="flex-1 max-w-2xl mx-auto lg:border-x min-h-full">
               {/* Mobile Header */}
-              <div className="sticky top-0 bg-background/95 backdrop-blur-md border-b p-3 sm:p-4 lg:hidden z-20 safe-area-pt">
+              <div className="sticky top-14 sm:top-16 bg-background/95 backdrop-blur-md border-b p-3 sm:p-4 lg:hidden z-20">
                 <div className="flex items-center justify-between">
                   <h1 className="font-bold text-lg sm:text-xl text-watt-primary">
                     VoltMarket Social
@@ -110,7 +110,7 @@ export const SocialNetworkHub = () => {
               </div>
 
               {/* Mobile Navigation */}
-              <div className="sticky top-[60px] sm:top-[68px] bg-background/95 backdrop-blur-md border-b p-2 lg:hidden z-10">
+              <div className="bg-background border-b p-2 lg:hidden z-10">
                 <div className="flex justify-center space-x-1">
                   {navigationItems.map((item) => {
                     const Icon = item.icon;
@@ -130,7 +130,7 @@ export const SocialNetworkHub = () => {
               </div>
 
               {/* Content Area */}
-              <div className="min-h-screen pb-safe lg:pb-0">
+              <div className="min-h-full pb-24 sm:pb-20 lg:pb-12">
                 {renderCurrentView()}
               </div>
             </div>

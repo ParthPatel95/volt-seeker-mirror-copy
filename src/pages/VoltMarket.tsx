@@ -29,7 +29,6 @@ import { SocialPage } from '@/components/voltmarket/social/SocialPage';
 import { CompanyProfile } from '@/components/voltmarket/social/CompanyProfile';
 import { AdvancedFinancialIntelligenceHub } from '@/components/financial-intelligence/AdvancedFinancialIntelligenceHub';
 import { EnhancedSocialHub } from '@/components/social/EnhancedSocialHub';
-import { GamificationDashboard } from '@/components/gamification/GamificationDashboard';
 import { ComprehensiveFeatureTest } from '@/components/testing/ComprehensiveFeatureTest';
 import { AIIntelligenceHub } from '@/components/ai-intelligence/AIIntelligenceHub';
 import { SocialFeaturesTest } from '@/components/voltmarket/social/SocialFeaturesTest';
@@ -209,12 +208,6 @@ export const VoltMarket = () => {
           </VoltMarketLayout>
         } />
         
-        {/* Gamification */}
-        <Route path="/achievements" element={
-          <VoltMarketLayout>
-            {user ? <GamificationDashboard /> : <WattbytesAuth />}
-          </VoltMarketLayout>
-        } />
         
         {/* Feature Testing */}
         <Route path="/feature-test" element={
