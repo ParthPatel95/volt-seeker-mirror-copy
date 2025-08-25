@@ -212,20 +212,20 @@ export const GooglePlacesInput: React.FC<GooglePlacesInputProps> = ({
       )}
 
       {isOpen && predictions.length > 0 && (
-        <Card className="absolute top-full left-0 right-0 z-50 mt-1 max-h-60 overflow-auto">
+        <Card className="absolute top-full left-0 right-0 z-50 mt-1 max-h-60 overflow-auto shadow-lg border-border">
           <CardContent className="p-0">
             {predictions.map((prediction) => (
               <button
                 key={prediction.place_id}
                 type="button"
-                className="w-full text-left p-3 hover:bg-muted transition-colors border-b last:border-b-0 flex items-start gap-3"
+                className="w-full text-left p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-b border-border last:border-b-0 flex items-start gap-3 focus:bg-accent focus:text-accent-foreground focus:outline-none"
                 onClick={() => handlePlaceSelect(prediction)}
               >
                 <MapPin className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm">{prediction.main_text}</p>
+                  <p className="font-medium text-sm truncate">{prediction.main_text}</p>
                   {prediction.secondary_text && (
-                    <p className="text-xs text-muted-foreground">{prediction.secondary_text}</p>
+                    <p className="text-xs text-muted-foreground truncate">{prediction.secondary_text}</p>
                   )}
                 </div>
               </button>
@@ -235,11 +235,11 @@ export const GooglePlacesInput: React.FC<GooglePlacesInputProps> = ({
       )}
 
       {isSearching && (
-        <Card className="absolute top-full left-0 right-0 z-50 mt-1">
+        <Card className="absolute top-full left-0 right-0 z-50 mt-1 shadow-lg border-border">
           <CardContent className="p-3">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Search className="w-4 h-4 animate-pulse" />
-              <span className="text-sm">Searching...</span>
+              <span className="text-sm">Searching for addresses...</span>
             </div>
           </CardContent>
         </Card>

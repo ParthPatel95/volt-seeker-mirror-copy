@@ -157,6 +157,23 @@ export const VoltMarketCreateListing: React.FC = () => {
         return;
       }
 
+      // Get the voltmarket profile ID - we need this for the foreign key
+      const { data: voltmarketProfile, error: profileError } = await supabase
+        .from('voltmarket_profiles')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profileError || !voltmarketProfile) {
+        toast({
+          title: "Profile Required",
+          description: "Please complete your VoltMarket profile first",
+          variant: "destructive"
+        });
+        navigate('/profile');
+        return;
+      }
+
       // Create listing with auto-generated description and tags
       const listingData = {
         title: formData.title,
@@ -185,7 +202,7 @@ export const VoltMarketCreateListing: React.FC = () => {
         manufacture_year: formData.manufacture_year,
         quantity: formData.quantity,
         shipping_terms: formData.shipping_terms,
-        seller_id: profile.id,
+        seller_id: voltmarketProfile.id,
         status: 'active' as const
       };
 
@@ -221,7 +238,7 @@ export const VoltMarketCreateListing: React.FC = () => {
       if (documents.length > 0) {
         const documentInserts = documents.map((doc) => ({
           listing_id: listing.id,
-          uploader_id: profile.id,
+          uploader_id: user.id,
           file_name: doc.name,
           file_url: doc.url,
           file_type: doc.type,
