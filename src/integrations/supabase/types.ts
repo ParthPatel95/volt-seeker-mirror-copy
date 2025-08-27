@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -3299,11 +3299,11 @@ export type Database = {
         Returns: undefined
       }
       increment: {
-        Args: { table_name: string; row_id: string; column_name: string }
+        Args: { column_name: string; row_id: string; table_name: string }
         Returns: undefined
       }
       increment_user_points: {
-        Args: { p_user_id: string; p_points: number }
+        Args: { p_points: number; p_user_id: string }
         Returns: undefined
       }
       is_voltscout_approved: {
@@ -3311,7 +3311,7 @@ export type Database = {
         Returns: boolean
       }
       update_user_progress: {
-        Args: { p_user_id: string; p_action_type: string; p_points: number }
+        Args: { p_action_type: string; p_points: number; p_user_id: string }
         Returns: undefined
       }
     }
