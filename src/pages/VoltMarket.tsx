@@ -120,6 +120,11 @@ export const VoltMarket = () => {
           {user && !loading ? <VoltMarketVerificationCenter /> : (!loading ? <WattbytesAuth /> : <div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>)}
         </VoltMarketLayout>
       } />
+      <Route path="/getting-verified" element={
+        <VoltMarketLayout>
+          {user && !loading ? <VoltMarketVerificationCenter /> : (!loading ? <WattbytesAuth /> : <div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>)}
+        </VoltMarketLayout>
+      } />
       <Route path="/create-listing" element={
         <VoltMarketLayout>
           {user ? <VoltMarketCreateListing /> : <WattbytesAuth />}
