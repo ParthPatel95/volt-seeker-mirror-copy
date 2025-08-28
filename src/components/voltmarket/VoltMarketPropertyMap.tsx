@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useGooglePlaces } from '@/hooks/useGooglePlaces';
+
 
 interface PropertyLocation {
   id: string;
@@ -90,7 +90,6 @@ export const VoltMarketPropertyMap: React.FC<VoltMarketPropertyMapProps> = ({
   const [showInfrastructure, setShowInfrastructure] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { toast } = useToast();
-  const { geocodeAddress } = useGooglePlaces();
 
   useEffect(() => {
     loadProperties();
@@ -118,71 +117,42 @@ export const VoltMarketPropertyMap: React.FC<VoltMarketPropertyMapProps> = ({
 
         if (data) {
           // Check if coordinates exist
-          if ((data as any).latitude && (data as any).longitude) {
+          if (data.latitude && data.longitude) {
             propertyData = [{
               id: data.id,
               title: data.title,
               address: data.location || 'Location not specified',
               city: data.location?.split(',')[0]?.trim() || 'Unknown City',
               state: data.location?.split(',')[1]?.trim() || 'Unknown State',
-              coordinates: [0, 0], // Coordinates not available in voltmarket_listings
+              coordinates: [Number(data.longitude), Number(data.latitude)], // [lng, lat] for Mapbox
               asking_price: data.asking_price,
               property_type: data.listing_type,
               power_capacity_mw: data.power_capacity_mw || 0,
-              size_sqft: 0, // Square footage not available in voltmarket_listings
+              size_sqft: data.square_footage || 0,
               status: data.status,
               image_url: undefined // Images are handled separately in VoltMarket
             }];
             console.log('Property data with coordinates:', propertyData); // Debug log
           } else if (data.location) {
-            // Try to geocode the location text
-            console.log('Attempting to geocode location:', data.location);
-            try {
-              const geocodeResult = await geocodeAddress(data.location);
-              if (geocodeResult) {
-                // Update the listing with coordinates
-                await supabase
-                  .from('voltmarket_listings')
-                  .update({
-                    latitude: geocodeResult.coordinates.lat,
-                    longitude: geocodeResult.coordinates.lng,
-                    location: geocodeResult.formattedAddress
-                  })
-                  .eq('id', data.id);
-
-                propertyData = [{
-                  id: data.id,
-                  title: data.title,
-                  address: geocodeResult.formattedAddress,
-                  city: geocodeResult.formattedAddress.split(',')[0]?.trim() || 'Unknown City',
-                  state: geocodeResult.formattedAddress.split(',')[1]?.trim() || 'Unknown State',
-                  coordinates: [geocodeResult.coordinates.lng, geocodeResult.coordinates.lat],
-                  asking_price: data.asking_price,
-                  property_type: data.listing_type,
-                  power_capacity_mw: data.power_capacity_mw || 0,
-                  size_sqft: 0, // Square footage not available in voltmarket_listings
-                  status: data.status,
-                  image_url: undefined
-                }];
-                console.log('Geocoded property data:', propertyData);
-              } else {
-                console.warn('Failed to geocode location:', data.location);
-                setProperties([]);
-                setLoading(false);
-                return;
-              }
-            } catch (error) {
-              console.error('Error geocoding location:', error);
-              setProperties([]);
-              setLoading(false);
-              return;
-            }
+            // Show property without coordinates for now
+            console.log('No coordinates available for location:', data.location);
+            propertyData = [{
+              id: data.id,
+              title: data.title,
+              address: data.location,
+              city: data.location?.split(',')[0]?.trim() || 'Unknown City',
+              state: data.location?.split(',')[1]?.trim() || 'Unknown State',
+              coordinates: [-98.5795, 39.8283], // Default to center of USA
+              asking_price: data.asking_price,
+              property_type: data.listing_type,
+              power_capacity_mw: data.power_capacity_mw || 0,
+              size_sqft: data.square_footage || 0,
+              status: data.status,
+              image_url: undefined
+            }];
+            console.log('Property data with default coordinates:', propertyData);
           } else {
-            console.warn('Listing found but no coordinates available:', { 
-              lat: (data as any).latitude, 
-              lng: (data as any).longitude,
-              location: data.location 
-            });
+            console.warn('Listing found but no location data available');
             // Set empty properties and return early for fallback display
             setProperties([]);
             setLoading(false);
@@ -249,6 +219,12 @@ export const VoltMarketPropertyMap: React.FC<VoltMarketPropertyMapProps> = ({
 
       console.log('Final property data:', propertyData); // Debug log
       setProperties(propertyData);
+      
+      // If we have properties and no selected property, select the first one
+      if (propertyData.length > 0 && !selectedProperty) {
+        setSelectedProperty(propertyData[0]);
+        loadNearbyInfrastructure(propertyData[0].coordinates);
+      }
       
       // Load nearby infrastructure for the first property or selected property
       if (propertyData.length > 0) {
