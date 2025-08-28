@@ -93,7 +93,7 @@ export const VoltMarketPropertyMap: React.FC<VoltMarketPropertyMapProps> = ({
 
   useEffect(() => {
     loadProperties();
-  }, [listingId, listings]);
+  }, [listingId]); // Remove 'listings' to prevent infinite loops
 
   const loadProperties = async () => {
     setLoading(true);
@@ -222,14 +222,9 @@ export const VoltMarketPropertyMap: React.FC<VoltMarketPropertyMapProps> = ({
       
       // If we have properties and no selected property, select the first one
       if (propertyData.length > 0 && !selectedProperty) {
-        setSelectedProperty(propertyData[0]);
-        loadNearbyInfrastructure(propertyData[0].coordinates);
-      }
-      
-      // Load nearby infrastructure for the first property or selected property
-      if (propertyData.length > 0) {
-        const targetProperty = propertyData[0];
-        await loadNearbyInfrastructure(targetProperty.coordinates);
+        const firstProperty = propertyData[0];
+        setSelectedProperty(firstProperty);
+        await loadNearbyInfrastructure(firstProperty.coordinates);
       } else {
         console.log('No properties with coordinates found');
       }
