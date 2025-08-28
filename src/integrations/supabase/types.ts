@@ -2704,39 +2704,99 @@ export type Database = {
       voltmarket_listings: {
         Row: {
           asking_price: number
+          available_power_mw: number | null
+          brand: string | null
+          cooling_type: string | null
           created_at: string
           description: string | null
+          equipment_condition: string | null
+          equipment_type: string | null
+          facility_tier: string | null
+          hosting_types: string[] | null
           id: string
+          is_location_confidential: boolean | null
+          latitude: number | null
+          lease_rate: number | null
           listing_type: string
           location: string
+          longitude: number | null
+          manufacture_year: number | null
+          minimum_commitment_months: number | null
+          model: string | null
           power_capacity_mw: number | null
+          power_rate_per_kw: number | null
+          property_type: string | null
+          quantity: number | null
           seller_id: string
+          shipping_terms: string | null
+          specs: Json | null
+          square_footage: number | null
           status: Database["public"]["Enums"]["voltmarket_listing_status"]
           title: string
           updated_at: string
         }
         Insert: {
           asking_price: number
+          available_power_mw?: number | null
+          brand?: string | null
+          cooling_type?: string | null
           created_at?: string
           description?: string | null
+          equipment_condition?: string | null
+          equipment_type?: string | null
+          facility_tier?: string | null
+          hosting_types?: string[] | null
           id?: string
+          is_location_confidential?: boolean | null
+          latitude?: number | null
+          lease_rate?: number | null
           listing_type: string
           location: string
+          longitude?: number | null
+          manufacture_year?: number | null
+          minimum_commitment_months?: number | null
+          model?: string | null
           power_capacity_mw?: number | null
+          power_rate_per_kw?: number | null
+          property_type?: string | null
+          quantity?: number | null
           seller_id: string
+          shipping_terms?: string | null
+          specs?: Json | null
+          square_footage?: number | null
           status?: Database["public"]["Enums"]["voltmarket_listing_status"]
           title: string
           updated_at?: string
         }
         Update: {
           asking_price?: number
+          available_power_mw?: number | null
+          brand?: string | null
+          cooling_type?: string | null
           created_at?: string
           description?: string | null
+          equipment_condition?: string | null
+          equipment_type?: string | null
+          facility_tier?: string | null
+          hosting_types?: string[] | null
           id?: string
+          is_location_confidential?: boolean | null
+          latitude?: number | null
+          lease_rate?: number | null
           listing_type?: string
           location?: string
+          longitude?: number | null
+          manufacture_year?: number | null
+          minimum_commitment_months?: number | null
+          model?: string | null
           power_capacity_mw?: number | null
+          power_rate_per_kw?: number | null
+          property_type?: string | null
+          quantity?: number | null
           seller_id?: string
+          shipping_terms?: string | null
+          specs?: Json | null
+          square_footage?: number | null
           status?: Database["public"]["Enums"]["voltmarket_listing_status"]
           title?: string
           updated_at?: string

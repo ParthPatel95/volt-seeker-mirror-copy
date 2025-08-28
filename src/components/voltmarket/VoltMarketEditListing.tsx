@@ -84,7 +84,12 @@ export const VoltMarketEditListing: React.FC = () => {
         return;
       }
 
-      setListing(data);
+      setListing({
+        ...data,
+        property_type: data.property_type as VoltMarketPropertyType,
+        equipment_type: data.equipment_type as 'other' | 'asic' | 'gpu' | 'cooling' | 'generator' | 'ups' | 'transformer',
+        equipment_condition: data.equipment_condition as 'new' | 'used' | 'refurbished'
+      });
     } catch (error) {
       console.error('Error fetching listing:', error);
       toast({

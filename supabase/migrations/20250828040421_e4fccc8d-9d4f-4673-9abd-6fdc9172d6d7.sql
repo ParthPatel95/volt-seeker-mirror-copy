@@ -1,0 +1,22 @@
+-- Add missing columns to voltmarket_listings table
+ALTER TABLE voltmarket_listings 
+ADD COLUMN IF NOT EXISTS latitude DECIMAL(10, 8),
+ADD COLUMN IF NOT EXISTS longitude DECIMAL(11, 8),
+ADD COLUMN IF NOT EXISTS lease_rate DECIMAL(10, 2),
+ADD COLUMN IF NOT EXISTS power_rate_per_kw DECIMAL(8, 2),
+ADD COLUMN IF NOT EXISTS available_power_mw DECIMAL(10, 2),
+ADD COLUMN IF NOT EXISTS square_footage INTEGER,
+ADD COLUMN IF NOT EXISTS is_location_confidential BOOLEAN DEFAULT FALSE,
+ADD COLUMN IF NOT EXISTS property_type TEXT,
+ADD COLUMN IF NOT EXISTS facility_tier TEXT,
+ADD COLUMN IF NOT EXISTS cooling_type TEXT,
+ADD COLUMN IF NOT EXISTS hosting_types TEXT[],
+ADD COLUMN IF NOT EXISTS minimum_commitment_months INTEGER,
+ADD COLUMN IF NOT EXISTS equipment_type TEXT,
+ADD COLUMN IF NOT EXISTS brand TEXT,
+ADD COLUMN IF NOT EXISTS model TEXT,
+ADD COLUMN IF NOT EXISTS specs JSONB,
+ADD COLUMN IF NOT EXISTS equipment_condition TEXT,
+ADD COLUMN IF NOT EXISTS manufacture_year INTEGER,
+ADD COLUMN IF NOT EXISTS quantity INTEGER,
+ADD COLUMN IF NOT EXISTS shipping_terms TEXT;
