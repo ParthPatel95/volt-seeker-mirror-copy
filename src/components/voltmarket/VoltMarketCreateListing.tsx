@@ -157,14 +157,14 @@ export const VoltMarketCreateListing: React.FC = () => {
         return;
       }
 
-      // Get the voltmarket profile ID - we need this for the foreign key
-      const { data: voltmarketProfile, error: profileError } = await supabase
-        .from('voltmarket_profiles')
-        .select('id')
+      // Check if user has a complete gridbazaar profile
+      const { data: gridbazaarProfile, error: profileError } = await supabase
+        .from('gridbazaar_profiles')
+        .select('id, company_name, phone_number, role')
         .eq('user_id', user.id)
         .single();
 
-      if (profileError || !voltmarketProfile) {
+      if (profileError || !gridbazaarProfile || !gridbazaarProfile.company_name || !gridbazaarProfile.phone_number) {
         toast({
           title: "Profile Required",
           description: "Please complete your VoltMarket profile first",
@@ -202,7 +202,7 @@ export const VoltMarketCreateListing: React.FC = () => {
         manufacture_year: formData.manufacture_year,
         quantity: formData.quantity,
         shipping_terms: formData.shipping_terms,
-        seller_id: voltmarketProfile.id,
+        seller_id: gridbazaarProfile.id,
         status: 'active' as const
       };
 
