@@ -202,7 +202,7 @@ export const VoltMarketCreateListing: React.FC = () => {
         manufacture_year: formData.manufacture_year,
         quantity: formData.quantity,
         shipping_terms: formData.shipping_terms,
-        seller_id: gridbazaarProfile.id,
+        seller_id: user.id,
         status: 'active' as const
       };
 
