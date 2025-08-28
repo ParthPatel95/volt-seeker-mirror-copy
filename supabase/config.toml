@@ -31,3 +31,6 @@ verify_jwt = false
 
 [functions.auth-email-webhook]
 verify_jwt = false
+
+[functions.get-mapbox-config]
+verify_jwt = false
