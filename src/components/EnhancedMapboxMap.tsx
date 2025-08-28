@@ -14,16 +14,37 @@ import {
   Navigation
 } from 'lucide-react';
 
-// Mapbox public token - using the token from Supabase secrets
-const getMapboxToken = () => {
-  // For now, return the hardcoded token, but in production this should come from env
-  return 'pk.eyJ1Ijoidm9sdHNjb3V0IiwiYSI6ImNtYnpqeWtmeDF5YjkycXB2MzQ3YWk0YzIifQ.YkeTxxJcGkgHTpt9miLk6A';
+// Mapbox token configuration
+let mapboxTokenPromise: Promise<string> | null = null;
+
+const getMapboxToken = async (): Promise<string> => {
+  if (!mapboxTokenPromise) {
+    mapboxTokenPromise = fetchMapboxToken();
+  }
+  return mapboxTokenPromise;
 };
 
-// Initialize mapbox
-if (typeof window !== 'undefined') {
-  mapboxgl.accessToken = getMapboxToken();
-}
+const fetchMapboxToken = async (): Promise<string> => {
+  try {
+    const response = await fetch(`https://taimpwfhxqenrkumbkng.supabase.co/functions/v1/get-mapbox-config`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch Mapbox configuration');
+    }
+    
+    const { mapboxToken } = await response.json();
+    return mapboxToken;
+  } catch (error) {
+    console.error('Error fetching Mapbox token:', error);
+    // Fallback to a demo token for development
+    return 'pk.eyJ1Ijoidm9sdHNjb3V0IiwiYSI6ImNtYnpqeWtmeDF5YjkycXB2MzQ3YWk0YzIifQ.YkeTxxJcGkgHTpt9miLk6A';
+  }
+};
 
 interface MapboxMapProps {
   height?: string;
@@ -48,9 +69,28 @@ export function EnhancedMapboxMap({
   const map = useRef<mapboxgl.Map | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentStyle, setCurrentStyle] = useState(mapStyle);
+  const [tokenLoaded, setTokenLoaded] = useState(false);
 
+  // Initialize Mapbox token
   useEffect(() => {
-    if (!mapContainer.current) return;
+    const initializeMapbox = async () => {
+      try {
+        const token = await getMapboxToken();
+        mapboxgl.accessToken = token;
+        setTokenLoaded(true);
+      } catch (error) {
+        console.error('Failed to initialize Mapbox token:', error);
+        // Still set as loaded to prevent infinite loading
+        setTokenLoaded(true);
+      }
+    };
+
+    initializeMapbox();
+  }, []);
+
+  // Initialize map when token is loaded
+  useEffect(() => {
+    if (!mapContainer.current || !tokenLoaded) return;
 
     // Initialize map
     map.current = new mapboxgl.Map({
@@ -87,7 +127,7 @@ export function EnhancedMapboxMap({
     return () => {
       map.current?.remove();
     };
-  }, []);
+  }, [tokenLoaded]);
 
   // Update map style when changed
   useEffect(() => {
@@ -223,11 +263,13 @@ export function EnhancedMapboxMap({
       </div>
 
       {/* Loading Indicator */}
-      {!isLoaded && (
+      {(!tokenLoaded || !isLoaded) && (
         <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
           <div className="text-center">
             <Map className="w-8 h-8 mx-auto mb-2 animate-pulse" />
-            <p className="text-sm text-gray-600">Loading Mapbox...</p>
+            <p className="text-sm text-gray-600">
+              {!tokenLoaded ? 'Loading Mapbox configuration...' : 'Loading Mapbox...'}
+            </p>
           </div>
         </div>
       )}
