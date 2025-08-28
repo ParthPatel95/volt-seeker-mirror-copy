@@ -113,12 +113,12 @@ const SellerDashboard: React.FC<{ profile: any }> = ({ profile }) => {
   };
 
   useEffect(() => {
-    if (profile?.id) {
-      fetchUserListings(profile.id);
+    if (profile?.user_id) {
+      fetchUserListings(profile.user_id);
       fetchAccessRequests(profile.id);
       fetchSellerMetrics();
     }
-  }, [profile?.id]);
+  }, [profile?.user_id, profile?.id]);
 
   const handleDeleteListing = async (listingId: string, title: string) => {
     if (!confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
