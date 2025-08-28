@@ -39,6 +39,7 @@ interface Listing {
   gridbazaar_profiles: {
     company_name: string;
     is_id_verified: boolean;
+    bio?: string;
   } | null;
 }
 
@@ -61,39 +62,49 @@ export const VoltMarketUnifiedListings: React.FC = () => {
   const fetchListings = async () => {
     console.log('Fetching listings...');
     try {
-      let query = supabase
+      const { data: listingsData, error } = await supabase
         .from('voltmarket_listings')
         .select('*')
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 
+      if (error) throw error;
+
+      // Apply filters
+      let filteredData = listingsData || [];
+      
       // Apply price filter if enabled
       if (usePriceFilter) {
-        query = query
-          .gte('asking_price', priceRange[0])
-          .lte('asking_price', priceRange[1]);
+        filteredData = filteredData.filter(listing => 
+          listing.asking_price >= priceRange[0] && listing.asking_price <= priceRange[1]
+        );
       }
 
       // Apply capacity filter if enabled
       if (useCapacityFilter) {
-        query = query
-          .gte('power_capacity_mw', capacityRange[0])
-          .lte('power_capacity_mw', capacityRange[1]);
+        filteredData = filteredData.filter(listing => 
+          listing.power_capacity_mw >= capacityRange[0] && listing.power_capacity_mw <= capacityRange[1]
+        );
       }
 
-      const { data, error } = await query;
+      // Get seller profiles for all listings
+      const sellerIds = [...new Set(filteredData.map(l => l.seller_id))];
+      const { data: profilesData } = await supabase
+        .from('gridbazaar_profiles')
+        .select('user_id, company_name, is_id_verified, bio')
+        .in('user_id', sellerIds);
 
-      console.log('Listings query result:', { data, error });
+      const profilesMap = new Map(profilesData?.map(p => [p.user_id, p]) || []);
 
-      if (error) throw error;
-      
+      console.log('Listings query result:', { data: filteredData, error });
+
       // Transform the data to match the expected interface
-      const transformedData = (data || []).map(listing => ({
+      const transformedData = filteredData.map(listing => ({
         ...listing,
-        lease_rate: 0,
-        power_rate_per_kw: 0,
-        gridbazaar_profiles: null
-      })) as Listing[];
+        lease_rate: listing.lease_rate || 0,
+        power_rate_per_kw: listing.power_rate_per_kw || 0,
+        gridbazaar_profiles: profilesMap.get(listing.seller_id) || null
+      }));
       
       setListings(transformedData);
     } catch (error) {

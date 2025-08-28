@@ -99,16 +99,32 @@ export const VoltMarketListingDetail: React.FC = () => {
     if (!id) return;
 
     try {
-      const { data, error } = await supabase
+      // First get the listing
+      const { data: listingData, error: listingError } = await supabase
         .from('voltmarket_listings')
-        .select(`
-          *,
-          gridbazaar_profiles!seller_id(company_name, is_id_verified, bio)
-        `)
+        .select('*')
         .eq('id', id)
         .maybeSingle();
 
-      if (error) throw error;
+      if (listingError) throw listingError;
+      if (!listingData) {
+        setListing(null);
+        setLoading(false);
+        return;
+      }
+
+      // Then get the seller profile
+      const { data: profileData } = await supabase
+        .from('gridbazaar_profiles')
+        .select('company_name, is_id_verified, bio')
+        .eq('user_id', listingData.seller_id)
+        .maybeSingle();
+
+      const data = {
+        ...listingData,
+        gridbazaar_profiles: profileData
+      };
+
       setListing({
         ...data,
         lease_rate: (data as any).lease_rate || 0,
