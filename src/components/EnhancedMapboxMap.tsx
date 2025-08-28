@@ -1,50 +1,25 @@
-
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { 
   Satellite, 
   Map, 
   Layers,
   ZoomIn,
   ZoomOut,
-  Navigation
+  Navigation,
+  Loader2
 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
-// Mapbox token configuration
-let mapboxTokenPromise: Promise<string> | null = null;
-
-const getMapboxToken = async (): Promise<string> => {
-  if (!mapboxTokenPromise) {
-    mapboxTokenPromise = fetchMapboxToken();
-  }
-  return mapboxTokenPromise;
-};
-
-const fetchMapboxToken = async (): Promise<string> => {
-  try {
-    const response = await fetch(`https://taimpwfhxqenrkumbkng.supabase.co/functions/v1/get-mapbox-config`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch Mapbox configuration');
-    }
-    
-    const { mapboxToken } = await response.json();
-    return mapboxToken;
-  } catch (error) {
-    console.error('Error fetching Mapbox token:', error);
-    // Fallback to a demo token for development
-    return 'pk.eyJ1Ijoidm9sdHNjb3V0IiwiYSI6ImNtYnpqeWtmeDF5YjkycXB2MzQ3YWk0YzIifQ.YkeTxxJcGkgHTpt9miLk6A';
-  }
-};
+interface PropertyLocation {
+  id: string;
+  title: string;
+  coordinates: [number, number]; // [lng, lat]
+  asking_price: number;
+  power_capacity_mw?: number;
+}
 
 interface MapboxMapProps {
   height?: string;
@@ -54,6 +29,9 @@ interface MapboxMapProps {
   mapStyle?: string;
   powerPlants?: any[];
   substations?: any[];
+  properties?: PropertyLocation[];
+  selectedProperty?: PropertyLocation | null;
+  onPropertySelect?: (property: PropertyLocation) => void;
 }
 
 export function EnhancedMapboxMap({ 
@@ -63,132 +41,249 @@ export function EnhancedMapboxMap({
   showControls = true,
   mapStyle = 'mapbox://styles/mapbox/satellite-streets-v12',
   powerPlants = [],
-  substations = []
+  substations = [],
+  properties = [],
+  selectedProperty = null,
+  onPropertySelect
 }: MapboxMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentStyle, setCurrentStyle] = useState(mapStyle);
-  const [tokenLoaded, setTokenLoaded] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Initialize Mapbox token
+  // Initialize Mapbox map
   useEffect(() => {
-    const initializeMapbox = async () => {
+    if (!mapContainer.current || map.current) return;
+
+    const initializeMap = async () => {
       try {
-        const token = await getMapboxToken();
-        mapboxgl.accessToken = token;
-        setTokenLoaded(true);
-      } catch (error) {
-        console.error('Failed to initialize Mapbox token:', error);
-        // Still set as loaded to prevent infinite loading
-        setTokenLoaded(true);
+        setIsInitializing(true);
+        setError(null);
+
+        // Get Mapbox token
+        const { data, error: tokenError } = await supabase.functions.invoke('get-mapbox-config');
+        
+        if (tokenError) {
+          console.error('Error fetching Mapbox token:', tokenError);
+          throw new Error('Failed to fetch map configuration');
+        }
+
+        if (!data.mapboxToken) {
+          throw new Error('No Mapbox token received');
+        }
+
+        // Set Mapbox access token
+        mapboxgl.accessToken = data.mapboxToken;
+
+        // Create map instance
+        map.current = new mapboxgl.Map({
+          container: mapContainer.current!,
+          style: currentStyle,
+          center: initialCenter,
+          zoom: initialZoom,
+          pitch: 0,
+          bearing: 0
+        });
+
+        // Add navigation controls
+        if (showControls) {
+          map.current.addControl(
+            new mapboxgl.NavigationControl({
+              visualizePitch: true,
+            }),
+            'top-right'
+          );
+          map.current.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+          map.current.addControl(new mapboxgl.ScaleControl(), 'bottom-left');
+        }
+
+        // Handle map load
+        map.current.on('load', () => {
+          console.log('Mapbox map loaded successfully');
+          setIsLoaded(true);
+          setIsInitializing(false);
+          addMarkers();
+        });
+
+        // Handle map errors
+        map.current.on('error', (e) => {
+          console.error('Mapbox map error:', e);
+          setError('Map failed to load');
+          setIsInitializing(false);
+        });
+
+      } catch (err: any) {
+        console.error('Failed to initialize Mapbox map:', err);
+        setError(err.message || 'Failed to initialize map');
+        setIsInitializing(false);
       }
     };
 
-    initializeMapbox();
-  }, []);
-
-  // Initialize map when token is loaded
-  useEffect(() => {
-    if (!mapContainer.current || !tokenLoaded) return;
-
-    // Initialize map
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: currentStyle,
-      center: initialCenter,
-      zoom: initialZoom,
-      pitch: 0,
-      bearing: 0
-    });
-
-    // Add navigation controls
-    if (showControls) {
-      map.current.addControl(
-        new mapboxgl.NavigationControl({
-          visualizePitch: true,
-        }),
-        'top-right'
-      );
-
-      // Add fullscreen control
-      map.current.addControl(new mapboxgl.FullscreenControl(), 'top-right');
-
-      // Add scale control
-      map.current.addControl(new mapboxgl.ScaleControl(), 'bottom-left');
-    }
-
-    map.current.on('load', () => {
-      setIsLoaded(true);
-      addInfrastructureData();
-    });
+    initializeMap();
 
     // Cleanup
     return () => {
-      map.current?.remove();
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
     };
-  }, [tokenLoaded]);
+  }, []);
 
-  // Update map style when changed
+  // Update map style
   useEffect(() => {
     if (map.current && isLoaded) {
       map.current.setStyle(currentStyle);
       map.current.once('styledata', () => {
-        addInfrastructureData();
+        addMarkers();
       });
     }
-  }, [currentStyle]);
+  }, [currentStyle, isLoaded]);
 
-  const addInfrastructureData = () => {
+  // Update markers when data changes
+  useEffect(() => {
+    if (map.current && isLoaded) {
+      addMarkers();
+    }
+  }, [properties, powerPlants, substations, isLoaded]);
+
+  // Center map on initial center or properties
+  useEffect(() => {
+    if (map.current && isLoaded) {
+      if (properties.length > 0) {
+        // Fit map to show all properties
+        const bounds = new mapboxgl.LngLatBounds();
+        properties.forEach(property => {
+          bounds.extend(property.coordinates);
+        });
+        
+        if (properties.length === 1) {
+          // Single property - center and zoom
+          map.current.setCenter(properties[0].coordinates);
+          map.current.setZoom(12);
+        } else {
+          // Multiple properties - fit bounds
+          map.current.fitBounds(bounds, { padding: 50 });
+        }
+      } else {
+        // No properties - use initial center
+        map.current.setCenter(initialCenter);
+        map.current.setZoom(initialZoom);
+      }
+    }
+  }, [properties, initialCenter, initialZoom, isLoaded]);
+
+  const addMarkers = useCallback(() => {
     if (!map.current || !isLoaded) return;
 
-    // Add power plants
-    if (powerPlants.length > 0) {
-      powerPlants.forEach((plant, index) => {
-        if (plant.coordinates?.lat && plant.coordinates?.lng) {
-          const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
-            <div class="p-2">
-              <h3 class="font-semibold">${plant.name}</h3>
-              <p class="text-sm text-gray-600">${plant.capacity_mw} MW</p>
-              <p class="text-sm text-gray-600">${plant.fuel_type}</p>
-            </div>
-          `);
+    // Remove existing markers (simple approach - in production you'd track and update)
+    const existingMarkers = document.querySelectorAll('.mapboxgl-marker');
+    existingMarkers.forEach(marker => marker.remove());
 
-          const marker = new mapboxgl.Marker({
-            color: '#f59e0b', // Yellow for power plants
-            scale: 0.8
-          })
-            .setLngLat([plant.coordinates.lng, plant.coordinates.lat])
-            .setPopup(popup)
-            .addTo(map.current!);
+    // Add property markers
+    properties.forEach((property) => {
+      const isSelected = selectedProperty?.id === property.id;
+      
+      // Create custom marker element
+      const el = document.createElement('div');
+      el.className = 'property-marker';
+      el.style.width = '20px';
+      el.style.height = '20px';
+      el.style.borderRadius = '50%';
+      el.style.backgroundColor = isSelected ? '#22c55e' : '#ef4444';
+      el.style.border = '2px solid white';
+      el.style.cursor = 'pointer';
+      el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+
+      const popup = new mapboxgl.Popup({ 
+        offset: 25,
+        closeButton: true,
+        closeOnClick: false 
+      }).setHTML(`
+        <div class="p-3 max-w-xs">
+          <h3 class="font-semibold text-sm mb-1">${property.title}</h3>
+          <p class="text-xs text-gray-600 mb-2">$${(property.asking_price / 1000000).toFixed(1)}M</p>
+          ${property.power_capacity_mw ? `<p class="text-xs text-blue-600">${property.power_capacity_mw} MW capacity</p>` : ''}
+          <button class="mt-2 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600" onclick="window.selectProperty('${property.id}')">
+            Select Property
+          </button>
+        </div>
+      `);
+
+      const marker = new mapboxgl.Marker(el)
+        .setLngLat(property.coordinates)
+        .setPopup(popup)
+        .addTo(map.current!);
+
+      // Handle marker click
+      el.addEventListener('click', () => {
+        if (onPropertySelect) {
+          onPropertySelect(property);
         }
       });
-    }
+    });
 
-    // Add substations
-    if (substations.length > 0) {
-      substations.forEach((substation, index) => {
-        if (substation.latitude && substation.longitude) {
-          const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
-            <div class="p-2">
-              <h3 class="font-semibold">${substation.name}</h3>
-              <p class="text-sm text-gray-600">${substation.capacity_mva} MVA</p>
-              <p class="text-sm text-gray-600">${substation.voltage_level}</p>
-              <p class="text-sm text-gray-600">${substation.city}, ${substation.state}</p>
-            </div>
-          `);
+    // Add power plant markers
+    powerPlants.forEach((plant, index) => {
+      if (plant.coordinates?.lat && plant.coordinates?.lng) {
+        const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+          <div class="p-2">
+            <h3 class="font-semibold">${plant.name}</h3>
+            <p class="text-sm text-gray-600">${plant.capacity_mw} MW</p>
+            <p class="text-sm text-gray-600">${plant.fuel_type}</p>
+          </div>
+        `);
 
-          const marker = new mapboxgl.Marker({
-            color: '#3b82f6', // Blue for substations
-            scale: 0.6
-          })
-            .setLngLat([substation.longitude, substation.latitude])
-            .setPopup(popup)
-            .addTo(map.current!);
-        }
-      });
-    }
-  };
+        new mapboxgl.Marker({
+          color: '#f59e0b',
+          scale: 0.8
+        })
+          .setLngLat([plant.coordinates.lng, plant.coordinates.lat])
+          .setPopup(popup)
+          .addTo(map.current!);
+      }
+    });
+
+    // Add substation markers
+    substations.forEach((substation, index) => {
+      if (substation.latitude && substation.longitude) {
+        const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+          <div class="p-2">
+            <h3 class="font-semibold">${substation.name}</h3>
+            <p class="text-sm text-gray-600">${substation.capacity_mva} MVA</p>
+            <p class="text-sm text-gray-600">${substation.voltage_level}</p>
+            <p class="text-sm text-gray-600">${substation.city}, ${substation.state}</p>
+          </div>
+        `);
+
+        new mapboxgl.Marker({
+          color: '#3b82f6',
+          scale: 0.6
+        })
+          .setLngLat([substation.longitude, substation.latitude])
+          .setPopup(popup)
+          .addTo(map.current!);
+      }
+    });
+
+    console.log('Added markers:', { properties: properties.length, powerPlants: powerPlants.length, substations: substations.length });
+  }, [properties, powerPlants, substations, selectedProperty, onPropertySelect, isLoaded]);
+
+  // Global function for popup button clicks
+  useEffect(() => {
+    (window as any).selectProperty = (propertyId: string) => {
+      const property = properties.find(p => p.id === propertyId);
+      if (property && onPropertySelect) {
+        onPropertySelect(property);
+      }
+    };
+    
+    return () => {
+      delete (window as any).selectProperty;
+    };
+  }, [properties, onPropertySelect]);
 
   const mapStyles = [
     { name: 'Satellite', value: 'mapbox://styles/mapbox/satellite-streets-v12', icon: Satellite },
@@ -197,79 +292,98 @@ export function EnhancedMapboxMap({
     { name: 'Light', value: 'mapbox://styles/mapbox/light-v11', icon: Layers }
   ];
 
-  const zoomIn = () => {
-    if (map.current) {
-      map.current.zoomIn();
-    }
-  };
-
-  const zoomOut = () => {
-    if (map.current) {
-      map.current.zoomOut();
-    }
-  };
+  const zoomIn = () => map.current?.zoomIn();
+  const zoomOut = () => map.current?.zoomOut();
 
   return (
     <div className="relative">
       {/* Map Container */}
-      <div ref={mapContainer} className={`w-full ${height} rounded-lg overflow-hidden`} />
+      <div ref={mapContainer} className={`w-full ${height} rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800`} />
       
       {/* Map Style Controls */}
-      <div className="absolute top-4 left-4 z-10 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-2">
-        <div className="flex flex-col space-y-2">
-          {mapStyles.map((style) => {
-            const IconComponent = style.icon;
-            return (
-              <Button
-                key={style.value}
-                size="sm"
-                variant={currentStyle === style.value ? "default" : "outline"}
-                onClick={() => setCurrentStyle(style.value)}
-                className="w-full justify-start"
-              >
-                <IconComponent className="w-4 h-4 mr-2" />
-                {style.name}
-              </Button>
-            );
-          })}
+      {isLoaded && (
+        <div className="absolute top-4 left-4 z-10 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-2">
+          <div className="flex flex-col space-y-2">
+            {mapStyles.map((style) => {
+              const IconComponent = style.icon;
+              return (
+                <Button
+                  key={style.value}
+                  size="sm"
+                  variant={currentStyle === style.value ? "default" : "outline"}
+                  onClick={() => setCurrentStyle(style.value)}
+                  className="w-full justify-start"
+                >
+                  <IconComponent className="w-4 h-4 mr-2" />
+                  {style.name}
+                </Button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Custom Zoom Controls */}
-      <div className="absolute top-4 right-4 z-10 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-1">
-        <div className="flex flex-col space-y-1">
-          <Button size="sm" variant="outline" onClick={zoomIn}>
-            <ZoomIn className="w-4 h-4" />
-          </Button>
-          <Button size="sm" variant="outline" onClick={zoomOut}>
-            <ZoomOut className="w-4 h-4" />
-          </Button>
+      {isLoaded && (
+        <div className="absolute top-4 right-4 z-10 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-1">
+          <div className="flex flex-col space-y-1">
+            <Button size="sm" variant="outline" onClick={zoomIn}>
+              <ZoomIn className="w-4 h-4" />
+            </Button>
+            <Button size="sm" variant="outline" onClick={zoomOut}>
+              <ZoomOut className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Map Legend */}
-      <div className="absolute bottom-4 left-4 z-10 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-3">
-        <h4 className="text-sm font-semibold mb-2">Infrastructure</h4>
-        <div className="space-y-2">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-            <span className="text-xs">Power Plants</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-            <span className="text-xs">Substations</span>
+      {isLoaded && (
+        <div className="absolute bottom-4 left-4 z-10 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-3">
+          <h4 className="text-sm font-semibold mb-2">Legend</h4>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+              <span className="text-xs">Properties</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span className="text-xs">Selected Property</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+              <span className="text-xs">Power Plants</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span className="text-xs">Substations</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Loading Indicator */}
-      {(!tokenLoaded || !isLoaded) && (
+      {/* Loading/Error Overlay */}
+      {(isInitializing || error) && (
         <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
           <div className="text-center">
-            <Map className="w-8 h-8 mx-auto mb-2 animate-pulse" />
-            <p className="text-sm text-gray-600">
-              {!tokenLoaded ? 'Loading Mapbox configuration...' : 'Loading Mapbox...'}
-            </p>
+            {error ? (
+              <>
+                <Map className="w-8 h-8 mx-auto mb-2 text-red-500" />
+                <p className="text-sm text-red-600 mb-2">{error}</p>
+                <Button 
+                  size="sm" 
+                  onClick={() => window.location.reload()}
+                  className="text-xs"
+                >
+                  Reload Page
+                </Button>
+              </>
+            ) : (
+              <>
+                <Loader2 className="w-8 h-8 mx-auto mb-2 animate-spin text-blue-500" />
+                <p className="text-sm text-gray-600">Loading map...</p>
+              </>
+            )}
           </div>
         </div>
       )}

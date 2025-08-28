@@ -400,12 +400,10 @@ export const VoltMarketPropertyMap: React.FC<VoltMarketPropertyMapProps> = ({
               initialZoom={listingId ? 12 : 6}
               powerPlants={mapPowerPlants}
               substations={mapSubstations}
+              properties={filteredProperties}
+              selectedProperty={selectedProperty}
+              onPropertySelect={handlePropertySelect}
             />
-            
-            {/* Property Markers Overlay */}
-            <div className="absolute inset-0 pointer-events-none">
-              {/* Custom property markers would be added here via map instance */}
-            </div>
           </div>
 
           {/* Sidebar */}
