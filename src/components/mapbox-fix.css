@@ -1,0 +1,15 @@
+/* Fix for Mapbox GL map visibility issues */
+.mapbox-container .mapboxgl-map {
+  visibility: visible !important;
+  display: block !important;
+}
+
+.mapbox-container .mapboxgl-canvas-container {
+  visibility: visible !important;
+  display: block !important;
+}
+
+.mapbox-container .mapboxgl-canvas {
+  visibility: visible !important;
+  display: block !important;
+}

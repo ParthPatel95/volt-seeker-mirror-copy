@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import './mapbox-fix.css';
 import { Button } from '@/components/ui/button';
 import { 
   Satellite, 
@@ -302,7 +303,14 @@ export function EnhancedMapboxMap({
   return (
     <div className="relative">
       {/* Map Container */}
-      <div ref={mapContainer} className={`w-full ${height} rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800`} />
+      <div 
+        ref={mapContainer} 
+        className={`w-full ${height} rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 mapbox-container`}
+        style={{ 
+          minHeight: '400px',
+          position: 'relative'
+        }}
+      />
       
       {/* Map Style Controls */}
       {isLoaded && (
