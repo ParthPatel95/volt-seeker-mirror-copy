@@ -12,7 +12,7 @@ import { VoltMarketDueDiligence } from './VoltMarketDueDiligence';
 import { VoltMarketAdvancedDueDiligence } from './VoltMarketAdvancedDueDiligence';
 import { VoltMarketListingAnalytics } from './VoltMarketListingAnalytics';
 import { VoltMarketRealTimeData } from './VoltMarketRealTimeData';
-import { VoltMarketPropertyMap } from './VoltMarketPropertyMap';
+import { VoltMarketSimplePropertyMap } from './VoltMarketSimplePropertyMap';
 import { VoltMarketLocationDisplay } from './VoltMarketLocationDisplay';
 import { VoltMarketListingImageGallery } from './VoltMarketListingImageGallery';
 import { VoltMarketSocialShare } from './VoltMarketSocialShare';
@@ -551,7 +551,7 @@ export const VoltMarketListingDetail: React.FC = () => {
 
               <TabsContent value="location">
                 {listing.latitude && listing.longitude ? (
-                  <VoltMarketPropertyMap
+                  <VoltMarketSimplePropertyMap
                     listingId={listing.id}
                     height="h-[600px]"
                   />
