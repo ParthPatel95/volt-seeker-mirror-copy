@@ -12,13 +12,32 @@ serve(async (req) => {
   }
 
   try {
+    // Get Mapbox PUBLIC token (must start with pk. for client-side use)
+    // See: https://docs.mapbox.com/api/overview/#access-tokens-and-token-scopes
     const mapboxToken = Deno.env.get('MAPBOX_PUBLIC_TOKEN');
     
     if (!mapboxToken) {
       return new Response(
-        JSON.stringify({ error: 'Mapbox token not configured' }),
+        JSON.stringify({ 
+          error: 'Mapbox public token not configured',
+          message: 'Please add your Mapbox public token (pk.*) to the MAPBOX_PUBLIC_TOKEN secret'
+        }),
         { 
           status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    // Validate that it's a public token (starts with pk.)
+    if (!mapboxToken.startsWith('pk.')) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid token type',
+          message: 'Mapbox GL requires a public access token (pk.*), not a secret token (sk.*)'
+        }),
+        { 
+          status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       );
