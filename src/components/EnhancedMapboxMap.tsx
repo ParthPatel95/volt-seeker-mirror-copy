@@ -82,14 +82,27 @@ export function EnhancedMapboxMap({
         // Set Mapbox access token
         mapboxgl.accessToken = data.mapboxToken;
 
+        // Add a small delay to ensure container is properly sized
+        await new Promise(resolve => setTimeout(resolve, 100));
+
         // Create map instance
+        console.log('Creating Mapbox map with container:', mapContainer.current);
+        console.log('Map container dimensions:', {
+          width: mapContainer.current!.offsetWidth,
+          height: mapContainer.current!.offsetHeight,
+          clientWidth: mapContainer.current!.clientWidth,
+          clientHeight: mapContainer.current!.clientHeight
+        });
+        
         map.current = new mapboxgl.Map({
           container: mapContainer.current!,
           style: currentStyle,
           center: initialCenter,
           zoom: initialZoom,
           pitch: 0,
-          bearing: 0
+          bearing: 0,
+          attributionControl: false,
+          preserveDrawingBuffer: true
         });
 
         // Add navigation controls
