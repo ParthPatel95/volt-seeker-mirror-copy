@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import DOMPurify from 'dompurify';
 import { useSocialNetwork, type SocialPost } from '@/hooks/useSocialNetwork';
 import { CommentSection } from './CommentSection';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -42,31 +43,45 @@ export const PostCard = ({ post }: PostCardProps) => {
     repost(post.id);
   };
 
-  const renderContent = () => {
+  // Safe content rendering with XSS protection
+  const safeContent = useMemo(() => {
     let content = post.content;
     
-    // Render hashtags
+    // First sanitize the content to prevent XSS
+    content = DOMPurify.sanitize(content, { 
+      ALLOWED_TAGS: ['br'],
+      ALLOWED_ATTR: []
+    });
+    
+    // Then apply safe highlighting for hashtags and mentions
     if (post.hashtags) {
       post.hashtags.forEach(hashtag => {
+        // Escape the hashtag to prevent regex injection
+        const escapedHashtag = hashtag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         content = content.replace(
-          new RegExp(`#${hashtag}`, 'gi'),
+          new RegExp(`#${escapedHashtag}`, 'gi'),
           `<span class="text-watt-primary font-medium">#${hashtag}</span>`
         );
       });
     }
 
-    // Render mentions
     if (post.mentions) {
       post.mentions.forEach(mention => {
+        // Escape the mention to prevent regex injection
+        const escapedMention = mention.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         content = content.replace(
-          new RegExp(`@${mention}`, 'gi'),
+          new RegExp(`@${escapedMention}`, 'gi'),
           `<span class="text-watt-primary font-medium">@${mention}</span>`
         );
       });
     }
 
-    return { __html: content };
-  };
+    // Final sanitization after adding our safe markup
+    return DOMPurify.sanitize(content, {
+      ALLOWED_TAGS: ['span', 'br'],
+      ALLOWED_ATTR: ['class']
+    });
+  }, [post.content, post.hashtags, post.mentions]);
 
   const displayName = post.social_profiles?.display_name || post.profiles?.full_name || 'Anonymous';
   const username = post.social_profiles?.username || 'anonymous';
@@ -118,7 +133,7 @@ export const PostCard = ({ post }: PostCardProps) => {
             {/* Content */}
             <div 
               className="text-sm mb-3 whitespace-pre-wrap break-words"
-              dangerouslySetInnerHTML={renderContent()}
+              dangerouslySetInnerHTML={{ __html: safeContent }}
             />
 
             {/* Attachments */}
