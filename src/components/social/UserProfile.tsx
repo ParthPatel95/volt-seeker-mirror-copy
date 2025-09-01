@@ -27,10 +27,13 @@ export const UserProfile = () => {
   const { profile, posts, updateProfile, followUser, unfollowUser } = useSocialNetwork();
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState({
+    username: '',
     display_name: '',
     bio: '',
     location: '',
-    website: ''
+    website: '',
+    avatar_url: '',
+    header_url: ''
   });
   const [userPosts, setUserPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,10 +46,13 @@ export const UserProfile = () => {
       
       if (profile) {
         setEditedProfile({
+          username: profile.username || '',
           display_name: profile.display_name || '',
           bio: profile.bio || '',
           location: profile.location || '',
-          website: profile.website || ''
+          website: profile.website || '',
+          avatar_url: profile.avatar_url || '',
+          header_url: profile.header_url || ''
         });
       }
       setLoading(false);
@@ -96,8 +102,16 @@ export const UserProfile = () => {
       </div>
 
       {/* Cover Image */}
-      <div className="relative h-32 sm:h-48 bg-gradient-to-br from-watt-primary/10 to-watt-secondary/10 border-b">
-        <div className="absolute inset-0 bg-gradient-to-br from-background/20 to-muted/40"></div>
+      <div className="relative h-32 sm:h-48 bg-gradient-to-br from-watt-primary/10 to-watt-secondary/10 border-b overflow-hidden">
+        {profile?.header_url ? (
+          <img 
+            src={profile.header_url} 
+            alt="Profile header" 
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-background/20 to-muted/40"></div>
+        )}
       </div>
 
       {/* Profile Info */}
@@ -132,11 +146,35 @@ export const UserProfile = () => {
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
+                    <label className="text-sm font-medium">Username</label>
+                    <Input
+                      value={editedProfile.username}
+                      onChange={(e) => setEditedProfile(prev => ({ ...prev, username: e.target.value }))}
+                      placeholder="Your username"
+                    />
+                  </div>
+                  <div>
                     <label className="text-sm font-medium">Display Name</label>
                     <Input
                       value={editedProfile.display_name}
                       onChange={(e) => setEditedProfile(prev => ({ ...prev, display_name: e.target.value }))}
                       placeholder="Your display name"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Profile Picture URL</label>
+                    <Input
+                      value={editedProfile.avatar_url}
+                      onChange={(e) => setEditedProfile(prev => ({ ...prev, avatar_url: e.target.value }))}
+                      placeholder="https://example.com/profile-picture.jpg"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Banner Image URL</label>
+                    <Input
+                      value={editedProfile.header_url}
+                      onChange={(e) => setEditedProfile(prev => ({ ...prev, header_url: e.target.value }))}
+                      placeholder="https://example.com/banner-image.jpg"
                     />
                   </div>
                   <div>

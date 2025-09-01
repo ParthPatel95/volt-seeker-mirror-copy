@@ -508,6 +508,23 @@ async function getUserProfile(supabase: any, data: any) {
 async function updateProfile(supabase: any, data: any) {
   const { user_id, username, display_name, bio, avatar_url, header_url, location, website } = data;
 
+  // Check username uniqueness if username is provided and different from current
+  if (username) {
+    const { data: existingProfile } = await supabase
+      .from('social_profiles')
+      .select('user_id')
+      .eq('username', username)
+      .neq('user_id', user_id)
+      .single();
+
+    if (existingProfile) {
+      return new Response(
+        JSON.stringify({ error: 'Username is already taken' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+  }
+
   // Provide defaults for required fields if not provided
   const profileData = {
     user_id,
