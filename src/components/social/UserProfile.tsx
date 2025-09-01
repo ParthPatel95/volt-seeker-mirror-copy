@@ -20,7 +20,9 @@ import {
   Users,
   MessageSquare,
   Heart,
-  Settings
+  Settings,
+  Upload,
+  Camera
 } from 'lucide-react';
 
 export const UserProfile = () => {
@@ -38,6 +40,7 @@ export const UserProfile = () => {
   const [userPosts, setUserPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [uploading, setUploading] = useState({ avatar: false, header: false });
 
   useEffect(() => {
     const getCurrentUser = async () => {
@@ -68,6 +71,51 @@ export const UserProfile = () => {
       setUserPosts(filteredPosts);
     }
   }, [posts, currentUser]);
+
+  const uploadImage = async (file: File, type: 'avatar' | 'header') => {
+    if (!currentUser || !file) return null;
+
+    try {
+      setUploading(prev => ({ ...prev, [type]: true }));
+
+      // Create unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${currentUser.id}/${type}_${Date.now()}.${fileExt}`;
+
+      // Upload to Supabase storage
+      const { data, error } = await supabase.storage
+        .from('profile-images')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('profile-images')
+        .getPublicUrl(fileName);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+      return null;
+    } finally {
+      setUploading(prev => ({ ...prev, [type]: false }));
+    }
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'header') => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const imageUrl = await uploadImage(file, type);
+    if (imageUrl) {
+      const field = type === 'avatar' ? 'avatar_url' : 'header_url';
+      setEditedProfile(prev => ({ ...prev, [field]: imageUrl }));
+    }
+  };
 
   const handleProfileUpdate = async () => {
     try {
@@ -162,20 +210,78 @@ export const UserProfile = () => {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Profile Picture URL</label>
-                    <Input
-                      value={editedProfile.avatar_url}
-                      onChange={(e) => setEditedProfile(prev => ({ ...prev, avatar_url: e.target.value }))}
-                      placeholder="https://example.com/profile-picture.jpg"
-                    />
+                    <label className="text-sm font-medium">Profile Picture</label>
+                    <div className="space-y-3">
+                      {editedProfile.avatar_url && (
+                        <div className="flex items-center space-x-3">
+                          <Avatar className="w-16 h-16">
+                            <AvatarImage src={editedProfile.avatar_url} />
+                            <AvatarFallback>
+                              {editedProfile.display_name?.charAt(0)?.toUpperCase() || 'U'}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="text-sm text-muted-foreground">Current profile picture</div>
+                        </div>
+                      )}
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(e, 'avatar')}
+                          className="hidden"
+                          id="avatar-upload"
+                        />
+                        <label
+                          htmlFor="avatar-upload"
+                          className="flex items-center space-x-2 px-3 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md cursor-pointer"
+                        >
+                          {uploading.avatar ? (
+                            <div className="w-4 h-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                          ) : (
+                            <Camera className="w-4 h-4" />
+                          )}
+                          <span className="text-sm">
+                            {uploading.avatar ? 'Uploading...' : 'Upload Image'}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Banner Image URL</label>
-                    <Input
-                      value={editedProfile.header_url}
-                      onChange={(e) => setEditedProfile(prev => ({ ...prev, header_url: e.target.value }))}
-                      placeholder="https://example.com/banner-image.jpg"
-                    />
+                    <label className="text-sm font-medium">Banner Image</label>
+                    <div className="space-y-3">
+                      {editedProfile.header_url && (
+                        <div className="w-full h-24 rounded-md overflow-hidden bg-muted">
+                          <img 
+                            src={editedProfile.header_url} 
+                            alt="Current banner" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(e, 'header')}
+                          className="hidden"
+                          id="header-upload"
+                        />
+                        <label
+                          htmlFor="header-upload"
+                          className="flex items-center space-x-2 px-3 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md cursor-pointer"
+                        >
+                          {uploading.header ? (
+                            <div className="w-4 h-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          <span className="text-sm">
+                            {uploading.header ? 'Uploading...' : 'Upload Banner'}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
                   </div>
                   <div>
                     <label className="text-sm font-medium">Bio</label>
