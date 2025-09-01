@@ -508,18 +508,23 @@ async function getUserProfile(supabase: any, data: any) {
 async function updateProfile(supabase: any, data: any) {
   const { user_id, username, display_name, bio, avatar_url, header_url, location, website } = data;
 
+  // Provide defaults for required fields if not provided
+  const profileData = {
+    user_id,
+    username: username || `user_${user_id.substring(0, 8)}`,
+    display_name: display_name || 'Anonymous User',
+    bio,
+    avatar_url,
+    header_url,
+    location,
+    website
+  };
+
+  console.log('Updating profile with data:', profileData);
+
   const { data: profile, error } = await supabase
     .from('social_profiles')
-    .upsert({
-      user_id,
-      username,
-      display_name,
-      bio,
-      avatar_url,
-      header_url,
-      location,
-      website
-    })
+    .upsert(profileData)
     .select('*')
     .single();
 
