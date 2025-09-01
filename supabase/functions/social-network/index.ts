@@ -541,7 +541,10 @@ async function updateProfile(supabase: any, data: any) {
 
   const { data: profile, error } = await supabase
     .from('social_profiles')
-    .upsert(profileData)
+    .upsert(profileData, { 
+      onConflict: 'user_id',
+      ignoreDuplicates: false 
+    })
     .select('*')
     .single();
 

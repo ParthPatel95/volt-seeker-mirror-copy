@@ -188,11 +188,11 @@ export const UserProfile = () => {
                   Edit Profile
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-h-[85vh] overflow-y-auto max-w-md">
                 <DialogHeader>
                   <DialogTitle>Edit Profile</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4">
+                <div className="space-y-4 pb-4">
                   <div>
                     <label className="text-sm font-medium">Username</label>
                     <Input
@@ -308,7 +308,7 @@ export const UserProfile = () => {
                       placeholder="https://your-website.com"
                     />
                   </div>
-                  <div className="flex justify-end space-x-2">
+                  <div className="flex justify-end space-x-2 pt-4 sticky bottom-0 bg-background border-t mt-4">
                     <Button variant="outline" onClick={() => setIsEditing(false)}>
                       Cancel
                     </Button>
