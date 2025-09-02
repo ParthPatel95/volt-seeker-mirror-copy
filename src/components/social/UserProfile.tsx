@@ -210,8 +210,8 @@ export const UserProfile = ({ userId, onBack }: UserProfileProps) => {
       </div>
 
       {/* Profile Info */}
-      <div className="p-4 sm:p-6 -mt-12 sm:-mt-16 lg:-mt-20 relative">
-        <div className="flex flex-col space-y-4 mb-6">
+      <div className="p-4 sm:p-6 lg:p-8 -mt-8 sm:-mt-12 lg:-mt-16 relative">
+        <div className="flex flex-col space-y-6 mb-8">
           {/* Avatar and Basic Info */}
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             <div className="flex flex-col sm:flex-row sm:items-end space-y-3 sm:space-y-0 sm:space-x-4">
