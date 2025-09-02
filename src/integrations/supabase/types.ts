@@ -3320,7 +3320,15 @@ export type Database = {
           listing_id?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_voltmarket_watchlist_listing_id"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "voltmarket_listings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       voltscout_approved_users: {
         Row: {
