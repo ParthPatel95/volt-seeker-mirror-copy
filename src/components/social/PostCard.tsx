@@ -39,9 +39,10 @@ import {
 
 interface PostCardProps {
   post: SocialPost;
+  onUserClick?: (userId: string) => void;
 }
 
-export const PostCard = ({ post }: PostCardProps) => {
+export const PostCard = ({ post, onUserClick }: PostCardProps) => {
   const { likePost, unlikePost, repost, deletePost } = useSocialNetwork();
   const [showComments, setShowComments] = useState(false);
   
@@ -138,10 +139,7 @@ export const PostCard = ({ post }: PostCardProps) => {
               <div className="flex items-center space-x-1">
                 <button 
                   className="font-bold text-sm hover:underline cursor-pointer"
-                  onClick={() => {
-                    // TODO: Navigate to user profile
-                    console.log('Navigate to user:', post.user_id);
-                  }}
+                  onClick={() => onUserClick?.(post.user_id)}
                 >
                   {displayName}
                 </button>

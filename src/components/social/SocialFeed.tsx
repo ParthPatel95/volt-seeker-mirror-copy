@@ -6,7 +6,11 @@ import { Button } from '@/components/ui/button';
 import { RefreshCw, Plus } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-export const SocialFeed = () => {
+interface SocialFeedProps {
+  onUserClick?: (userId: string) => void;
+}
+
+export const SocialFeed = ({ onUserClick }: SocialFeedProps) => {
   const { posts, loading, loadFeed } = useSocialNetwork();
   const [showCompose, setShowCompose] = useState(false);
 
@@ -67,7 +71,7 @@ export const SocialFeed = () => {
           </div>
         ) : (
           posts.map((post) => (
-            <PostCard key={post.id} post={post} />
+            <PostCard key={post.id} post={post} onUserClick={onUserClick} />
           ))
         )}
       </div>

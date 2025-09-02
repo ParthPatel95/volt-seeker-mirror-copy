@@ -22,6 +22,7 @@ type ViewType = 'feed' | 'search' | 'notifications' | 'profile' | 'compose';
 
 export const SocialNetworkHub = () => {
   const [currentView, setCurrentView] = useState<ViewType>('feed');
+  const [viewingUserId, setViewingUserId] = useState<string | null>(null);
 
   const navigationItems = [
     { id: 'feed', label: 'Home', icon: Home },
@@ -30,20 +31,25 @@ export const SocialNetworkHub = () => {
     { id: 'profile', label: 'Profile', icon: User },
   ];
 
+  const navigateToUserProfile = (userId: string) => {
+    setViewingUserId(userId);
+    setCurrentView('profile');
+  };
+
   const renderCurrentView = () => {
     switch (currentView) {
       case 'feed':
-        return <SocialFeed />;
+        return <SocialFeed onUserClick={navigateToUserProfile} />;
       case 'search':
         return <SocialSearch />;
       case 'notifications':
         return <Notifications />;
       case 'profile':
-        return <UserProfile />;
+        return <UserProfile userId={viewingUserId} onBack={() => { setCurrentView('feed'); setViewingUserId(null); }} />;
       case 'compose':
         return <ComposePost onClose={() => setCurrentView('feed')} />;
       default:
-        return <SocialFeed />;
+        return <SocialFeed onUserClick={navigateToUserProfile} />;
     }
   };
 

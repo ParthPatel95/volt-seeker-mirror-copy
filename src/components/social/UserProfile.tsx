@@ -25,8 +25,13 @@ import {
   Camera
 } from 'lucide-react';
 
-export const UserProfile = () => {
-  const { profile, posts, updateProfile, followUser, unfollowUser } = useSocialNetwork();
+interface UserProfileProps {
+  userId?: string | null;
+  onBack?: () => void;
+}
+
+export const UserProfile = ({ userId, onBack }: UserProfileProps) => {
+  const { profile: currentUserProfile, posts, updateProfile, followUser, unfollowUser, getUserProfile } = useSocialNetwork();
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState({
     username: '',
@@ -41,36 +46,70 @@ export const UserProfile = () => {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [uploading, setUploading] = useState({ avatar: false, header: false });
+  const [viewedProfile, setViewedProfile] = useState<any>(null);
+  const [isOwnProfile, setIsOwnProfile] = useState(true);
 
   useEffect(() => {
     const getCurrentUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setCurrentUser(user);
-      
-      if (profile) {
-        setEditedProfile({
-          username: profile.username || '',
-          display_name: profile.display_name || '',
-          bio: profile.bio || '',
-          location: profile.location || '',
-          website: profile.website || '',
-          avatar_url: profile.avatar_url || '',
-          header_url: profile.header_url || ''
-        });
-      }
       setLoading(false);
     };
 
     getCurrentUser();
-  }, [profile]);
+  }, []);
 
   useEffect(() => {
-    // Filter posts by current user
-    if (posts && currentUser) {
+    const loadProfileData = async () => {
+      if (!currentUser) return;
+      
+      setLoading(true);
+      const targetUserId = userId || currentUser.id;
+      const isOwn = !userId || userId === currentUser.id;
+      setIsOwnProfile(isOwn);
+
+      try {
+        if (isOwn) {
+          // Use current user's profile from context
+          const profileData = currentUserProfile;
+          setViewedProfile(profileData);
+          
+          if (profileData) {
+            setEditedProfile({
+              username: profileData.username || '',
+              display_name: profileData.display_name || '',
+              bio: profileData.bio || '',
+              location: profileData.location || '',
+              website: profileData.website || '',
+              avatar_url: profileData.avatar_url || '',
+              header_url: profileData.header_url || ''
+            });
+          }
+        } else {
+          // Load other user's profile
+          const result = await getUserProfile(targetUserId);
+          if (result?.profile) {
+            setViewedProfile(result.profile);
+            setUserPosts(result.posts || []);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load profile data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProfileData();
+  }, [userId, currentUser, currentUserProfile, getUserProfile]);
+
+  useEffect(() => {
+    // Filter posts by target user (only for own profile)
+    if (posts && currentUser && isOwnProfile) {
       const filteredPosts = posts.filter(post => post.user_id === currentUser.id);
       setUserPosts(filteredPosts);
     }
-  }, [posts, currentUser]);
+  }, [posts, currentUser, isOwnProfile]);
 
   const uploadImage = async (file: File, type: 'avatar' | 'header') => {
     if (!currentUser || !file) return null;
@@ -138,22 +177,30 @@ export const UserProfile = () => {
     );
   }
 
-  const displayName = profile?.display_name || currentUser?.user_metadata?.full_name || 'Anonymous User';
-  const username = profile?.username || currentUser?.email?.split('@')[0] || 'anonymous';
-  const avatarUrl = profile?.avatar_url || currentUser?.user_metadata?.avatar_url;
+  const activeProfile = viewedProfile || currentUserProfile;
+  const displayName = activeProfile?.display_name || currentUser?.user_metadata?.full_name || 'Anonymous User';
+  const username = activeProfile?.username || currentUser?.email?.split('@')[0] || 'anonymous';
+  const avatarUrl = activeProfile?.avatar_url || currentUser?.user_metadata?.avatar_url;
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b p-4 lg:hidden z-10">
-        <h2 className="text-xl font-bold">Profile</h2>
+        <div className="flex items-center space-x-4">
+          {onBack && (
+            <Button variant="ghost" size="sm" onClick={onBack}>
+              ← Back
+            </Button>
+          )}
+          <h2 className="text-xl font-bold">{isOwnProfile ? 'Profile' : displayName}</h2>
+        </div>
       </div>
 
       {/* Cover Image */}
       <div className="relative h-32 sm:h-48 lg:h-56 bg-gradient-to-br from-watt-primary/10 to-watt-secondary/10 border-b overflow-hidden">
-        {profile?.header_url ? (
+        {activeProfile?.header_url ? (
           <img 
-            src={profile.header_url} 
+            src={activeProfile.header_url} 
             alt="Profile header" 
             className="w-full h-full object-cover"
           />
@@ -181,13 +228,14 @@ export const UserProfile = () => {
               </div>
             </div>
 
-            <Dialog open={isEditing} onOpenChange={setIsEditing}>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="mt-4 lg:mt-0 w-full sm:w-auto">
-                  <Edit3 className="w-4 h-4 mr-2" />
-                  Edit Profile
-                </Button>
-              </DialogTrigger>
+            {isOwnProfile ? (
+              <Dialog open={isEditing} onOpenChange={setIsEditing}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="mt-4 lg:mt-0 w-full sm:w-auto">
+                    <Edit3 className="w-4 h-4 mr-2" />
+                    Edit Profile
+                  </Button>
+                </DialogTrigger>
               <DialogContent className="max-h-[90vh] overflow-hidden max-w-md mx-4">
                 <DialogHeader className="pb-2">
                   <DialogTitle>Edit Profile</DialogTitle>
@@ -321,27 +369,42 @@ export const UserProfile = () => {
                 </div>
               </DialogContent>
             </Dialog>
+            ) : (
+              <Button 
+                variant={activeProfile?.is_following ? "outline" : "default"} 
+                className="mt-4 lg:mt-0 w-full sm:w-auto"
+                onClick={() => {
+                  if (activeProfile?.is_following) {
+                    unfollowUser(userId!);
+                  } else {
+                    followUser(userId!);
+                  }
+                }}
+              >
+                {activeProfile?.is_following ? 'Unfollow' : 'Follow'}
+              </Button>
+            )}
           </div>
         </div>
 
         {/* Bio and Details */}
         <div className="space-y-4 mb-6">
-          {profile?.bio && (
-            <p className="text-sm sm:text-base leading-relaxed">{profile.bio}</p>
+          {activeProfile?.bio && (
+            <p className="text-sm sm:text-base leading-relaxed">{activeProfile.bio}</p>
           )}
           
           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-            {profile?.location && (
+            {activeProfile?.location && (
               <div className="flex items-center space-x-1">
                 <MapPin className="w-4 h-4 flex-shrink-0" />
-                <span className="truncate">{profile.location}</span>
+                <span className="truncate">{activeProfile.location}</span>
               </div>
             )}
-            {profile?.website && (
+            {activeProfile?.website && (
               <div className="flex items-center space-x-1 min-w-0">
                 <LinkIcon className="w-4 h-4 flex-shrink-0" />
-                <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-watt-primary hover:underline truncate">
-                  {profile.website.replace(/^https?:\/\//, '')}
+                <a href={activeProfile.website} target="_blank" rel="noopener noreferrer" className="text-watt-primary hover:underline truncate">
+                  {activeProfile.website.replace(/^https?:\/\//, '')}
                 </a>
               </div>
             )}
@@ -354,11 +417,11 @@ export const UserProfile = () => {
           {/* Stats */}
           <div className="flex flex-wrap gap-6 text-sm">
             <div className="flex items-center space-x-1">
-              <span className="font-bold">{profile?.following_count || 0}</span>
+              <span className="font-bold">{activeProfile?.following_count || 0}</span>
               <span className="text-muted-foreground">Following</span>
             </div>
             <div className="flex items-center space-x-1">
-              <span className="font-bold">{profile?.followers_count || 0}</span>
+              <span className="font-bold">{activeProfile?.followers_count || 0}</span>
               <span className="text-muted-foreground">Followers</span>
             </div>
             <div className="flex items-center space-x-1">
