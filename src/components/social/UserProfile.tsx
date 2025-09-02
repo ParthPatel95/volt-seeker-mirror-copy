@@ -175,7 +175,7 @@ export const UserProfile = () => {
                 </AvatarFallback>
               </Avatar>
               
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 mt-4 sm:mt-0">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate">{displayName}</h1>
                 <p className="text-muted-foreground text-sm sm:text-base lg:text-lg">@{username}</p>
               </div>

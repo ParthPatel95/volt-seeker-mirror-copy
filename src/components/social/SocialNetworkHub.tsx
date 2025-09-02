@@ -48,8 +48,8 @@ export const SocialNetworkHub = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <div className="max-w-6xl mx-auto flex">
+    <div className="container-responsive min-h-screen pt-6 pb-24 animate-fade-in">
+      <div className="flex w-full">
         {/* Left Sidebar Navigation */}
         <aside className="w-56 xl:w-64 hidden lg:block sticky top-16 h-[calc(100vh-64px)] overflow-y-auto border-r bg-card/50 backdrop-blur-sm p-3 xl:p-4 z-10">
           <div className="space-y-2">
@@ -92,7 +92,7 @@ export const SocialNetworkHub = () => {
         <div className="flex-1">
           <div className="flex">
             {/* Center Content */}
-            <div className="flex-1 max-w-2xl mx-auto lg:border-x min-h-full">
+            <div className="flex-1 lg:border-x min-h-full">
               {/* Mobile Header */}
               <div className="sticky top-14 sm:top-16 bg-background/95 backdrop-blur-md border-b p-3 sm:p-4 lg:hidden z-20">
                 <div className="flex items-center justify-between">

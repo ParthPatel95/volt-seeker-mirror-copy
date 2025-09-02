@@ -136,7 +136,15 @@ export const PostCard = ({ post }: PostCardProps) => {
             {/* Header */}
             <div className="flex items-center space-x-2 mb-1">
               <div className="flex items-center space-x-1">
-                <span className="font-bold text-sm">{displayName}</span>
+                <button 
+                  className="font-bold text-sm hover:underline cursor-pointer"
+                  onClick={() => {
+                    // TODO: Navigate to user profile
+                    console.log('Navigate to user:', post.user_id);
+                  }}
+                >
+                  {displayName}
+                </button>
                 {isVerified && (
                   <Verified className="w-4 h-4 text-watt-primary fill-current" />
                 )}
