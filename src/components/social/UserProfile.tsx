@@ -143,14 +143,14 @@ export const UserProfile = () => {
   const avatarUrl = profile?.avatar_url || currentUser?.user_metadata?.avatar_url;
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b p-4 lg:hidden z-10">
         <h2 className="text-xl font-bold">Profile</h2>
       </div>
 
       {/* Cover Image */}
-      <div className="relative h-32 sm:h-48 bg-gradient-to-br from-watt-primary/10 to-watt-secondary/10 border-b overflow-hidden">
+      <div className="relative h-32 sm:h-48 lg:h-56 bg-gradient-to-br from-watt-primary/10 to-watt-secondary/10 border-b overflow-hidden">
         {profile?.header_url ? (
           <img 
             src={profile.header_url} 
@@ -163,36 +163,37 @@ export const UserProfile = () => {
       </div>
 
       {/* Profile Info */}
-      <div className="p-4 -mt-12 sm:-mt-16 relative">
+      <div className="p-4 sm:p-6 -mt-12 sm:-mt-16 lg:-mt-20 relative">
         <div className="flex flex-col space-y-4 mb-6">
           {/* Avatar and Basic Info */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             <div className="flex flex-col sm:flex-row sm:items-end space-y-3 sm:space-y-0 sm:space-x-4">
-              <Avatar className="w-20 h-20 sm:w-24 sm:h-24 border-4 border-background self-start">
+              <Avatar className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 border-4 border-background self-start">
                 <AvatarImage src={avatarUrl} alt={displayName} />
-                <AvatarFallback className="text-xl sm:text-2xl">
+                <AvatarFallback className="text-xl sm:text-2xl lg:text-3xl">
                   {displayName.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               
               <div className="flex-1 min-w-0">
-                <h1 className="text-xl sm:text-2xl font-bold truncate">{displayName}</h1>
-                <p className="text-muted-foreground text-sm sm:text-base">@{username}</p>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate">{displayName}</h1>
+                <p className="text-muted-foreground text-sm sm:text-base lg:text-lg">@{username}</p>
               </div>
             </div>
 
             <Dialog open={isEditing} onOpenChange={setIsEditing}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="mt-4 sm:mt-0 self-start">
+                <Button variant="outline" className="mt-4 lg:mt-0 w-full sm:w-auto">
                   <Edit3 className="w-4 h-4 mr-2" />
                   Edit Profile
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-h-[85vh] overflow-y-auto max-w-md">
-                <DialogHeader>
+              <DialogContent className="max-h-[90vh] overflow-hidden max-w-md mx-4">
+                <DialogHeader className="pb-2">
                   <DialogTitle>Edit Profile</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4 pb-4">
+                <div className="max-h-[calc(90vh-120px)] overflow-y-auto pr-2 -mr-2">
+                  <div className="space-y-4 pb-4">
                   <div>
                     <label className="text-sm font-medium">Username</label>
                     <Input
@@ -308,14 +309,15 @@ export const UserProfile = () => {
                       placeholder="https://your-website.com"
                     />
                   </div>
-                  <div className="flex justify-end space-x-2 pt-4 sticky bottom-0 bg-background border-t mt-4">
-                    <Button variant="outline" onClick={() => setIsEditing(false)}>
-                      Cancel
-                    </Button>
-                    <Button onClick={handleProfileUpdate} className="bg-watt-gradient hover:opacity-90">
-                      Save Changes
-                    </Button>
                   </div>
+                </div>
+                <div className="flex justify-end space-x-2 pt-4 border-t bg-background">
+                  <Button variant="outline" onClick={() => setIsEditing(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleProfileUpdate} className="bg-watt-gradient hover:opacity-90">
+                    Save Changes
+                  </Button>
                 </div>
               </DialogContent>
             </Dialog>
@@ -323,60 +325,60 @@ export const UserProfile = () => {
         </div>
 
         {/* Bio and Details */}
-        <div className="space-y-3 mb-6">
+        <div className="space-y-4 mb-6">
           {profile?.bio && (
-            <p className="text-sm">{profile.bio}</p>
+            <p className="text-sm sm:text-base leading-relaxed">{profile.bio}</p>
           )}
           
           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
             {profile?.location && (
               <div className="flex items-center space-x-1">
-                <MapPin className="w-4 h-4" />
-                <span>{profile.location}</span>
+                <MapPin className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">{profile.location}</span>
               </div>
             )}
             {profile?.website && (
-              <div className="flex items-center space-x-1">
-                <LinkIcon className="w-4 h-4" />
-                <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-watt-primary hover:underline">
+              <div className="flex items-center space-x-1 min-w-0">
+                <LinkIcon className="w-4 h-4 flex-shrink-0" />
+                <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-watt-primary hover:underline truncate">
                   {profile.website.replace(/^https?:\/\//, '')}
                 </a>
               </div>
             )}
             <div className="flex items-center space-x-1">
-              <Calendar className="w-4 h-4" />
+              <Calendar className="w-4 h-4 flex-shrink-0" />
               <span>Joined {new Date(currentUser?.created_at || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
             </div>
           </div>
 
           {/* Stats */}
-          <div className="flex space-x-6 text-sm">
-            <div>
+          <div className="flex flex-wrap gap-6 text-sm">
+            <div className="flex items-center space-x-1">
               <span className="font-bold">{profile?.following_count || 0}</span>
-              <span className="text-muted-foreground ml-1">Following</span>
+              <span className="text-muted-foreground">Following</span>
             </div>
-            <div>
+            <div className="flex items-center space-x-1">
               <span className="font-bold">{profile?.followers_count || 0}</span>
-              <span className="text-muted-foreground ml-1">Followers</span>
+              <span className="text-muted-foreground">Followers</span>
             </div>
-            <div>
+            <div className="flex items-center space-x-1">
               <span className="font-bold">{userPosts.length}</span>
-              <span className="text-muted-foreground ml-1">Posts</span>
+              <span className="text-muted-foreground">Posts</span>
             </div>
           </div>
         </div>
 
         {/* Tabs */}
         <Tabs defaultValue="posts" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="posts">Posts</TabsTrigger>
-            <TabsTrigger value="media">Media</TabsTrigger>
-            <TabsTrigger value="likes">Likes</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="posts" className="text-xs sm:text-sm">Posts</TabsTrigger>
+            <TabsTrigger value="media" className="text-xs sm:text-sm">Media</TabsTrigger>
+            <TabsTrigger value="likes" className="text-xs sm:text-sm">Likes</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="posts" className="space-y-0 mt-4">
+          <TabsContent value="posts" className="space-y-4 mt-0">
             {userPosts.length === 0 ? (
-              <Card className="p-8 text-center">
+              <Card className="p-6 sm:p-8 text-center">
                 <MessageSquare className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                 <h3 className="font-semibold mb-2">No posts yet</h3>
                 <p className="text-sm text-muted-foreground">
@@ -384,20 +386,22 @@ export const UserProfile = () => {
                 </p>
               </Card>
             ) : (
-              userPosts.map((post: any) => (
-                <PostCard key={post.id} post={post} />
-              ))
+              <div className="space-y-4">
+                {userPosts.map((post: any) => (
+                  <PostCard key={post.id} post={post} />
+                ))}
+              </div>
             )}
           </TabsContent>
           
-          <TabsContent value="media" className="mt-4">
-            <Card className="p-8 text-center">
+          <TabsContent value="media" className="mt-0">
+            <Card className="p-6 sm:p-8 text-center">
               <div className="text-muted-foreground">Media posts will appear here</div>
             </Card>
           </TabsContent>
           
-          <TabsContent value="likes" className="mt-4">
-            <Card className="p-8 text-center">
+          <TabsContent value="likes" className="mt-0">
+            <Card className="p-6 sm:p-8 text-center">
               <div className="text-muted-foreground">Liked posts will appear here</div>
             </Card>
           </TabsContent>

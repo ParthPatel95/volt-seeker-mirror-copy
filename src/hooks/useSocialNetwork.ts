@@ -406,11 +406,25 @@ export const useSocialNetwork = () => {
     }
   };
 
+  const loadCurrentUserProfile = async () => {
+    if (!user) return;
+    
+    try {
+      const result = await getUserProfile(user.id);
+      if (result?.profile) {
+        setProfile(result.profile);
+      }
+    } catch (error) {
+      console.error('Failed to load current user profile:', error);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       loadFeed();
       loadTrendingHashtags();
       loadNotifications();
+      loadCurrentUserProfile();
     }
   }, [user]);
 
