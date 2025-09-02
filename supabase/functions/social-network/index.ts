@@ -50,6 +50,8 @@ serve(async (req) => {
         return await updateProfile(supabaseClient, data);
       case 'get_notifications':
         return await getNotifications(supabaseClient, data);
+      case 'delete_post':
+        return await deletePost(supabaseClient, data);
       default:
         return new Response(
           JSON.stringify({ error: 'Unknown action' }),
@@ -600,6 +602,51 @@ async function getNotifications(supabase: any, data: any) {
 
   return new Response(
     JSON.stringify({ success: true, notifications: notificationsWithUserInfo }),
+    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+  );
+}
+
+async function deletePost(supabase: any, data: any) {
+  const { post_id, user_id } = data;
+
+  // First verify that the user owns the post
+  const { data: post, error: fetchError } = await supabase
+    .from('social_posts')
+    .select('user_id')
+    .eq('id', post_id)
+    .single();
+
+  if (fetchError) {
+    console.error('Error fetching post for deletion:', fetchError);
+    return new Response(
+      JSON.stringify({ error: fetchError.message }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
+  if (!post || post.user_id !== user_id) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized to delete this post' }),
+      { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
+  // Delete the post
+  const { error: deleteError } = await supabase
+    .from('social_posts')
+    .delete()
+    .eq('id', post_id);
+
+  if (deleteError) {
+    console.error('Error deleting post:', deleteError);
+    return new Response(
+      JSON.stringify({ error: deleteError.message }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
+  return new Response(
+    JSON.stringify({ success: true }),
     { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
   );
 }

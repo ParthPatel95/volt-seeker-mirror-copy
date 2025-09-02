@@ -8,28 +8,53 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { formatDistanceToNow } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Heart,
   MessageCircle,
   Repeat2,
   Share,
   MoreHorizontal,
-  Verified
+  Verified,
+  Trash2
 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface PostCardProps {
   post: SocialPost;
 }
 
 export const PostCard = ({ post }: PostCardProps) => {
-  const { likePost, unlikePost, repost } = useSocialNetwork();
+  const { likePost, unlikePost, repost, deletePost } = useSocialNetwork();
   const [showComments, setShowComments] = useState(false);
+  
+  // Get current user to check if they can delete the post
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  
+  React.useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
+    };
+    getUser();
+  }, []);
 
   const handleLike = () => {
     if (post.is_liked) {
@@ -42,6 +67,12 @@ export const PostCard = ({ post }: PostCardProps) => {
   const handleRepost = () => {
     repost(post.id);
   };
+
+  const handleDelete = () => {
+    deletePost(post.id);
+  };
+
+  const canDeletePost = currentUser?.id === post.user_id;
 
   // Safe content rendering with XSS protection
   const safeContent = useMemo(() => {
@@ -125,6 +156,39 @@ export const PostCard = ({ post }: PostCardProps) => {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem>Copy link</DropdownMenuItem>
                     <DropdownMenuItem>Report post</DropdownMenuItem>
+                    {canDeletePost && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <DropdownMenuItem 
+                              className="text-destructive focus:text-destructive"
+                              onSelect={(e) => e.preventDefault()}
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete post
+                            </DropdownMenuItem>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete post?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete your post.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction 
+                                onClick={handleDelete}
+                                className="bg-destructive hover:bg-destructive/90"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>

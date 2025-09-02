@@ -379,6 +379,33 @@ export const useSocialNetwork = () => {
     }
   };
 
+  const deletePost = async (postId: string) => {
+    if (!user?.id) {
+      toast.error('You must be logged in to delete posts');
+      return;
+    }
+
+    try {
+      const result = await callSocialFunction('delete_post', {
+        user_id: user.id,
+        post_id: postId
+      });
+
+      if (result.error) {
+        toast.error('Failed to delete post');
+        return;
+      }
+
+      toast.success('Post deleted successfully');
+      
+      // Remove post from local state for immediate UI feedback
+      setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      toast.error('Failed to delete post');
+    }
+  };
+
   useEffect(() => {
     if (user) {
       loadFeed();
@@ -397,6 +424,7 @@ export const useSocialNetwork = () => {
     likePost,
     unlikePost,
     repost,
+    deletePost,
     followUser,
     unfollowUser,
     createComment,
