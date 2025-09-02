@@ -390,7 +390,7 @@ export const ComprehensiveTestSuite: React.FC = () => {
 
                 <div className="space-y-3">
                   {testResults.map((test, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={`chart-${index}`} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center gap-3">
                         {getStatusIcon(test.status)}
                         <div>

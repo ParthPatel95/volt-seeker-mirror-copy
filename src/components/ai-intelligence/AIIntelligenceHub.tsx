@@ -50,7 +50,7 @@ export function AIIntelligenceHub() {
 
           <div className="grid gap-4 md:grid-cols-3 mb-8">
             {features.map((feature, index) => (
-              <Card key={index} className="border-0 bg-gradient-to-br from-background to-muted/20 hover:shadow-lg transition-all">
+              <Card key={`ai-tool-${feature.title}-${index}`} className="border-0 bg-gradient-to-br from-background to-muted/20 hover:shadow-lg transition-all">
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-3 mb-3">
                     <feature.icon className={`w-6 h-6 ${feature.color}`} />

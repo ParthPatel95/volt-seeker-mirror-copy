@@ -234,7 +234,7 @@ export const BTCROIHostingAnalytics: React.FC<BTCROIHostingAnalyticsProps> = ({ 
                 </TableHeader>
                 <TableBody>
                   {costBreakdownData.map((item, index) => (
-                    <TableRow key={index}>
+                    <TableRow key={`result-${index}`}>
                       <TableCell className="font-medium">{item.name}</TableCell>
                       <TableCell className="text-right">{formatCurrency(item.amount)}</TableCell>
                       <TableCell className="text-right">
@@ -415,7 +415,7 @@ export const BTCROIHostingAnalytics: React.FC<BTCROIHostingAnalyticsProps> = ({ 
             <CardContent>
               <div className="space-y-3">
                 {hostingResults.taxAnalysis.taxSavingsOpportunities.map((opportunity, index) => (
-                  <div key={index} className="flex items-start gap-3">
+                  <div key={`tip-${index}`} className="flex items-start gap-3">
                     <AlertCircle className="w-4 h-4 text-blue-500 mt-0.5" />
                     <span className="text-sm">{opportunity}</span>
                   </div>

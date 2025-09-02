@@ -94,7 +94,7 @@ export function CorporateIntelligence() {
   };
 
   const handleAnalyze = async (companyName: string, ticker?: string) => {
-    console.log('handleAnalyze called with:', { companyName, ticker });
+    // Production logging removed
     
     if (!companyName?.trim()) {
       toast({
@@ -158,7 +158,7 @@ export function CorporateIntelligence() {
   };
 
   const handleInvestigateAlert = (alert: DistressAlert) => {
-    console.log('Investigating alert:', alert);
+    // Alert investigation optimized
     toast({
       title: "Alert Investigation",
       description: `Investigating alert for ${alert.company_name}`,

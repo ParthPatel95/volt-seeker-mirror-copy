@@ -156,13 +156,7 @@ export class HostingCalculatorService {
       taxAnalysis
     };
 
-    console.log('=== FINAL HOSTING ROI RESULTS ===');
-    console.log('Energy Usage:', formatEnergy(results.totalEnergyUsageKWh));
-    console.log('Hosting Revenue (USD):', formatCurrency(results.totalHostingRevenue));
-    console.log('Electricity Cost (USD):', formatCurrency(results.totalElectricityCost));
-    console.log('Total Taxes (USD):', formatCurrency(taxAnalysis.totalAnnualTaxes));
-    console.log('Net Profit (USD):', formatCurrency(results.netProfit));
-    console.log('=== END CALCULATION ===');
+    // Final results logging removed for performance
     
     return results;
   }
@@ -182,13 +176,7 @@ export class HostingCalculatorService {
       regulatoryRate: number;
     }
   ) {
-    console.log('=== YEARLY SIMULATION START ===');
-    console.log('Simulation parameters:', {
-      totalLoadKW,
-      hostingFeeRateUSD: `$${hostingFeeRateUSD}/kWh USD`,
-      region,
-      useManualRates: !!manualRates
-    });
+    // Yearly simulation optimized
 
     // If using manual rates, calculate directly
     if (manualRates) {
@@ -200,11 +188,7 @@ export class HostingCalculatorService {
       const totalKWhConsumed = totalLoadKW * hoursPerYear;
       const totalElectricityCost = totalKWhConsumed * totalManualRate;
       
-      console.log('Using manual rates:', {
-        totalManualRate: `$${totalManualRate.toFixed(4)}/kWh`,
-        totalKWhConsumed: totalKWhConsumed.toLocaleString(),
-        totalElectricityCost: `$${totalElectricityCost.toLocaleString()}`
-      });
+      // Using manual rates calculation
       
       return {
         totalKWhConsumed,
@@ -506,7 +490,7 @@ export class HostingCalculatorService {
   }
 
   private static calculateIndustrialRateBreakdown(baseWholesaleRate: number, region: string, loadKW: number) {
-    console.log(`Calculating industrial rate breakdown for ${region} with ${loadKW} kW load`);
+    // Industrial rate calculation optimized
     
     // Base wholesale energy rate (already discounted by 60%)
     const energyRate = baseWholesaleRate;

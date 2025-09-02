@@ -210,7 +210,7 @@ export const Dashboard = () => {
           {metrics.map((metric, index) => {
             const Icon = metric.icon;
             return (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
+              <Card key={`dashboard-metric-${metric.title}-${index}`} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">

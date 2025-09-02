@@ -130,7 +130,7 @@ export function PricePredictionDashboard() {
                 <span className="text-sm font-medium">Key Drivers</span>
                 <div className="flex flex-wrap gap-2">
                   {predictions.market_analysis.key_drivers.map((driver, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs">
+                    <Badge key={`driver-${driver}-${index}`} variant="secondary" className="text-xs">
                       {driver}
                     </Badge>
                   ))}
@@ -172,7 +172,7 @@ export function PricePredictionDashboard() {
       <div className="grid gap-4">
         <h3 className="text-lg font-semibold text-foreground">Detailed Predictions</h3>
         {predictions?.predictions.map((prediction, index) => (
-          <Card key={index}>
+          <Card key={`prediction-${index}`}>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">

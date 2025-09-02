@@ -64,7 +64,7 @@ export function EnhancedMapboxMap({
         setError(null);
 
         // Get Mapbox token
-        console.log('Fetching Mapbox token...');
+        // Mapbox token fetch
         const { data, error: tokenError } = await supabase.functions.invoke('get-mapbox-config');
         
         if (tokenError) {
@@ -77,7 +77,7 @@ export function EnhancedMapboxMap({
           throw new Error('No Mapbox token received from server');
         }
 
-        console.log('Mapbox token received successfully');
+        // Token received successfully
 
         // Set Mapbox access token
         mapboxgl.accessToken = data.mapboxToken;

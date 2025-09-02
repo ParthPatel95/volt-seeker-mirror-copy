@@ -148,7 +148,7 @@ export function MarketIntelligenceDashboard() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {displayData.insights?.map((insight: string, index: number) => (
-                  <div key={index} className="flex items-start gap-3 p-3 bg-muted rounded-lg">
+                  <div key={`insight-${index}`} className="flex items-start gap-3 p-3 bg-muted rounded-lg">
                     <Activity className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                     <p className="text-sm text-foreground">{insight}</p>
                   </div>
@@ -165,7 +165,7 @@ export function MarketIntelligenceDashboard() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {displayData.opportunities?.map((opportunity: string, index: number) => (
-                  <div key={index} className="flex items-start gap-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <div key={`opportunity-${index}`} className="flex items-start gap-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
                     <TrendingUp className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                     <p className="text-sm text-foreground">{opportunity}</p>
                   </div>
@@ -184,7 +184,7 @@ export function MarketIntelligenceDashboard() {
             <CardContent className="space-y-4">
               <div className="grid gap-3">
                 {displayData.risk_factors?.map((risk: string, index: number) => (
-                  <div key={index} className="flex items-start gap-3 p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                  <div key={`alert-${index}`} className="flex items-start gap-3 p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
                     <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
                     <p className="text-sm text-foreground">{risk}</p>
                   </div>
