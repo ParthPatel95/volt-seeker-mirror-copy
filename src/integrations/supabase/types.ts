@@ -637,6 +637,39 @@ export type Database = {
         }
         Relationships: []
       }
+      email_verification_codes: {
+        Row: {
+          code: string
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          updated_at: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          updated_at?: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          updated_at?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       energy_markets: {
         Row: {
           created_at: string
@@ -3365,6 +3398,10 @@ export type Database = {
       cleanup_old_predictions: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      generate_verification_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       increment: {
         Args: { column_name: string; row_id: string; table_name: string }
