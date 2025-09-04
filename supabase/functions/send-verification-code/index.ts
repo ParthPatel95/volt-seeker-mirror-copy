@@ -1,16 +1,18 @@
 import React from 'npm:react@18.3.1'
-import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.0'
 import { Resend } from 'npm:resend@4.0.0'
 import { renderAsync } from 'npm:@react-email/components@0.0.22'
 import { VerificationCodeEmail } from './_templates/verification-code-email.tsx'
 
-const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
-const hookSecret = Deno.env.get('AUTH_EMAIL_HOOK_SECRET') as string
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+interface SendCodeRequest {
+  email: string
+  user_id: string
+  is_resend?: boolean
 }
 
 Deno.serve(async (req) => {
@@ -27,51 +29,25 @@ Deno.serve(async (req) => {
   }
 
   try {
-    console.log('Received auth email webhook request')
+    console.log('Starting send verification code process...')
     
-    const payload = await req.text()
-    const headers = Object.fromEntries(req.headers)
-    
-    // If we have a hook secret, verify the webhook
-    if (hookSecret) {
-      const wh = new Webhook(hookSecret)
-      try {
-        wh.verify(payload, headers)
-      } catch (error) {
-        console.error('Webhook verification failed:', error)
-        return new Response('Unauthorized', { 
-          status: 401,
-          headers: corsHeaders 
-        })
-      }
-    }
+    // Initialize Supabase client with service role for admin access
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    )
 
-    const webhookData = JSON.parse(payload)
-    console.log('Webhook data received:', JSON.stringify(webhookData, null, 2))
-    
-    const {
-      user,
-      email_data: { token, token_hash, redirect_to, email_action_type },
-    } = webhookData as {
-      user: {
-        email: string
-      }
-      email_data: {
-        token: string
-        token_hash: string
-        redirect_to: string
-        email_action_type: string
-        site_url: string
-      }
-    }
+    // Initialize Resend client
+    const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 
-    // Only handle signup confirmations
-    if (email_action_type !== 'signup') {
-      console.log('Not a signup confirmation, skipping custom email')
+    const { email, user_id, is_resend = false }: SendCodeRequest = await req.json()
+    console.log('Sending verification code to:', email, 'for user:', user_id)
+
+    if (!email || !user_id) {
       return new Response(
-        JSON.stringify({ success: true, message: 'Email type not handled by this webhook' }),
+        JSON.stringify({ error: 'Email and user_id are required' }),
         {
-          status: 200,
+          status: 400,
           headers: {
             'Content-Type': 'application/json',
             ...corsHeaders,
@@ -80,58 +56,71 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Initialize Supabase client with service role for admin access
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
-
-    // Generate 6-digit verification code
+    // Generate 6-digit verification code using the database function
     const { data: codeResult, error: codeGenerationError } = await supabase
       .rpc('generate_verification_code')
 
     if (codeGenerationError || !codeResult) {
       console.error('Error generating code:', codeGenerationError)
-      throw new Error('Failed to generate verification code')
+      return new Response(
+        JSON.stringify({ error: 'Failed to generate verification code' }),
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders,
+          },
+        }
+      )
     }
 
     const verificationCode = codeResult
-    console.log('Generated verification code for user:', user.email)
+    console.log('Generated verification code:', verificationCode)
 
     // Clean up any existing unused codes for this user
     await supabase
       .from('email_verification_codes')
       .delete()
-      .eq('email', user.email.toLowerCase())
+      .eq('user_id', user_id)
+      .eq('email', email.toLowerCase())
       .is('used_at', null)
 
-    // Insert new verification code (we don't have user_id from webhook, so we'll use email)
+    // Insert new verification code
     const { error: insertError } = await supabase
       .from('email_verification_codes')
       .insert({
-        user_id: null, // Will be updated when user verifies
-        email: user.email.toLowerCase(),
+        user_id,
+        email: email.toLowerCase(),
         code: verificationCode,
         expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(), // 15 minutes
       })
 
     if (insertError) {
       console.error('Error saving verification code:', insertError)
-      throw new Error('Failed to save verification code')
+      return new Response(
+        JSON.stringify({ error: 'Failed to save verification code' }),
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders,
+          },
+        }
+      )
     }
 
     console.log('Rendering email template...')
     const html = await renderAsync(
       React.createElement(VerificationCodeEmail, {
         verification_code: verificationCode,
-        user_email: user.email,
+        user_email: email,
       })
     )
 
     console.log('Sending email via Resend...')
     const { data, error } = await resend.emails.send({
       from: 'GridBazaar <noreply@gridbazaar.com>',
-      to: [user.email],
+      to: [email],
       subject: `Your GridBazaar verification code: ${verificationCode}`,
       html,
     })
@@ -144,7 +133,11 @@ Deno.serve(async (req) => {
     console.log('Email sent successfully:', data)
 
     return new Response(
-      JSON.stringify({ success: true, data }),
+      JSON.stringify({ 
+        success: true, 
+        message: is_resend ? 'Verification code resent successfully' : 'Verification code sent successfully',
+        data 
+      }),
       {
         status: 200,
         headers: {
@@ -153,8 +146,9 @@ Deno.serve(async (req) => {
         },
       }
     )
+
   } catch (error: any) {
-    console.error('Error in auth-email-webhook function:', error)
+    console.error('Error in send-verification-code function:', error)
     return new Response(
       JSON.stringify({
         error: {

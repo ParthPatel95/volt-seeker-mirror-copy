@@ -350,9 +350,9 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
     if (!user?.email || !user?.id) return { error: new Error('No user found') };
 
     try {
-      console.log('Sending verification email using Resend...');
+      console.log('Sending verification code using new system...');
       
-      const { data, error } = await supabase.functions.invoke('send-verification-email', {
+      const { data, error } = await supabase.functions.invoke('send-verification-code', {
         body: {
           email: user.email,
           user_id: user.id,
@@ -361,14 +361,14 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
       });
 
       if (error) {
-        console.error('Error sending verification email:', error);
+        console.error('Error sending verification code:', error);
         return { error };
       }
 
-      console.log('Verification email sent successfully:', data);
+      console.log('Verification code sent successfully:', data);
       return { error: null };
     } catch (err) {
-      console.error('Error sending verification email:', err);
+      console.error('Error sending verification code:', err);
       return { error: err as Error };
     }
   };

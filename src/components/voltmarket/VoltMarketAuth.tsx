@@ -10,11 +10,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useVoltMarketAuth } from '@/contexts/VoltMarketAuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Zap, Mail, Lock, User, Building, CheckCircle } from 'lucide-react';
+import { EmailVerificationCode } from '@/components/auth/EmailVerificationCode';
 
 export const VoltMarketAuth: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showVerificationSuccess, setShowVerificationSuccess] = useState(false);
+  const [showVerificationCode, setShowVerificationCode] = useState(false);
+  const [pendingUserInfo, setPendingUserInfo] = useState<{email: string; userId: string} | null>(null);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -56,43 +59,34 @@ export const VoltMarketAuth: React.FC = () => {
           return;
         }
 
-        const { error } = await signUp(formData.email, formData.password, {
+        const result = await signUp(formData.email, formData.password, {
           role: formData.role,
           seller_type: formData.role === 'seller' ? formData.sellerType : undefined,
           company_name: formData.companyName,
           phone_number: formData.phoneNumber
         });
 
-        if (error) {
+        if (result.error) {
           // Handle rate limiting with better user messaging
-          const isRateLimit = error.message.includes('seconds') || error.message.includes('rate');
+          const isRateLimit = result.error.message.includes('seconds') || result.error.message.includes('rate');
           toast({
             title: "Sign Up Failed", 
             description: isRateLimit 
               ? "Too many requests. Please wait a moment before trying again."
-              : error.message,
+              : result.error.message,
             variant: "destructive"
           });
         } else {
-          // Clear form data
-          setFormData({
-            email: '',
-            password: '',
-            confirmPassword: '',
-            role: 'buyer',
-            sellerType: 'site_owner',
-            companyName: '',
-            phoneNumber: ''
+          // Store user info for verification step
+          setPendingUserInfo({
+            email: formData.email,
+            userId: result.data?.user?.id || ''
           });
-          
-          // Show success toast
+          setShowVerificationCode(true);
           toast({
             title: "Account Created!",
-            description: "Please check your email to verify your account before signing in.",
+            description: "Please check your email for a verification code.",
           });
-          
-          // Switch to sign-in mode
-          setIsSignUp(false);
         }
       } else {
         const { error } = await signIn(formData.email, formData.password);
@@ -117,6 +111,42 @@ export const VoltMarketAuth: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  const handleVerificationComplete = () => {
+    setShowVerificationCode(false);
+    setPendingUserInfo(null);
+    setFormData({
+      email: '',
+      password: '',
+      confirmPassword: '',
+      role: 'buyer',
+      sellerType: 'site_owner',
+      companyName: '',
+      phoneNumber: ''
+    });
+    toast({
+      title: "Email Verified!",
+      description: "You can now sign in with your credentials.",
+    });
+    setIsSignUp(false); // Switch back to sign in mode
+  };
+
+  const handleBackToSignUp = () => {
+    setShowVerificationCode(false);
+    setPendingUserInfo(null);
+  };
+
+  // Show verification code screen if user just signed up
+  if (showVerificationCode && pendingUserInfo) {
+    return (
+      <EmailVerificationCode
+        email={pendingUserInfo.email}
+        userId={pendingUserInfo.userId}
+        onVerified={handleVerificationComplete}
+        onBack={handleBackToSignUp}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8 md:py-12 px-4 sm:px-6 lg:px-8">
