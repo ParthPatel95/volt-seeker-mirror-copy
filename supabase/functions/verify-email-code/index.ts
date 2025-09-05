@@ -110,17 +110,38 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Update the user's email verification status in their profile
-    console.log('Updating user profile email verification status...')
-    const { error: profileError } = await supabase
-      .from('gridbazaar_profiles')
-      .update({ is_email_verified: true })
-      .eq('user_id', codeData.user_id)
+    // If user_id is null (webhook-generated code), find the user by email
+    let userId = codeData.user_id
+    if (!userId) {
+      console.log('Finding user by email for webhook-generated code...')
+      const { data: userData, error: userError } = await supabase.auth.admin.listUsers()
+      
+      if (!userError && userData.users) {
+        const user = userData.users.find(u => u.email?.toLowerCase() === email.toLowerCase())
+        if (user) {
+          userId = user.id
+          // Update the code record with the user_id
+          await supabase
+            .from('email_verification_codes')
+            .update({ user_id: userId })
+            .eq('id', codeData.id)
+        }
+      }
+    }
 
-    if (profileError) {
-      console.error('Error updating profile:', profileError)
-      // Don't fail the request if profile update fails, as the main verification succeeded
-      console.log('Profile update failed but verification succeeded')
+    // Update the user's email verification status in their profile
+    if (userId) {
+      console.log('Updating user profile email verification status...')
+      const { error: profileError } = await supabase
+        .from('gridbazaar_profiles')
+        .update({ is_email_verified: true })
+        .eq('user_id', userId)
+
+      if (profileError) {
+        console.error('Error updating profile:', profileError)
+        // Don't fail the request if profile update fails, as the main verification succeeded
+        console.log('Profile update failed but verification succeeded')
+      }
     }
 
     console.log('Email verification completed successfully')
@@ -129,7 +150,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ 
         success: true, 
         message: 'Email verified successfully',
-        user_id: codeData.user_id 
+        user_id: userId 
       }),
       {
         status: 200,

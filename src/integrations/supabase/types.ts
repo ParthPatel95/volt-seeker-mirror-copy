@@ -646,7 +646,7 @@ export type Database = {
           id: string
           updated_at: string
           used_at: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           code: string
@@ -656,7 +656,7 @@ export type Database = {
           id?: string
           updated_at?: string
           used_at?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           code?: string
@@ -666,7 +666,7 @@ export type Database = {
           id?: string
           updated_at?: string
           used_at?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
