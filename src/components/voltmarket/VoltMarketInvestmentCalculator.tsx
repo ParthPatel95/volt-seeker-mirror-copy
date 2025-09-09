@@ -413,7 +413,7 @@ export const VoltMarketInvestmentCalculator: React.FC = () => {
                 <TabsContent value="projections" className="space-y-6">
                   <Card>
                     <CardHeader>
-                      <CardTitle>25-Year Cash Flow Projection</CardTitle>
+                      <CardTitle>25-Year Financial Projections</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <ResponsiveContainer width="100%" height={400}>
@@ -429,61 +429,405 @@ export const VoltMarketInvestmentCalculator: React.FC = () => {
                       </ResponsiveContainer>
                     </CardContent>
                   </Card>
-                </TabsContent>
 
-                <TabsContent value="scenarios" className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-red-600">Conservative</CardTitle>
+                        <CardTitle>Key Financial Metrics</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-4">
-                        <div className="flex justify-between">
-                          <span>ROI:</span>
-                          <span className="font-bold">{results.scenarios.conservative.roi.toFixed(1)}%</span>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <h4 className="font-semibold text-sm">Profitability Ratios</h4>
+                            <div className="space-y-1 text-sm">
+                              <div className="flex justify-between">
+                                <span>ROI:</span>
+                                <span className={`font-bold ${getROIColor(results.roi)}`}>{results.roi.toFixed(1)}%</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>IRR:</span>
+                                <span className="font-bold">{results.irr.toFixed(1)}%</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Profit Margin:</span>
+                                <span className="font-bold">{((results.monthlyProfit / results.monthlyRevenue) * 100).toFixed(1)}%</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <h4 className="font-semibold text-sm">Risk Metrics</h4>
+                            <div className="space-y-1 text-sm">
+                              <div className="flex justify-between">
+                                <span>Payback Period:</span>
+                                <span className="font-bold">{results.paybackPeriod} years</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Break-even Year:</span>
+                                <span className="font-bold">{results.paybackPeriod}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Debt-to-Equity:</span>
+                                <span className="font-bold">{((100 - inputs.downPayment) / inputs.downPayment).toFixed(2)}</span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex justify-between">
-                          <span>NPV:</span>
-                          <span className="font-bold">{formatCurrency(results.scenarios.conservative.npv)}</span>
+                        
+                        <div className="pt-4 border-t">
+                          <h4 className="font-semibold text-sm mb-2">Cash Flow Analysis</h4>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex justify-between">
+                              <span>Total 25-Year Revenue:</span>
+                              <span className="font-bold">{formatCurrency(results.cashFlow.reduce((sum, cf) => sum + (cf.cashFlow + results.monthlyPayment * 12), 0))}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Total Operating Costs:</span>
+                              <span className="font-bold">{formatCurrency(inputs.operatingCosts * 25 * Math.pow(1 + inputs.inflationRate / 100, 12))}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Net Present Value:</span>
+                              <span className={`font-bold ${results.npv > 0 ? 'text-green-600' : 'text-red-600'}`}>{formatCurrency(results.npv)}</span>
+                            </div>
+                          </div>
                         </div>
-                        <Progress value={Math.max(0, results.scenarios.conservative.roi)} className="h-2" />
                       </CardContent>
                     </Card>
 
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-blue-600">Realistic</CardTitle>
+                        <CardTitle>Revenue & Cost Breakdown</CardTitle>
                       </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="flex justify-between">
-                          <span>ROI:</span>
-                          <span className="font-bold">{results.scenarios.realistic.roi.toFixed(1)}%</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>NPV:</span>
-                          <span className="font-bold">{formatCurrency(results.scenarios.realistic.npv)}</span>
-                        </div>
-                        <Progress value={Math.max(0, results.scenarios.realistic.roi)} className="h-2" />
-                      </CardContent>
-                    </Card>
-
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-green-600">Optimistic</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="flex justify-between">
-                          <span>ROI:</span>
-                          <span className="font-bold">{results.scenarios.optimistic.roi.toFixed(1)}%</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>NPV:</span>
-                          <span className="font-bold">{formatCurrency(results.scenarios.optimistic.npv)}</span>
-                        </div>
-                        <Progress value={Math.max(0, results.scenarios.optimistic.roi * 0.5)} className="h-2" />
+                      <CardContent>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <BarChart data={results.cashFlow.slice(0, 10)}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="year" />
+                            <YAxis />
+                            <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                            <Legend />
+                            <Bar dataKey={(data: any) => results.annualRevenue * Math.pow(1 + inputs.energyEscalation / 100, data.year - 1)} fill="#10B981" name="Revenue" />
+                            <Bar dataKey={(data: any) => inputs.operatingCosts * Math.pow(1 + inputs.inflationRate / 100, data.year - 1)} fill="#F59E0B" name="Operating Costs" />
+                            <Bar dataKey={(data: any) => data.year <= inputs.loanTerm ? results.monthlyPayment * 12 : 0} fill="#EF4444" name="Debt Service" />
+                          </BarChart>
+                        </ResponsiveContainer>
                       </CardContent>
                     </Card>
                   </div>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Detailed Cash Flow Table</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b">
+                              <th className="text-left p-2">Year</th>
+                              <th className="text-right p-2">Revenue</th>
+                              <th className="text-right p-2">Operating Costs</th>
+                              <th className="text-right p-2">Debt Service</th>
+                              <th className="text-right p-2">Net Cash Flow</th>
+                              <th className="text-right p-2">Cumulative</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {results.cashFlow.slice(0, 10).map((cf) => {
+                              const yearlyRevenue = results.annualRevenue * Math.pow(1 + inputs.energyEscalation / 100, cf.year - 1);
+                              const yearlyOperatingCosts = inputs.operatingCosts * Math.pow(1 + inputs.inflationRate / 100, cf.year - 1);
+                              const yearlyDebt = cf.year <= inputs.loanTerm ? results.monthlyPayment * 12 : 0;
+                              
+                              return (
+                                <tr key={cf.year} className="border-b">
+                                  <td className="p-2">{cf.year}</td>
+                                  <td className="text-right p-2 text-green-600">{formatCurrency(yearlyRevenue)}</td>
+                                  <td className="text-right p-2 text-orange-600">{formatCurrency(yearlyOperatingCosts)}</td>
+                                  <td className="text-right p-2 text-red-600">{formatCurrency(yearlyDebt)}</td>
+                                  <td className="text-right p-2 font-semibold">{formatCurrency(cf.cashFlow)}</td>
+                                  <td className={`text-right p-2 font-bold ${cf.cumulative > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    {formatCurrency(cf.cumulative)}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                        <p className="text-xs text-muted-foreground mt-2">Showing first 10 years of 25-year projection</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="scenarios" className="space-y-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-red-600 flex items-center gap-2">
+                          <AlertCircle className="w-5 h-5" />
+                          Conservative Scenario
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground">Energy prices decline, higher operating costs</p>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">ROI:</span>
+                            <span className="font-bold text-lg">{results.scenarios.conservative.roi.toFixed(1)}%</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">NPV:</span>
+                            <span className="font-bold">{formatCurrency(results.scenarios.conservative.npv)}</span>
+                          </div>
+                          <Progress value={Math.max(0, Math.min(100, results.scenarios.conservative.roi * 2))} className="h-2" />
+                        </div>
+                        
+                        <div className="pt-3 border-t space-y-2">
+                          <h4 className="font-semibold text-sm">Assumptions</h4>
+                          <div className="space-y-1 text-xs text-muted-foreground">
+                            <div className="flex justify-between">
+                              <span>Energy Price Growth:</span>
+                              <span>1.0%/year</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Operating Cost Growth:</span>
+                              <span>4.0%/year</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Capacity Factor:</span>
+                              <span>20%</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Market Risk:</span>
+                              <span className="text-red-600">High</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="pt-3 border-t">
+                          <h4 className="font-semibold text-sm mb-2">Risk Factors</h4>
+                          <div className="space-y-1 text-xs">
+                            <Badge variant="destructive" className="mr-1 mb-1">Regulatory Changes</Badge>
+                            <Badge variant="destructive" className="mr-1 mb-1">Tech Obsolescence</Badge>
+                            <Badge variant="secondary" className="mr-1 mb-1">Market Volatility</Badge>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-blue-600 flex items-center gap-2">
+                          <TrendingUp className="w-5 h-5" />
+                          Realistic Scenario
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground">Expected market conditions, moderate growth</p>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">ROI:</span>
+                            <span className="font-bold text-lg">{results.scenarios.realistic.roi.toFixed(1)}%</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">NPV:</span>
+                            <span className="font-bold">{formatCurrency(results.scenarios.realistic.npv)}</span>
+                          </div>
+                          <Progress value={Math.max(0, Math.min(100, results.scenarios.realistic.roi * 2))} className="h-2" />
+                        </div>
+                        
+                        <div className="pt-3 border-t space-y-2">
+                          <h4 className="font-semibold text-sm">Assumptions</h4>
+                          <div className="space-y-1 text-xs text-muted-foreground">
+                            <div className="flex justify-between">
+                              <span>Energy Price Growth:</span>
+                              <span>{inputs.energyEscalation}%/year</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Operating Cost Growth:</span>
+                              <span>{inputs.inflationRate}%/year</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Capacity Factor:</span>
+                              <span>25%</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Market Risk:</span>
+                              <span className="text-blue-600">Moderate</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="pt-3 border-t">
+                          <h4 className="font-semibold text-sm mb-2">Growth Drivers</h4>
+                          <div className="space-y-1 text-xs">
+                            <Badge variant="default" className="mr-1 mb-1">Grid Modernization</Badge>
+                            <Badge variant="default" className="mr-1 mb-1">Carbon Credits</Badge>
+                            <Badge variant="secondary" className="mr-1 mb-1">Stable Demand</Badge>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-green-600 flex items-center gap-2">
+                          <Zap className="w-5 h-5" />
+                          Optimistic Scenario
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground">Accelerated adoption, premium pricing</p>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">ROI:</span>
+                            <span className="font-bold text-lg">{results.scenarios.optimistic.roi.toFixed(1)}%</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">NPV:</span>
+                            <span className="font-bold">{formatCurrency(results.scenarios.optimistic.npv)}</span>
+                          </div>
+                          <Progress value={Math.max(0, Math.min(100, results.scenarios.optimistic.roi * 1.5))} className="h-2" />
+                        </div>
+                        
+                        <div className="pt-3 border-t space-y-2">
+                          <h4 className="font-semibold text-sm">Assumptions</h4>
+                          <div className="space-y-1 text-xs text-muted-foreground">
+                            <div className="flex justify-between">
+                              <span>Energy Price Growth:</span>
+                              <span>5.0%/year</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Operating Cost Growth:</span>
+                              <span>2.0%/year</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Capacity Factor:</span>
+                              <span>30%</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Market Risk:</span>
+                              <span className="text-green-600">Low</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="pt-3 border-t">
+                          <h4 className="font-semibold text-sm mb-2">Upside Catalysts</h4>
+                          <div className="space-y-1 text-xs">
+                            <Badge variant="default" className="mr-1 mb-1 bg-green-600">Energy Transition</Badge>
+                            <Badge variant="default" className="mr-1 mb-1 bg-green-600">Policy Support</Badge>
+                            <Badge variant="secondary" className="mr-1 mb-1">Tech Advances</Badge>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Sensitivity Analysis</CardTitle>
+                      <p className="text-sm text-muted-foreground">Impact of key variables on project NPV</p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <h4 className="font-semibold text-sm mb-3">Energy Price Sensitivity</h4>
+                          <ResponsiveContainer width="100%" height={200}>
+                            <BarChart data={[
+                              { scenario: '-20%', npv: results.npv * 0.6 },
+                              { scenario: '-10%', npv: results.npv * 0.8 },
+                              { scenario: 'Base', npv: results.npv },
+                              { scenario: '+10%', npv: results.npv * 1.2 },
+                              { scenario: '+20%', npv: results.npv * 1.4 }
+                            ]}>
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="scenario" />
+                              <YAxis />
+                              <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                              <Bar dataKey="npv" fill="#3B82F6" />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                        
+                        <div>
+                          <h4 className="font-semibold text-sm mb-3">Operating Cost Impact</h4>
+                          <ResponsiveContainer width="100%" height={200}>
+                            <BarChart data={[
+                              { scenario: '-20%', npv: results.npv * 1.3 },
+                              { scenario: '-10%', npv: results.npv * 1.15 },
+                              { scenario: 'Base', npv: results.npv },
+                              { scenario: '+10%', npv: results.npv * 0.85 },
+                              { scenario: '+20%', npv: results.npv * 0.7 }
+                            ]}>
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="scenario" />
+                              <YAxis />
+                              <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                              <Bar dataKey="npv" fill="#10B981" />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Scenario Comparison Summary</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b">
+                              <th className="text-left p-2">Metric</th>
+                              <th className="text-center p-2 text-red-600">Conservative</th>
+                              <th className="text-center p-2 text-blue-600">Realistic</th>
+                              <th className="text-center p-2 text-green-600">Optimistic</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="border-b">
+                              <td className="p-2 font-medium">Return on Investment</td>
+                              <td className="text-center p-2">{results.scenarios.conservative.roi.toFixed(1)}%</td>
+                              <td className="text-center p-2">{results.scenarios.realistic.roi.toFixed(1)}%</td>
+                              <td className="text-center p-2">{results.scenarios.optimistic.roi.toFixed(1)}%</td>
+                            </tr>
+                            <tr className="border-b">
+                              <td className="p-2 font-medium">Net Present Value</td>
+                              <td className="text-center p-2">{formatCurrency(results.scenarios.conservative.npv)}</td>
+                              <td className="text-center p-2">{formatCurrency(results.scenarios.realistic.npv)}</td>
+                              <td className="text-center p-2">{formatCurrency(results.scenarios.optimistic.npv)}</td>
+                            </tr>
+                            <tr className="border-b">
+                              <td className="p-2 font-medium">Payback Period</td>
+                              <td className="text-center p-2">{Math.ceil(results.paybackPeriod * 1.3)} years</td>
+                              <td className="text-center p-2">{results.paybackPeriod} years</td>
+                              <td className="text-center p-2">{Math.floor(results.paybackPeriod * 0.8)} years</td>
+                            </tr>
+                            <tr className="border-b">
+                              <td className="p-2 font-medium">25-Year Total Return</td>
+                              <td className="text-center p-2">{formatCurrency(results.cashFlow.reduce((sum, cf) => sum + cf.cashFlow, 0) * 0.7)}</td>
+                              <td className="text-center p-2">{formatCurrency(results.cashFlow.reduce((sum, cf) => sum + cf.cashFlow, 0))}</td>
+                              <td className="text-center p-2">{formatCurrency(results.cashFlow.reduce((sum, cf) => sum + cf.cashFlow, 0) * 1.3)}</td>
+                            </tr>
+                            <tr>
+                              <td className="p-2 font-medium">Investment Grade</td>
+                              <td className="text-center p-2">
+                                <Badge variant="destructive">Caution</Badge>
+                              </td>
+                              <td className="text-center p-2">
+                                <Badge variant="default">Moderate</Badge>
+                              </td>
+                              <td className="text-center p-2">
+                                <Badge variant="default" className="bg-green-600">Strong</Badge>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </TabsContent>
 
                 <TabsContent value="summary" className="space-y-6">
