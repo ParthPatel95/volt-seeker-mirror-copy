@@ -48,6 +48,15 @@ interface HostingResults extends ProfitabilityResults {
   totalPowerDraw: number;
   hostingRevenue: number;
   operationalCosts: number;
+  energyCostDaily: number;
+  operationalCostDaily: number;
+  facilityCostDaily: number;
+  grossMargin: number;
+  netMargin: number;
+  energyCostPercentage: number;
+  opexPercentage: number;
+  powerSoldDaily: number;
+  revenuePerMW: number;
 }
 
 interface VoltMarketProfitabilityCalculatorProps {
@@ -211,40 +220,57 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
     const totalCapacityKW = facilityCapacityMW * 1000;
     const utilizedCapacityKW = totalCapacityKW * (utilizationRate / 100);
     
-    // Hosting revenue calculations
+    // Revenue: What we charge clients for hosting
     const dailyPowerSold = utilizedCapacityKW * 24; // kWh per day
-    const dailyHostingRevenue = dailyPowerSold * hostingRate;
+    const dailyHostingRevenue = dailyPowerSold * hostingRate; // Revenue from clients
     
-    // Operating costs
-    const dailyPowerCost = dailyPowerSold * energyRate;
+    // Costs: What we pay
+    const dailyEnergyCost = dailyPowerSold * energyRate; // What we pay for electricity
     const monthlyOperationalCost = facilityCapacityMW * operationalCostPerMW;
-    const dailyOperationalCost = monthlyOperationalCost / 30;
-    const dailyMaintenanceCost = facilitySetupCost * 0.00005; // 0.005% daily maintenance
-    const dailyCosts = dailyPowerCost + dailyOperationalCost + dailyMaintenanceCost;
+    const dailyOperationalCost = monthlyOperationalCost / 30; // Staff, maintenance, etc.
+    const dailyFacilityCost = facilitySetupCost * 0.00005; // 0.005% daily facility costs (insurance, etc.)
     
-    const dailyProfit = dailyHostingRevenue - dailyCosts;
+    const totalDailyCosts = dailyEnergyCost + dailyOperationalCost + dailyFacilityCost;
+    
+    // Profit = Revenue - Costs
+    const dailyProfit = dailyHostingRevenue - totalDailyCosts;
     const monthlyProfit = dailyProfit * 30;
     const yearlyProfit = dailyProfit * 365;
     
+    // Calculate margins and metrics
+    const grossMargin = dailyHostingRevenue > 0 ? ((dailyHostingRevenue - dailyEnergyCost) / dailyHostingRevenue) * 100 : 0;
+    const netMargin = dailyHostingRevenue > 0 ? (dailyProfit / dailyHostingRevenue) * 100 : 0;
+    const energyCostPercentage = dailyHostingRevenue > 0 ? (dailyEnergyCost / dailyHostingRevenue) * 100 : 0;
+    const opexPercentage = dailyHostingRevenue > 0 ? (dailyOperationalCost / dailyHostingRevenue) * 100 : 0;
+    
     const roi = facilitySetupCost > 0 ? (yearlyProfit / facilitySetupCost) * 100 : 0;
     const paybackDays = dailyProfit > 0 ? facilitySetupCost / dailyProfit : 0;
-    const breakEvenPrice = dailyPowerSold > 0 ? dailyCosts / dailyPowerSold : 0;
-    const profitMargin = dailyHostingRevenue > 0 ? (dailyProfit / dailyHostingRevenue) * 100 : 0;
-
+    const breakEvenHostingRate = dailyPowerSold > 0 ? totalDailyCosts / dailyPowerSold : 0;
+    
     return {
       dailyRevenue: dailyHostingRevenue,
-      dailyCosts,
+      dailyCosts: totalDailyCosts,
       dailyProfit,
       monthlyProfit,
       yearlyProfit,
       roi,
       paybackDays,
-      breakEvenPrice,
-      profitMargin,
+      breakEvenPrice: breakEvenHostingRate,
+      profitMargin: netMargin,
       totalEquipment: Math.floor(utilizedCapacityKW / 3.5), // Assuming avg 3.5kW per miner
       totalPowerDraw: utilizedCapacityKW,
       hostingRevenue: dailyHostingRevenue,
-      operationalCosts: dailyCosts
+      operationalCosts: totalDailyCosts,
+      // Additional detailed metrics for hosting
+      energyCostDaily: dailyEnergyCost,
+      operationalCostDaily: dailyOperationalCost,
+      facilityCostDaily: dailyFacilityCost,
+      grossMargin,
+      netMargin,
+      energyCostPercentage,
+      opexPercentage,
+      powerSoldDaily: dailyPowerSold,
+      revenuePerMW: dailyHostingRevenue / facilityCapacityMW
     };
   };
 
@@ -371,99 +397,178 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
         </TabsList>
 
         <TabsContent value="calculator">
-          {calculatorType === 'hosting' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Hosting Configuration</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label>Facility Capacity (MW)</Label>
-                    <Input
-                      type="number"
-                      value={facilityCapacityMW}
-                      onChange={(e) => setFacilityCapacityMW(parseFloat(e.target.value) || 0)}
-                      step="0.1"
-                    />
-                  </div>
-                  <div>
-                    <Label>Utilization Rate (%)</Label>
-                    <Input
-                      type="number"
-                      value={utilizationRate}
-                      onChange={(e) => setUtilizationRate(parseFloat(e.target.value) || 0)}
-                      min="0"
-                      max="100"
-                    />
-                    <Progress value={utilizationRate} className="mt-2" />
-                  </div>
-                  <div>
-                    <Label>Hosting Rate ($/kWh)</Label>
-                    <Input
-                      type="number"
-                      value={hostingRate}
-                      onChange={(e) => setHostingRate(parseFloat(e.target.value) || 0)}
-                      step="0.001"
-                    />
-                  </div>
-                  <div>
-                    <Label>Monthly OpEx per MW ($)</Label>
-                    <Input
-                      type="number"
-                      value={operationalCostPerMW}
-                      onChange={(e) => setOperationalCostPerMW(parseFloat(e.target.value) || 0)}
-                    />
-                  </div>
-                  <div>
-                    <Label>Initial Investment ($)</Label>
-                    <Input
-                      type="number"
-                      value={facilitySetupCost}
-                      onChange={(e) => setFacilitySetupCost(parseFloat(e.target.value) || 0)}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+            {calculatorType === 'hosting' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Hosting Configuration</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label>Facility Capacity (MW)</Label>
+                      <Input
+                        type="number"
+                        value={facilityCapacityMW}
+                        onChange={(e) => setFacilityCapacityMW(parseFloat(e.target.value) || 0)}
+                        step="0.1"
+                      />
+                    </div>
+                    <div>
+                      <Label>Utilization Rate (%)</Label>
+                      <Input
+                        type="number"
+                        value={utilizationRate}
+                        onChange={(e) => setUtilizationRate(parseFloat(e.target.value) || 0)}
+                        min="0"
+                        max="100"
+                      />
+                      <Progress value={utilizationRate} className="mt-2" />
+                    </div>
+                    <div>
+                      <Label>Energy Purchase Rate ($/kWh)</Label>
+                      <Input
+                        type="number"
+                        value={energyRate}
+                        onChange={(e) => setEnergyRate(parseFloat(e.target.value) || 0)}
+                        step="0.001"
+                        placeholder="What you pay for electricity"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Current rate: ${energyRate.toFixed(3)}/kWh
+                      </p>
+                    </div>
+                    <div>
+                      <Label>Hosting Rate to Clients ($/kWh)</Label>
+                      <Input
+                        type="number"
+                        value={hostingRate}
+                        onChange={(e) => setHostingRate(parseFloat(e.target.value) || 0)}
+                        step="0.001"
+                        placeholder="What you charge customers"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Markup: {hostingRate > energyRate ? `+${((hostingRate - energyRate) / energyRate * 100).toFixed(1)}%` : 'Below cost'}
+                      </p>
+                    </div>
+                    <div>
+                      <Label>Monthly OpEx per MW ($)</Label>
+                      <Input
+                        type="number"
+                        value={operationalCostPerMW}
+                        onChange={(e) => setOperationalCostPerMW(parseFloat(e.target.value) || 0)}
+                        placeholder="Staff, maintenance, insurance"
+                      />
+                    </div>
+                    <div>
+                      <Label>Initial Investment ($)</Label>
+                      <Input
+                        type="number"
+                        value={facilitySetupCost}
+                        onChange={(e) => setFacilitySetupCost(parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Hosting Metrics</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {results && 'totalEquipment' in results && (
-                    <>
-                      <div className="flex justify-between">
-                        <span>Total Capacity:</span>
-                        <span className="font-semibold">{facilityCapacityMW.toFixed(1)} MW</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Utilized Power:</span>
-                        <span className="font-semibold">{results.totalPowerDraw.toFixed(0)} kW</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Est. Miners:</span>
-                        <span className="font-semibold">{results.totalEquipment.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Daily Revenue:</span>
-                        <span className="font-semibold text-green-600">{formatCurrency(results.dailyRevenue)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Daily Costs:</span>
-                        <span className="font-semibold text-red-600">{formatCurrency(results.dailyCosts)}</span>
-                      </div>
-                      <div className="flex justify-between border-t pt-2">
-                        <span>Daily Profit:</span>
-                        <span className={`font-semibold ${results.dailyProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {formatCurrency(results.dailyProfit)}
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Hosting Business Metrics</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {results && 'totalEquipment' in results && (
+                      <>
+                        <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg">
+                          <h4 className="font-semibold text-sm mb-3 text-gray-700">Revenue Breakdown</h4>
+                          <div className="space-y-2">
+                            <div className="flex justify-between">
+                              <span className="text-sm">Daily Power Sold:</span>
+                              <span className="font-semibold">{results.powerSoldDaily.toLocaleString()} kWh</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-sm">Hosting Rate:</span>
+                              <span className="font-semibold">${hostingRate.toFixed(3)}/kWh</span>
+                            </div>
+                            <div className="flex justify-between border-t pt-2">
+                              <span className="font-medium text-green-700">Daily Revenue:</span>
+                              <span className="font-bold text-green-700">{formatCurrency(results.dailyRevenue)}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-red-50 to-orange-50 p-4 rounded-lg">
+                          <h4 className="font-semibold text-sm mb-3 text-gray-700">Cost Breakdown</h4>
+                          <div className="space-y-2">
+                            <div className="flex justify-between">
+                              <span className="text-sm">Energy Cost:</span>
+                              <span className="font-semibold text-red-600">{formatCurrency(results.energyCostDaily)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-sm">Operations:</span>
+                              <span className="font-semibold text-red-600">{formatCurrency(results.operationalCostDaily)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-sm">Facility Costs:</span>
+                              <span className="font-semibold text-red-600">{formatCurrency(results.facilityCostDaily)}</span>
+                            </div>
+                            <div className="flex justify-between border-t pt-2">
+                              <span className="font-medium text-red-700">Total Daily Costs:</span>
+                              <span className="font-bold text-red-700">{formatCurrency(results.dailyCosts)}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg">
+                          <h4 className="font-semibold text-sm mb-3 text-gray-700">Profit Analysis</h4>
+                          <div className="space-y-2">
+                            <div className="flex justify-between">
+                              <span className="text-sm">Gross Margin:</span>
+                              <span className="font-semibold">{results.grossMargin.toFixed(1)}%</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-sm">Net Margin:</span>
+                              <span className="font-semibold">{results.netMargin.toFixed(1)}%</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-sm">Energy % of Revenue:</span>
+                              <span className="font-semibold">{results.energyCostPercentage.toFixed(1)}%</span>
+                            </div>
+                            <div className="flex justify-between border-t pt-2">
+                              <span className={`font-medium ${results.dailyProfit >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+                                Daily Profit:
+                              </span>
+                              <span className={`font-bold ${results.dailyProfit >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+                                {formatCurrency(results.dailyProfit)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <h4 className="font-semibold text-sm mb-3 text-gray-700">Facility Overview</h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <span className="text-xs text-gray-600">Total Capacity:</span>
+                              <p className="font-semibold">{facilityCapacityMW.toFixed(1)} MW</p>
+                            </div>
+                            <div>
+                              <span className="text-xs text-gray-600">Utilized Power:</span>
+                              <p className="font-semibold">{results.totalPowerDraw.toFixed(0)} kW</p>
+                            </div>
+                            <div>
+                              <span className="text-xs text-gray-600">Est. Miners:</span>
+                              <p className="font-semibold">{results.totalEquipment.toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <span className="text-xs text-gray-600">Revenue/MW:</span>
+                              <p className="font-semibold">{formatCurrency(results.revenuePerMW)}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
