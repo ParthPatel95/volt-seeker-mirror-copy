@@ -1554,6 +1554,39 @@ export type Database = {
         }
         Relationships: []
       }
+      security_audit_log: {
+        Row: {
+          action: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          ip_address: unknown | null
+          table_name: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       site_access_requests: {
         Row: {
           company_name: string
@@ -2751,6 +2784,7 @@ export type Database = {
           hosting_types: string[] | null
           id: string
           is_location_confidential: boolean | null
+          is_public: boolean | null
           latitude: number | null
           lease_rate: number | null
           listing_type: string
@@ -2763,6 +2797,7 @@ export type Database = {
           power_rate_per_kw: number | null
           property_type: string | null
           quantity: number | null
+          requires_verification: boolean | null
           seller_id: string
           shipping_terms: string | null
           specs: Json | null
@@ -2784,6 +2819,7 @@ export type Database = {
           hosting_types?: string[] | null
           id?: string
           is_location_confidential?: boolean | null
+          is_public?: boolean | null
           latitude?: number | null
           lease_rate?: number | null
           listing_type: string
@@ -2796,6 +2832,7 @@ export type Database = {
           power_rate_per_kw?: number | null
           property_type?: string | null
           quantity?: number | null
+          requires_verification?: boolean | null
           seller_id: string
           shipping_terms?: string | null
           specs?: Json | null
@@ -2817,6 +2854,7 @@ export type Database = {
           hosting_types?: string[] | null
           id?: string
           is_location_confidential?: boolean | null
+          is_public?: boolean | null
           latitude?: number | null
           lease_rate?: number | null
           listing_type?: string
@@ -2829,6 +2867,7 @@ export type Database = {
           power_rate_per_kw?: number | null
           property_type?: string | null
           quantity?: number | null
+          requires_verification?: boolean | null
           seller_id?: string
           shipping_terms?: string | null
           specs?: Json | null
