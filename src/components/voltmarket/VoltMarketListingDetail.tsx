@@ -9,7 +9,7 @@ import { VoltMarketContactButton } from './VoltMarketContactButton';
 import { VoltMarketWatchlistButton } from './VoltMarketWatchlistButton';
 import { VoltMarketLOIModal } from './VoltMarketLOIModal';
 import { VoltMarketDueDiligence } from './VoltMarketDueDiligence';
-import { VoltMarketAdvancedDueDiligence } from './VoltMarketAdvancedDueDiligence';
+import { VoltMarketProfitabilityCalculator } from './VoltMarketProfitabilityCalculator';
 import { VoltMarketListingAnalytics } from './VoltMarketListingAnalytics';
 import { VoltMarketRealTimeData } from './VoltMarketRealTimeData';
 import { VoltMarketSimplePropertyMap } from './VoltMarketSimplePropertyMap';
@@ -535,8 +535,7 @@ export const VoltMarketListingDetail: React.FC = () => {
               </TabsContent>
 
               <TabsContent value="analysis">
-                <VoltMarketAdvancedDueDiligence
-                  listingId={listing.id}
+                <VoltMarketProfitabilityCalculator
                   listingData={listing}
                 />
               </TabsContent>
