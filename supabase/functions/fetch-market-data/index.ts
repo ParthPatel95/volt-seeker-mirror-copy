@@ -22,40 +22,81 @@ serve(async (req) => {
   try {
     console.log('Fetching live market data...');
     
-    // Fetch Bitcoin price from CoinGecko (free, no API key required)
-    const btcResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
-    const btcData = await btcResponse.json();
-    const btcPrice = btcData.bitcoin?.usd || 95000; // Fallback if API fails
+    // Fetch Bitcoin price from multiple reliable sources
+    let btcPrice = 95000; // Fallback
     
-    // Fetch network difficulty from blockchain.info
-    const difficultyResponse = await fetch('https://blockchain.info/q/getdifficulty');
-    const networkDifficulty = parseFloat(await difficultyResponse.text()) || 106.9e12;
-    
-    // Fetch latest block info for current block reward
-    const blockResponse = await fetch('https://blockchain.info/latestblock');
-    const blockData = await blockResponse.json();
-    const blockHeight = blockData.height;
-    
-    // Calculate current block reward based on halving schedule
-    let blockReward = 50; // Initial reward
-    let halvings = Math.floor(blockHeight / 210000);
-    for (let i = 0; i < halvings; i++) {
-      blockReward /= 2;
+    try {
+      // Try CoinMarketCap first (more reliable)
+      const cmcResponse = await fetch('https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=BTC', {
+        headers: {
+          'X-CMC_PRO_API_KEY': Deno.env.get('COINMARKETCAP_API_KEY') || '',
+          'Accept': 'application/json'
+        }
+      });
+      
+      if (cmcResponse.ok) {
+        const cmcData = await cmcResponse.json();
+        if (cmcData.data?.BTC?.quote?.USD?.price) {
+          btcPrice = cmcData.data.BTC.quote.USD.price;
+          console.log('Using CoinMarketCap BTC price:', btcPrice);
+        }
+      } else {
+        throw new Error('CoinMarketCap failed');
+      }
+    } catch (error) {
+      console.log('CoinMarketCap failed, trying CoinGecko:', error);
+      // Fallback to CoinGecko
+      try {
+        const cgResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+        const cgData = await cgResponse.json();
+        if (cgData.bitcoin?.usd) {
+          btcPrice = cgData.bitcoin.usd;
+          console.log('Using CoinGecko BTC price:', btcPrice);
+        }
+      } catch (cgError) {
+        console.log('CoinGecko also failed, using fallback price:', cgError);
+      }
     }
     
-    // Get average block time from recent blocks
-    const recentBlocksResponse = await fetch('https://blockchain.info/blocks?format=json');
-    const recentBlocks = await recentBlocksResponse.json();
-    
-    let totalTime = 0;
-    let blockCount = Math.min(10, recentBlocks.blocks.length - 1);
-    
-    for (let i = 0; i < blockCount; i++) {
-      const timeDiff = recentBlocks.blocks[i].time - recentBlocks.blocks[i + 1].time;
-      totalTime += timeDiff;
+    // Fetch network difficulty with error handling
+    let networkDifficulty = 106.9e12; // Fallback
+    try {
+      const difficultyResponse = await fetch('https://blockchain.info/q/getdifficulty');
+      if (difficultyResponse.ok) {
+        const diffText = await difficultyResponse.text();
+        const parsedDifficulty = parseFloat(diffText);
+        if (!isNaN(parsedDifficulty)) {
+          networkDifficulty = parsedDifficulty;
+        }
+      }
+    } catch (error) {
+      console.log('Failed to fetch difficulty, using fallback:', error);
     }
     
-    const avgBlockTime = blockCount > 0 ? totalTime / blockCount : 600; // Fallback to 10 minutes
+    // Calculate current block reward based on current block height
+    let blockReward = 6.25; // Current post-halving reward
+    let blockHeight = 870000; // Approximate current height
+    
+    try {
+      const blockResponse = await fetch('https://blockchain.info/latestblock');
+      if (blockResponse.ok) {
+        const blockData = await blockResponse.json();
+        if (blockData.height) {
+          blockHeight = blockData.height;
+          // Calculate reward based on halvings
+          blockReward = 50; // Initial reward
+          const halvings = Math.floor(blockHeight / 210000);
+          for (let i = 0; i < halvings; i++) {
+            blockReward /= 2;
+          }
+        }
+      }
+    } catch (error) {
+      console.log('Failed to fetch block height, using current reward:', error);
+    }
+    
+    // Use a fixed average block time of 10 minutes (600 seconds)
+    const avgBlockTime = 600;
     
     const marketData: MarketData = {
       btcPrice,

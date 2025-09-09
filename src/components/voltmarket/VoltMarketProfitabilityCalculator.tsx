@@ -363,14 +363,10 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
               <Label className="text-muted-foreground">Bitcoin Price</Label>
               <p className="text-lg font-semibold text-green-600">${btcPrice.toLocaleString()}</p>
-            </div>
-            <div>
-              <Label className="text-muted-foreground">Energy Rate</Label>
-              <p className="text-lg font-semibold">${energyRate.toFixed(3)}/kWh</p>
             </div>
             <div>
               <Label className="text-muted-foreground">Network Difficulty</Label>
