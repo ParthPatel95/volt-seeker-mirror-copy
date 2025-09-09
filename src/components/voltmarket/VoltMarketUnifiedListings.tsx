@@ -36,6 +36,19 @@ interface Listing {
   seller_id: string;
   lease_rate: number;
   power_rate_per_kw: number;
+  // Equipment specific fields
+  equipment_type?: string;
+  brand?: string;
+  model?: string;
+  equipment_condition?: string;
+  quantity?: number;
+  manufacture_year?: number;
+  shipping_terms?: string;
+  // Site specific fields
+  square_footage?: number;
+  facility_tier?: string;
+  cooling_type?: string;
+  property_type?: string;
   gridbazaar_profiles: {
     company_name: string;
     is_id_verified: boolean;
@@ -64,7 +77,10 @@ export const VoltMarketUnifiedListings: React.FC = () => {
     try {
       const { data: listingsData, error } = await supabase
         .from('voltmarket_listings')
-        .select('*')
+        .select(`
+          *,
+          voltmarket_listing_images(image_url)
+        `)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 
@@ -80,10 +96,11 @@ export const VoltMarketUnifiedListings: React.FC = () => {
         );
       }
 
-      // Apply capacity filter if enabled
+      // Apply capacity filter if enabled (only for non-equipment listings)
       if (useCapacityFilter) {
         filteredData = filteredData.filter(listing => 
-          listing.power_capacity_mw >= capacityRange[0] && listing.power_capacity_mw <= capacityRange[1]
+          listing.listing_type === 'equipment' || 
+          (listing.power_capacity_mw >= capacityRange[0] && listing.power_capacity_mw <= capacityRange[1])
         );
       }
 
@@ -118,7 +135,10 @@ export const VoltMarketUnifiedListings: React.FC = () => {
     const matchesSearch = searchQuery === '' || 
       listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       listing.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      listing.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      listing.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      listing.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      listing.model?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      listing.equipment_type?.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesType = selectedType === 'all' || listing.listing_type === selectedType;
     

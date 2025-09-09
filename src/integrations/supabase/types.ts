@@ -3378,19 +3378,19 @@ export type Database = {
       }
       voltmarket_watchlist: {
         Row: {
-          added_at: string
+          created_at: string
           id: string
           listing_id: string
           user_id: string
         }
         Insert: {
-          added_at?: string
+          created_at?: string
           id?: string
           listing_id: string
           user_id: string
         }
         Update: {
-          added_at?: string
+          created_at?: string
           id?: string
           listing_id?: string
           user_id?: string

@@ -45,8 +45,7 @@ export const useVoltMarketWatchlist = () => {
       if (error) throw error;
       setWatchlist((data || []).map(item => ({
         ...item,
-        created_at: item.added_at,
-        listing: { title: 'Unknown Listing', asking_price: 0 }
+        listing: item.listing || { id: '', title: 'Unknown Listing', location: '', asking_price: 0, status: 'active' }
       })) as any);
     } catch (error) {
       console.error('Error fetching watchlist:', error);

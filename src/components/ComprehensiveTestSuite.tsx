@@ -7,6 +7,7 @@ import { TestRunner } from '@/components/scraping/TestRunner';
 import { EnergyRateEstimatorTest } from '@/components/energy/EnergyRateEstimatorTest';
 import { VoltMarketFeatureTest } from '@/components/voltmarket/VoltMarketFeatureTest';
 import { SystemHealthCheck } from '@/components/testing/SystemHealthCheck';
+import { EquipmentListingTest } from '@/components/testing/EquipmentListingTest';
 import { supabase } from '@/integrations/supabase/client';
 
 interface TestResult {
@@ -413,6 +414,7 @@ export const ComprehensiveTestSuite: React.FC = () => {
             {/* Feature-Specific Test Suites */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <VoltMarketFeatureTest />
+              <EquipmentListingTest />
               <div className="space-y-6">
                 <EnergyRateEstimatorTest />
                 <TestRunner onPropertiesFound={setPropertiesFound} />

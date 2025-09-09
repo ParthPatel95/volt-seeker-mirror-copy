@@ -30,6 +30,14 @@ interface Listing {
   created_at: string;
   status: string;
   seller_id: string;
+  // Equipment specific fields
+  equipment_type?: string;
+  brand?: string;
+  model?: string;
+  equipment_condition?: string;
+  quantity?: number;
+  manufacture_year?: number;
+  shipping_terms?: string;
   gridbazaar_profiles: {
     company_name: string;
     is_id_verified: boolean;
@@ -172,7 +180,24 @@ export const VoltMarketListingCard: React.FC<VoltMarketListingCardProps> = ({ li
             <DollarSign className="w-4 h-4 mr-1 shrink-0" />
             <span className="truncate">{getPriceDisplay()}</span>
           </div>
-          {listing.power_capacity_mw > 0 && (
+          
+          {/* Show equipment info for equipment listings */}
+          {listing.listing_type === 'equipment' && listing.brand && listing.model && (
+            <div className="flex items-center text-purple-600 shrink-0">
+              <Building2 className="w-4 h-4 mr-1" />
+              <span className="text-sm">{listing.brand} {listing.model}</span>
+            </div>
+          )}
+          
+          {/* Show quantity for equipment */}
+          {listing.listing_type === 'equipment' && listing.quantity && listing.quantity > 1 && (
+            <div className="flex items-center text-gray-600 shrink-0">
+              <span className="text-sm">Qty: {listing.quantity}</span>
+            </div>
+          )}
+          
+          {/* Show power capacity for non-equipment listings */}
+          {listing.listing_type !== 'equipment' && listing.power_capacity_mw > 0 && (
             <div className="flex items-center text-blue-600 shrink-0">
               <Zap className="w-4 h-4 mr-1" />
               <span className="text-sm">{listing.power_capacity_mw}MW</span>
