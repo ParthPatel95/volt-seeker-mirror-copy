@@ -16,17 +16,12 @@ import { useToast } from '@/hooks/use-toast';
 import { Plus, Building2, Zap, Camera, FileText, MapPin, Settings, Tag, ChevronLeft, ChevronRight, CheckCircle, Wand2 } from 'lucide-react';
 import { GooglePlacesInput } from '@/components/ui/google-places-input';
 
-const categoryTags = [
-  'Greenfield',
-  'Brownfield', 
-  'Powered Land',
-  'Operational Facility',
-  'Modular Containers',
-  'Substation Access',
-  'Transformer Onsite',
-  'Behind-the-Meter',
-  'Renewable Site'
-];
+const categoryTags = {
+  site_sale: ['Greenfield', 'Brownfield', 'Powered Land', 'Operational Facility', 'Substation Access', 'Transformer Onsite', 'Behind-the-Meter', 'Renewable Site'],
+  site_lease: ['Greenfield', 'Brownfield', 'Powered Land', 'Operational Facility', 'Substation Access', 'Transformer Onsite', 'Behind-the-Meter', 'Renewable Site'],
+  hosting: ['Modular Containers', 'Operational Facility', 'Substation Access', 'Transformer Onsite', 'Behind-the-Meter', 'Renewable Site', 'High Uptime', '24/7 Monitoring'],
+  equipment: ['ASIC Miners', 'GPU Miners', 'New Equipment', 'Used Equipment', 'Refurbished', 'Warranty Included', 'Bulk Pricing', 'Fast Shipping']
+};
 
 const steps = [
   { id: 1, title: 'Basic Info', icon: Building2 },
@@ -272,6 +267,14 @@ export const VoltMarketCreateListing: React.FC = () => {
     if (currentStep === 1) {
       return formData.title && formData.location && formData.listing_type;
     }
+    if (currentStep === 2) {
+      if (formData.listing_type === 'equipment') {
+        return formData.equipment_type && formData.brand && formData.model && 
+               formData.equipment_condition && formData.quantity > 0 && formData.asking_price > 0;
+      } else {
+        return formData.power_capacity_mw > 0;
+      }
+    }
     return true;
   };
 
@@ -421,232 +424,310 @@ export const VoltMarketCreateListing: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Power Infrastructure Specifications */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                  <div>
-                    <Label htmlFor="power_capacity_mw">Total Power Capacity (MW) *</Label>
-                    <Input
-                      id="power_capacity_mw"
-                      type="number"
-                      step="0.1"
-                      value={formData.power_capacity_mw || ''}
-                      onChange={(e) => setFormData(prev => ({ 
-                        ...prev, 
-                        power_capacity_mw: parseFloat(e.target.value) || 0 
-                      }))}
-                      placeholder="e.g., 50"
-                      required
-                    />
-                  </div>
+                {/* Equipment Specifications */}
+                {formData.listing_type === 'equipment' && (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="equipment_type">Equipment Type *</Label>
+                        <Select value={formData.equipment_type} onValueChange={(value: 'other' | 'asic' | 'gpu' | 'cooling' | 'generator' | 'ups' | 'transformer') => 
+                          setFormData(prev => ({ ...prev, equipment_type: value }))}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="asic">ASIC Miners</SelectItem>
+                            <SelectItem value="gpu">GPU Miners</SelectItem>
+                            <SelectItem value="cooling">Cooling Equipment</SelectItem>
+                            <SelectItem value="generator">Generators</SelectItem>
+                            <SelectItem value="ups">UPS Systems</SelectItem>
+                            <SelectItem value="transformer">Transformers</SelectItem>
+                            <SelectItem value="other">Other Equipment</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                  <div>
-                    <Label htmlFor="available_power_mw">Available Power (MW)</Label>
-                    <Input
-                      id="available_power_mw"
-                      type="number"
-                      step="0.1"
-                      value={formData.available_power_mw || ''}
-                      onChange={(e) => setFormData(prev => ({ 
-                        ...prev, 
-                        available_power_mw: parseFloat(e.target.value) || 0 
-                      }))}
-                      placeholder="e.g., 25"
-                    />
-                  </div>
-                </div>
+                      <div>
+                        <Label htmlFor="equipment_condition">Condition *</Label>
+                        <Select value={formData.equipment_condition} onValueChange={(value: 'new' | 'used' | 'refurbished') => 
+                          setFormData(prev => ({ ...prev, equipment_condition: value }))}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="new">New</SelectItem>
+                            <SelectItem value="used">Used</SelectItem>
+                            <SelectItem value="refurbished">Refurbished</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
 
-                {/* Site Details */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="acres">Land Size (Acres)</Label>
-                    <Input
-                      id="acres"
-                      type="number"
-                      step="0.1"
-                      value={formData.square_footage || ''}
-                      onChange={(e) => setFormData(prev => ({ 
-                        ...prev, 
-                        square_footage: parseFloat(e.target.value) || 0 
-                      }))}
-                      placeholder="e.g., 10.5"
-                    />
-                  </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="brand">Brand *</Label>
+                        <Input
+                          id="brand"
+                          value={formData.brand}
+                          onChange={(e) => setFormData(prev => ({ ...prev, brand: e.target.value }))}
+                          placeholder="e.g., Bitmain, Canaan, MicroBT"
+                          required
+                        />
+                      </div>
 
-                  <div>
-                    <Label htmlFor="site_type">Site Type</Label>
-                    <Select value={formData.facility_tier} onValueChange={(value) => 
-                      setFormData(prev => ({ ...prev, facility_tier: value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select site type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="greenfield">Greenfield (Undeveloped)</SelectItem>
-                        <SelectItem value="brownfield">Brownfield (Former Industrial)</SelectItem>
-                        <SelectItem value="operational">Operational Facility</SelectItem>
-                        <SelectItem value="data_center">Data Center</SelectItem>
-                        <SelectItem value="warehouse">Warehouse/Industrial</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                      <div>
+                        <Label htmlFor="model">Model *</Label>
+                        <Input
+                          id="model"
+                          value={formData.model}
+                          onChange={(e) => setFormData(prev => ({ ...prev, model: e.target.value }))}
+                          placeholder="e.g., Antminer S19 Pro, T21"
+                          required
+                        />
+                      </div>
+                    </div>
 
-                {/* Power Infrastructure Details */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="cooling_type">Cooling Infrastructure</Label>
-                    <Select value={formData.cooling_type} onValueChange={(value) => 
-                      setFormData(prev => ({ ...prev, cooling_type: value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select cooling type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="air">Air Cooling</SelectItem>
-                        <SelectItem value="immersion">Immersion Cooling</SelectItem>
-                        <SelectItem value="hydro">Hydro Cooling</SelectItem>
-                        <SelectItem value="evaporative">Evaporative Cooling</SelectItem>
-                        <SelectItem value="none">No Cooling Infrastructure</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="quantity">Quantity Available *</Label>
+                        <Input
+                          id="quantity"
+                          type="number"
+                          min="1"
+                          value={formData.quantity}
+                          onChange={(e) => setFormData(prev => ({ 
+                            ...prev, 
+                            quantity: parseInt(e.target.value) || 1 
+                          }))}
+                          placeholder="Number of units"
+                          required
+                        />
+                      </div>
 
-                  <div>
-                    <Label htmlFor="property_type">Substation Access</Label>
-                    <Select value={formData.property_type} onValueChange={(value: 'other' | 'industrial' | 'warehouse' | 'data_center' | 'land' | 'office') => 
-                      setFormData(prev => ({ ...prev, property_type: value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select access type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="data_center">Direct Substation Connection</SelectItem>
-                        <SelectItem value="industrial">Close to Substation (&lt;1 mile)</SelectItem>
-                        <SelectItem value="warehouse">Nearby Substation (1-5 miles)</SelectItem>
-                        <SelectItem value="office">Distant Substation (&gt;5 miles)</SelectItem>
-                        <SelectItem value="other">Unknown/Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                      <div>
+                        <Label htmlFor="manufacture_year">Manufacturing Year</Label>
+                        <Input
+                          id="manufacture_year"
+                          type="number"
+                          min="2000"
+                          max={new Date().getFullYear() + 1}
+                          value={formData.manufacture_year}
+                          onChange={(e) => setFormData(prev => ({ 
+                            ...prev, 
+                            manufacture_year: parseInt(e.target.value) || new Date().getFullYear()
+                          }))}
+                          placeholder={new Date().getFullYear().toString()}
+                        />
+                      </div>
+                    </div>
 
-                {/* Pricing Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {formData.listing_type === 'site_sale' && (
                     <div>
-                      <Label htmlFor="asking_price">Asking Price ($)</Label>
+                      <Label htmlFor="asking_price">Asking Price ($) *</Label>
                       <Input
                         id="asking_price"
                         type="number"
+                        min="0"
                         value={formData.asking_price || ''}
                         onChange={(e) => setFormData(prev => ({ 
                           ...prev, 
                           asking_price: parseFloat(e.target.value) || 0 
                         }))}
-                        placeholder="e.g., 25000000"
+                        placeholder="Price per unit or total price"
+                        required
                       />
                     </div>
-                  )}
 
-                  {formData.listing_type === 'site_lease' && (
                     <div>
-                      <Label htmlFor="lease_rate">Monthly Lease Rate ($)</Label>
-                      <Input
-                        id="lease_rate"
-                        type="number"
-                        value={formData.lease_rate || ''}
-                        onChange={(e) => setFormData(prev => ({ 
-                          ...prev, 
-                          lease_rate: parseFloat(e.target.value) || 0 
-                        }))}
-                        placeholder="e.g., 150000"
+                      <Label htmlFor="shipping_terms">Shipping & Terms</Label>
+                      <Textarea
+                        id="shipping_terms"
+                        value={formData.shipping_terms}
+                        onChange={(e) => setFormData(prev => ({ ...prev, shipping_terms: e.target.value }))}
+                        placeholder="Shipping details, payment terms, warranty information, etc."
+                        rows={3}
                       />
                     </div>
-                  )}
+                  </>
+                )}
 
-                  {formData.listing_type === 'hosting' && (
-                    <div>
-                      <Label htmlFor="power_rate_per_kw">Power Rate ($/kW/month)</Label>
-                      <Input
-                        id="power_rate_per_kw"
-                        type="number"
-                        step="0.001"
-                        value={formData.power_rate_per_kw || ''}
-                        onChange={(e) => setFormData(prev => ({ 
-                          ...prev, 
-                          power_rate_per_kw: parseFloat(e.target.value) || 0 
-                        }))}
-                        placeholder="e.g., 0.085"
-                      />
+                {/* Power Infrastructure Specifications - For Site Sales, Leases, and Hosting */}
+                {formData.listing_type !== 'equipment' && (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                      <div>
+                        <Label htmlFor="power_capacity_mw">Total Power Capacity (MW) *</Label>
+                        <Input
+                          id="power_capacity_mw"
+                          type="number"
+                          step="0.1"
+                          value={formData.power_capacity_mw || ''}
+                          onChange={(e) => setFormData(prev => ({ 
+                            ...prev, 
+                            power_capacity_mw: parseFloat(e.target.value) || 0 
+                          }))}
+                          placeholder="e.g., 50"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="available_power_mw">Available Power (MW)</Label>
+                        <Input
+                          id="available_power_mw"
+                          type="number"
+                          step="0.1"
+                          value={formData.available_power_mw || ''}
+                          onChange={(e) => setFormData(prev => ({ 
+                            ...prev, 
+                            available_power_mw: parseFloat(e.target.value) || 0 
+                          }))}
+                          placeholder="e.g., 25"
+                        />
+                      </div>
                     </div>
-                  )}
 
-                  {(formData.listing_type === 'hosting' || formData.listing_type === 'site_lease') && (
-                    <div>
-                      <Label htmlFor="minimum_commitment_months">Minimum Commitment (Months)</Label>
-                      <Input
-                        id="minimum_commitment_months"
-                        type="number"
-                        min="1"
-                        value={formData.minimum_commitment_months || ''}
-                        onChange={(e) => setFormData(prev => ({ 
-                          ...prev, 
-                          minimum_commitment_months: parseInt(e.target.value) || 0 
-                        }))}
-                        placeholder="e.g., 12"
-                      />
+                    {/* Site Details */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="acres">Land Size (Acres)</Label>
+                        <Input
+                          id="acres"
+                          type="number"
+                          step="0.1"
+                          value={formData.square_footage || ''}
+                          onChange={(e) => setFormData(prev => ({ 
+                            ...prev, 
+                            square_footage: parseFloat(e.target.value) || 0 
+                          }))}
+                          placeholder="e.g., 10.5"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="site_type">Site Type</Label>
+                        <Select value={formData.facility_tier} onValueChange={(value) => 
+                          setFormData(prev => ({ ...prev, facility_tier: value }))}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select site type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="greenfield">Greenfield (Undeveloped)</SelectItem>
+                            <SelectItem value="brownfield">Brownfield (Former Industrial)</SelectItem>
+                            <SelectItem value="operational">Operational Facility</SelectItem>
+                            <SelectItem value="data_center">Data Center</SelectItem>
+                            <SelectItem value="warehouse">Warehouse/Industrial</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
-                  )}
-                </div>
 
-                {/* Equipment specific fields */}
-                {formData.listing_type === 'equipment' && (
+                    {/* Power Infrastructure Details */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="cooling_type">Cooling Infrastructure</Label>
+                        <Select value={formData.cooling_type} onValueChange={(value) => 
+                          setFormData(prev => ({ ...prev, cooling_type: value }))}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select cooling type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="air">Air Cooling</SelectItem>
+                            <SelectItem value="immersion">Immersion Cooling</SelectItem>
+                            <SelectItem value="hydro">Hydro Cooling</SelectItem>
+                            <SelectItem value="evaporative">Evaporative Cooling</SelectItem>
+                            <SelectItem value="none">No Cooling Infrastructure</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="property_type">Substation Access</Label>
+                        <Select value={formData.property_type} onValueChange={(value: 'other' | 'industrial' | 'warehouse' | 'data_center' | 'land' | 'office') => 
+                          setFormData(prev => ({ ...prev, property_type: value }))}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select access type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="data_center">Direct Substation Connection</SelectItem>
+                            <SelectItem value="industrial">Close to Substation (&lt;1 mile)</SelectItem>
+                            <SelectItem value="warehouse">Nearby Substation (1-5 miles)</SelectItem>
+                            <SelectItem value="office">Distant Substation (&gt;5 miles)</SelectItem>
+                            <SelectItem value="other">Unknown/Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Pricing Section - For Non-Equipment Listings */}
+                {formData.listing_type !== 'equipment' && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="brand">Brand</Label>
-                      <Input
-                        id="brand"
-                        value={formData.brand}
-                        onChange={(e) => setFormData(prev => ({ ...prev, brand: e.target.value }))}
-                        placeholder="e.g., Bitmain"
-                      />
-                    </div>
+                    {formData.listing_type === 'site_sale' && (
+                      <div>
+                        <Label htmlFor="asking_price">Asking Price ($)</Label>
+                        <Input
+                          id="asking_price"
+                          type="number"
+                          value={formData.asking_price || ''}
+                          onChange={(e) => setFormData(prev => ({ 
+                            ...prev, 
+                            asking_price: parseFloat(e.target.value) || 0 
+                          }))}
+                          placeholder="e.g., 25000000"
+                        />
+                      </div>
+                    )}
 
-                    <div>
-                      <Label htmlFor="model">Model</Label>
-                      <Input
-                        id="model"
-                        value={formData.model}
-                        onChange={(e) => setFormData(prev => ({ ...prev, model: e.target.value }))}
-                        placeholder="e.g., Antminer S19 Pro"
-                      />
-                    </div>
+                    {formData.listing_type === 'site_lease' && (
+                      <div>
+                        <Label htmlFor="lease_rate">Monthly Lease Rate ($)</Label>
+                        <Input
+                          id="lease_rate"
+                          type="number"
+                          value={formData.lease_rate || ''}
+                          onChange={(e) => setFormData(prev => ({ 
+                            ...prev, 
+                            lease_rate: parseFloat(e.target.value) || 0 
+                          }))}
+                          placeholder="e.g., 150000"
+                        />
+                      </div>
+                    )}
 
-                    <div>
-                      <Label htmlFor="equipment_condition">Condition</Label>
-                      <Select value={formData.equipment_condition} onValueChange={(value: 'new' | 'used' | 'refurbished') => 
-                        setFormData(prev => ({ ...prev, equipment_condition: value }))}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="new">New</SelectItem>
-                          <SelectItem value="used">Used</SelectItem>
-                          <SelectItem value="refurbished">Refurbished</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    {formData.listing_type === 'hosting' && (
+                      <div>
+                        <Label htmlFor="power_rate_per_kw">Power Rate ($/kW/month)</Label>
+                        <Input
+                          id="power_rate_per_kw"
+                          type="number"
+                          step="0.001"
+                          value={formData.power_rate_per_kw || ''}
+                          onChange={(e) => setFormData(prev => ({ 
+                            ...prev, 
+                            power_rate_per_kw: parseFloat(e.target.value) || 0 
+                          }))}
+                          placeholder="e.g., 0.085"
+                        />
+                      </div>
+                    )}
 
-                    <div>
-                      <Label htmlFor="quantity">Quantity</Label>
-                      <Input
-                        id="quantity"
-                        type="number"
-                        min="1"
-                        value={formData.quantity}
-                        onChange={(e) => setFormData(prev => ({ 
-                          ...prev, 
-                          quantity: parseInt(e.target.value) || 1 
-                        }))}
-                      />
-                    </div>
+                    {(formData.listing_type === 'hosting' || formData.listing_type === 'site_lease') && (
+                      <div>
+                        <Label htmlFor="minimum_commitment_months">Minimum Commitment (Months)</Label>
+                        <Input
+                          id="minimum_commitment_months"
+                          type="number"
+                          min="1"
+                          value={formData.minimum_commitment_months || ''}
+                          onChange={(e) => setFormData(prev => ({ 
+                            ...prev, 
+                            minimum_commitment_months: parseInt(e.target.value) || 0 
+                          }))}
+                          placeholder="e.g., 12"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
@@ -702,7 +783,7 @@ export const VoltMarketCreateListing: React.FC = () => {
                 <CardContent>
                   <p className="text-sm text-gray-600 mb-4">Choose one or more tags that best describe your listing:</p>
                   <div className="flex flex-wrap gap-2">
-                    {categoryTags.map((tag) => (
+                    {categoryTags[formData.listing_type]?.map((tag) => (
                       <Badge
                         key={tag}
                         variant={selectedTags.includes(tag) ? "default" : "outline"}
@@ -764,9 +845,27 @@ export const VoltMarketCreateListing: React.FC = () => {
                   <div>
                     <strong>Location:</strong> {formData.location}
                   </div>
-                  <div>
-                    <strong>Power Capacity:</strong> {formData.power_capacity_mw}MW
-                  </div>
+                  {formData.listing_type !== 'equipment' && (
+                    <div>
+                      <strong>Power Capacity:</strong> {formData.power_capacity_mw}MW
+                    </div>
+                  )}
+                  {formData.listing_type === 'equipment' && (
+                    <>
+                      <div>
+                        <strong>Equipment:</strong> {formData.brand} {formData.model}
+                      </div>
+                      <div>
+                        <strong>Quantity:</strong> {formData.quantity}
+                      </div>
+                      <div>
+                        <strong>Condition:</strong> {formData.equipment_condition}
+                      </div>
+                      <div>
+                        <strong>Price:</strong> ${formData.asking_price?.toLocaleString()}
+                      </div>
+                    </>
+                  )}
                   {formData.square_footage > 0 && (
                     <div>
                       <strong>Square Footage:</strong> {formData.square_footage.toLocaleString()} sq ft
