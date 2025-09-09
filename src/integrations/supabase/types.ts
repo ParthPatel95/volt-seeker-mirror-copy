@@ -2707,6 +2707,7 @@ export type Database = {
           created_at: string
           id: string
           image_url: string
+          is_public: boolean | null
           listing_id: string
           sort_order: number
         }
@@ -2714,6 +2715,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url: string
+          is_public?: boolean | null
           listing_id: string
           sort_order?: number
         }
@@ -2721,6 +2723,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string
+          is_public?: boolean | null
           listing_id?: string
           sort_order?: number
         }

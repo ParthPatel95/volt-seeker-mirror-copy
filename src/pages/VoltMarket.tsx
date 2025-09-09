@@ -41,6 +41,7 @@ import { ForgotPassword } from '@/pages/ForgotPassword';
 import { ResetPassword } from '@/pages/ResetPassword';
 import { VoltMarketLogin } from '@/components/voltmarket/VoltMarketLogin';
 import { ComprehensiveTestSuite } from '@/components/ComprehensiveTestSuite';
+import { PreLaunchTestSuite } from '@/components/testing/PreLaunchTestSuite';
 
 export const VoltMarket = () => {
   const { user, loading } = useVoltMarketAuth();
@@ -218,6 +219,13 @@ export const VoltMarket = () => {
         <Route path="/feature-test" element={
           <VoltMarketLayout>
             {user ? <ComprehensiveFeatureTest /> : <WattbytesAuth />}
+          </VoltMarketLayout>
+        } />
+        
+        {/* Pre-Launch Test Suite */}
+        <Route path="/pre-launch-test" element={
+          <VoltMarketLayout>
+            {user ? <PreLaunchTestSuite /> : <WattbytesAuth />}
           </VoltMarketLayout>
         } />
     </Routes>
