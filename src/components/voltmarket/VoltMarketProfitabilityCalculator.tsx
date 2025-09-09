@@ -60,6 +60,7 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
   const [btcPrice, setBtcPrice] = useState(95000);
   const [networkDifficulty, setNetworkDifficulty] = useState(106.9e12);
   const [energyRate, setEnergyRate] = useState(0.08);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [results, setResults] = useState<ProfitabilityResults | HostingResults | null>(null);
   const { toast } = useToast();
 
@@ -89,38 +90,74 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
 
   // Fetch real-time data
   const fetchMarketData = async () => {
+    setLoading(true);
     try {
-      // Fetch Bitcoin price (using a free API or existing market data)
-      const btcResponse = await fetch('https://api.coindesk.com/v1/bpi/currentprice.json');
-      if (btcResponse.ok) {
-        const btcData = await btcResponse.json();
-        const price = parseFloat(btcData.bpi.USD.rate.replace(/,/g, ''));
-        setBtcPrice(price);
+      console.log('Fetching live market data...');
+      
+      // Fetch live market data from our edge function
+      const { data: marketData, error: marketError } = await supabase.functions.invoke('fetch-market-data', {
+        body: {}
+      });
+
+      if (marketError) {
+        console.error('Market data error:', marketError);
+        throw marketError;
       }
 
-      // Fetch energy rates from our database
-      const { data: energyData } = await supabase
+      if (marketData) {
+        setBtcPrice(marketData.btcPrice);
+        setNetworkDifficulty(marketData.networkDifficulty);
+        setLastUpdated(new Date());
+        
+        console.log('Live market data updated:', {
+          btcPrice: `$${marketData.btcPrice.toLocaleString()}`,
+          networkDifficulty: `${(marketData.networkDifficulty / 1e12).toFixed(1)}T`,
+          blockReward: marketData.blockReward,
+          lastUpdated: marketData.lastUpdated
+        });
+      }
+
+      // Fetch live energy rates from our database
+      const { data: energyData, error: energyError } = await supabase
         .from('energy_rates')
-        .select('price_per_mwh')
+        .select('price_per_mwh, timestamp, market_name')
         .order('timestamp', { ascending: false })
         .limit(1)
         .maybeSingle();
 
       if (energyData?.price_per_mwh) {
-        setEnergyRate(energyData.price_per_mwh / 1000); // Convert to $/kWh
+        const liveEnergyRate = energyData.price_per_mwh / 1000; // Convert to $/kWh
+        setEnergyRate(liveEnergyRate);
+        console.log('Live energy rate updated:', {
+          rate: `$${liveEnergyRate.toFixed(3)}/kWh`,
+          market: energyData.market_name,
+          timestamp: energyData.timestamp
+        });
+      } else if (energyError) {
+        console.warn('Energy data error:', energyError);
+        // Use a realistic default based on current market conditions
+        setEnergyRate(0.085); // $0.085/kWh average industrial rate
       }
 
-      // Fetch network difficulty (simulated - in real app would use blockchain API)
-      // For now, using realistic current values
-      setNetworkDifficulty(106.9e12);
+      toast({
+        title: "Market Data Updated",
+        description: `Live BTC price: $${marketData?.btcPrice?.toLocaleString() || 'N/A'} | Energy: $${energyRate.toFixed(3)}/kWh`,
+      });
       
     } catch (error) {
-      console.error('Error fetching market data:', error);
+      console.error('Error fetching live market data:', error);
       toast({
-        title: "Market Data",
-        description: "Using cached market data. Some values may not be current.",
-        variant: "default"
+        title: "Market Data Error",
+        description: "Failed to fetch live data. Using fallback values.",
+        variant: "destructive"
       });
+      
+      // Set realistic fallback values
+      setBtcPrice(95000);
+      setNetworkDifficulty(106.9e12);
+      setEnergyRate(0.085);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -225,7 +262,13 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
   ]);
 
   useEffect(() => {
+    // Fetch live market data on component mount
     fetchMarketData();
+    
+    // Set up interval to refresh data every 5 minutes
+    const interval = setInterval(fetchMarketData, 5 * 60 * 1000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const formatCurrency = (amount: number) => {
@@ -270,7 +313,28 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
       {/* Market Data */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Market Data</CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-lg">Live Market Data</CardTitle>
+              <Badge variant="outline" className="text-green-600 border-green-600">
+                <div className="w-2 h-2 bg-green-600 rounded-full mr-1 animate-pulse"></div>
+                LIVE
+              </Badge>
+            </div>
+            <Button
+              onClick={fetchMarketData}
+              disabled={loading}
+              size="sm"
+              variant="outline"
+            >
+              {loading ? (
+                <Clock className="w-4 h-4 animate-spin" />
+              ) : (
+                <Activity className="w-4 h-4" />
+              )}
+              {loading ? 'Updating...' : 'Refresh'}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -288,7 +352,12 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
             </div>
             <div>
               <Label className="text-muted-foreground">Last Updated</Label>
-              <p className="text-sm text-muted-foreground">{new Date().toLocaleTimeString()}</p>
+              <p className="text-sm text-muted-foreground">
+                {lastUpdated.toLocaleTimeString()}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {lastUpdated.toLocaleDateString()}
+              </p>
             </div>
           </div>
         </CardContent>
