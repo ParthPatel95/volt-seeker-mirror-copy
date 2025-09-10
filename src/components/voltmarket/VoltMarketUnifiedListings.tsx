@@ -189,11 +189,19 @@ export const VoltMarketUnifiedListings: React.FC = () => {
           // Handle different events
           if (payload.eventType === 'DELETE') {
             // Remove deleted listing from state immediately
-            setListings(prev => prev.filter(listing => listing.id !== payload.old.id));
+            setListings(prev => {
+              const updated = prev.filter(listing => listing.id !== payload.old?.id);
+              console.log(`Removed listing ${payload.old?.id} from browse listings`);
+              return updated;
+            });
           } else if (payload.eventType === 'UPDATE') {
             // Handle status changes (inactive listings should be filtered out)
             if (payload.new.status !== 'active') {
-              setListings(prev => prev.filter(listing => listing.id !== payload.new.id));
+              setListings(prev => {
+                const updated = prev.filter(listing => listing.id !== payload.new.id);
+                console.log(`Removed inactive listing ${payload.new.id} from browse listings`);
+                return updated;
+              });
             } else {
               // Update existing listing
               setListings(prev => prev.map(listing => 
@@ -216,7 +224,7 @@ export const VoltMarketUnifiedListings: React.FC = () => {
       console.log('Cleaning up real-time subscription');
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [fetchListings]);
 
   if (loading) {
     return (

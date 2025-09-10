@@ -82,7 +82,7 @@ export const useVoltMarketListings = () => {
       
       console.log('Successfully deleted listing from database');
       
-      // Remove from local state
+      // Remove from local state immediately - this ensures instant UI update
       setUserListings(prev => {
         const updated = prev.filter(listing => listing.id !== listingId);
         console.log('Updated user listings after delete:', updated.length);
@@ -95,12 +95,17 @@ export const useVoltMarketListings = () => {
         return updated;
       });
       
+      // Force a refresh of listings to ensure consistency
+      setTimeout(() => {
+        fetchListings();
+      }, 100);
+      
       return { success: true };
     } catch (error) {
       console.error('Error deleting listing:', error);
       return { success: false, error };
     }
-  }, []);
+  }, [fetchListings]);
 
   const updateListingStatus = useCallback(async (listingId: string, status: VoltMarketListingStatus) => {
     try {
