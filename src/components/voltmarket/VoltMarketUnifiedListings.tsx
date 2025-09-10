@@ -175,7 +175,7 @@ export const VoltMarketUnifiedListings: React.FC = () => {
   // Set up real-time subscription for listing changes
   useEffect(() => {
     const channel = supabase
-      .channel('listing-changes')
+      .channel('voltmarket-listing-changes')
       .on(
         'postgres_changes',
         {
@@ -183,14 +183,37 @@ export const VoltMarketUnifiedListings: React.FC = () => {
           schema: 'public',
           table: 'voltmarket_listings'
         },
-        () => {
-          // Refetch listings when any change occurs
-          fetchListings();
+        (payload) => {
+          console.log('Real-time listing change:', payload);
+          
+          // Handle different events
+          if (payload.eventType === 'DELETE') {
+            // Remove deleted listing from state immediately
+            setListings(prev => prev.filter(listing => listing.id !== payload.old.id));
+          } else if (payload.eventType === 'UPDATE') {
+            // Handle status changes (inactive listings should be filtered out)
+            if (payload.new.status !== 'active') {
+              setListings(prev => prev.filter(listing => listing.id !== payload.new.id));
+            } else {
+              // Update existing listing
+              setListings(prev => prev.map(listing => 
+                listing.id === payload.new.id 
+                  ? { ...listing, ...payload.new }
+                  : listing
+              ));
+            }
+          } else if (payload.eventType === 'INSERT' && payload.new.status === 'active') {
+            // Add new active listings
+            fetchListings(); // Refetch to get complete data with profiles
+          }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Real-time subscription status:', status);
+      });
 
     return () => {
+      console.log('Cleaning up real-time subscription');
       supabase.removeChannel(channel);
     };
   }, []);

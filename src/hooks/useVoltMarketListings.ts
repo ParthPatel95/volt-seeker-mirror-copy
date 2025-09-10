@@ -66,17 +66,34 @@ export const useVoltMarketListings = () => {
   }, []);
 
   const deleteListing = useCallback(async (listingId: string) => {
+    console.log('Attempting to delete listing:', listingId);
     try {
       const { error } = await supabase
         .from('voltmarket_listings')
         .delete()
         .eq('id', listingId);
 
-      if (error) throw error;
+      console.log('Delete result:', { error });
+
+      if (error) {
+        console.error('Delete error:', error);
+        throw error;
+      }
+      
+      console.log('Successfully deleted listing from database');
       
       // Remove from local state
-      setUserListings(prev => prev.filter(listing => listing.id !== listingId));
-      setListings(prev => prev.filter(listing => listing.id !== listingId));
+      setUserListings(prev => {
+        const updated = prev.filter(listing => listing.id !== listingId);
+        console.log('Updated user listings after delete:', updated.length);
+        return updated;
+      });
+      
+      setListings(prev => {
+        const updated = prev.filter(listing => listing.id !== listingId);
+        console.log('Updated general listings after delete:', updated.length);
+        return updated;
+      });
       
       return { success: true };
     } catch (error) {
