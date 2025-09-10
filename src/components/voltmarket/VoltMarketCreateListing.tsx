@@ -63,7 +63,9 @@ export const VoltMarketCreateListing: React.FC = () => {
     equipment_condition: 'new' as 'new' | 'used' | 'refurbished',
     manufacture_year: new Date().getFullYear(),
     quantity: 1,
-    shipping_terms: ''
+    shipping_terms: '',
+    th_specification: '',
+    price_per_th: 0
   });
 
   const { profile } = useVoltMarketAuth();
@@ -521,8 +523,41 @@ export const VoltMarketCreateListing: React.FC = () => {
                       </div>
                     </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="th_specification">TH Specification *</Label>
+                        <Input
+                          id="th_specification"
+                          value={formData.th_specification}
+                          onChange={(e) => setFormData(prev => ({ 
+                            ...prev, 
+                            th_specification: e.target.value 
+                          }))}
+                          placeholder="e.g., TH/s, Terahash/s, TeraHash per second"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="price_per_th">Price per TH ($) *</Label>
+                        <Input
+                          id="price_per_th"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={formData.price_per_th || ''}
+                          onChange={(e) => setFormData(prev => ({ 
+                            ...prev, 
+                            price_per_th: parseFloat(e.target.value) || 0 
+                          }))}
+                          placeholder="Price per TH unit"
+                          required
+                        />
+                      </div>
+                    </div>
+
                     <div>
-                      <Label htmlFor="asking_price">Asking Price ($) *</Label>
+                      <Label htmlFor="asking_price">Total Price ($) *</Label>
                       <Input
                         id="asking_price"
                         type="number"
@@ -532,7 +567,7 @@ export const VoltMarketCreateListing: React.FC = () => {
                           ...prev, 
                           asking_price: parseFloat(e.target.value) || 0 
                         }))}
-                        placeholder="Price per unit or total price"
+                        placeholder="Total price for all units"
                         required
                       />
                     </div>

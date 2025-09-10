@@ -44,6 +44,8 @@ interface ListingData {
   manufacture_year?: number;
   quantity?: number;
   shipping_terms?: string;
+  th_specification?: string;
+  price_per_th?: number;
   status: string;
 }
 
@@ -141,6 +143,8 @@ export const VoltMarketEditListing: React.FC = () => {
           manufacture_year: listing.manufacture_year,
           quantity: listing.quantity,
           shipping_terms: listing.shipping_terms,
+          th_specification: listing.th_specification,
+          price_per_th: listing.price_per_th,
           updated_at: new Date().toISOString()
         })
         .eq('id', listing.id)
@@ -394,6 +398,28 @@ export const VoltMarketEditListing: React.FC = () => {
                     value={listing.model || ''}
                     onChange={(e) => handleInputChange('model', e.target.value)}
                     placeholder="e.g., Antminer S19"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="th_specification">TH Specification</Label>
+                  <Input
+                    id="th_specification"
+                    value={listing.th_specification || ''}
+                    onChange={(e) => handleInputChange('th_specification', e.target.value)}
+                    placeholder="e.g., TH/s, Terahash/s"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="price_per_th">Price per TH ($)</Label>
+                  <Input
+                    id="price_per_th"
+                    type="number"
+                    step="0.01"
+                    value={listing.price_per_th || ''}
+                    onChange={(e) => handleInputChange('price_per_th', parseFloat(e.target.value) || 0)}
+                    placeholder="0.00"
                   />
                 </div>
               </div>
