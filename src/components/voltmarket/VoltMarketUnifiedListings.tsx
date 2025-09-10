@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,7 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { VoltMarketListingCard } from './VoltMarketListingCard';
+import { useVoltMarketListings } from '@/hooks/useVoltMarketListings';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   Search, 
@@ -57,8 +58,8 @@ interface Listing {
 }
 
 export const VoltMarketUnifiedListings: React.FC = () => {
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { listings: hookListings, loading } = useVoltMarketListings();
+  const [processedListings, setProcessedListings] = useState<Listing[]>([]);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   
   // Basic search state
@@ -72,22 +73,10 @@ export const VoltMarketUnifiedListings: React.FC = () => {
   const [usePriceFilter, setUsePriceFilter] = useState(false);
   const [useCapacityFilter, setUseCapacityFilter] = useState(false);
 
-  const fetchListings = async () => {
-    console.log('Fetching listings...');
+  const processListings = useCallback(async (baseListings: any[]) => {
     try {
-      const { data: listingsData, error } = await supabase
-        .from('voltmarket_listings')
-        .select(`
-          *,
-          voltmarket_listing_images(image_url)
-        `)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      // Apply filters
-      let filteredData = listingsData || [];
+      // Apply advanced filters
+      let filteredData = baseListings;
       
       // Apply price filter if enabled
       if (usePriceFilter) {
@@ -113,8 +102,6 @@ export const VoltMarketUnifiedListings: React.FC = () => {
 
       const profilesMap = new Map(profilesData?.map(p => [p.user_id, p]) || []);
 
-      console.log('Listings query result:', { data: filteredData, error });
-
       // Transform the data to match the expected interface
       const transformedData = filteredData.map(listing => ({
         ...listing,
@@ -123,15 +110,13 @@ export const VoltMarketUnifiedListings: React.FC = () => {
         gridbazaar_profiles: profilesMap.get(listing.seller_id) || null
       }));
       
-      setListings(transformedData);
+      setProcessedListings(transformedData);
     } catch (error) {
-      console.error('Error fetching listings:', error);
-    } finally {
-      setLoading(false);
+      console.error('Error processing listings:', error);
     }
-  };
+  }, [usePriceFilter, useCapacityFilter, priceRange, capacityRange]);
 
-  const filteredListings = listings.filter(listing => {
+  const filteredListings = processedListings.filter(listing => {
     const matchesSearch = searchQuery === '' || 
       listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       listing.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -148,7 +133,7 @@ export const VoltMarketUnifiedListings: React.FC = () => {
     return matchesSearch && matchesType && matchesLocation;
   });
 
-  const uniqueLocations = Array.from(new Set(listings.map(l => l.location.split(',').pop()?.trim()))).filter(Boolean);
+  const uniqueLocations = Array.from(new Set(processedListings.map(l => l.location.split(',').pop()?.trim()))).filter(Boolean);
 
   const clearAllFilters = () => {
     setSearchQuery('');
@@ -169,73 +154,11 @@ export const VoltMarketUnifiedListings: React.FC = () => {
   ].filter(Boolean).length;
 
   useEffect(() => {
-    fetchListings();
-  }, [usePriceFilter, useCapacityFilter, priceRange, capacityRange]);
+    if (hookListings.length > 0) {
+      processListings(hookListings);
+    }
+  }, [hookListings, processListings]);
 
-  // Set up real-time subscription for listing changes
-  useEffect(() => {
-    console.log('Setting up real-time subscription for listing changes');
-    const channel = supabase
-      .channel('voltmarket-listing-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'voltmarket_listings'
-        },
-        (payload) => {
-          console.log('Real-time listing change received:', payload);
-          
-          // Handle different events
-          if (payload.eventType === 'DELETE') {
-            console.log('Processing DELETE event for listing:', payload.old?.id);
-            // Remove deleted listing from state immediately
-            setListings(prev => {
-              const beforeCount = prev.length;
-              const filtered = prev.filter(listing => listing.id !== payload.old?.id);
-              console.log(`Browse listings count changed from ${beforeCount} to ${filtered.length}`);
-              return filtered;
-            });
-          } else if (payload.eventType === 'UPDATE') {
-            console.log('Processing UPDATE event for listing:', payload.new?.id, 'status:', payload.new?.status);
-            // Handle status changes (inactive listings should be filtered out)
-            if (payload.new.status !== 'active') {
-              setListings(prev => {
-                const beforeCount = prev.length;
-                const filtered = prev.filter(listing => listing.id !== payload.new.id);
-                console.log(`Removed inactive listing, count changed from ${beforeCount} to ${filtered.length}`);
-                return filtered;
-              });
-            } else {
-              // Update existing listing
-              setListings(prev => prev.map(listing => 
-                listing.id === payload.new.id 
-                  ? { ...listing, ...payload.new }
-                  : listing
-              ));
-            }
-          } else if (payload.eventType === 'INSERT' && payload.new.status === 'active') {
-            console.log('Processing INSERT event for new active listing:', payload.new?.id);
-            // Add new active listings - refetch to get complete data with profiles
-            fetchListings();
-          }
-        }
-      )
-      .subscribe((status) => {
-        console.log('Real-time subscription status:', status);
-        if (status === 'SUBSCRIBED') {
-          console.log('Successfully subscribed to voltmarket_listings changes');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('Real-time subscription error');
-        }
-      });
-
-    return () => {
-      console.log('Cleaning up real-time subscription');
-      supabase.removeChannel(channel);
-    };
-  }, [fetchListings]);
 
   if (loading) {
     return (
