@@ -172,6 +172,29 @@ export const VoltMarketUnifiedListings: React.FC = () => {
     fetchListings();
   }, [usePriceFilter, useCapacityFilter, priceRange, capacityRange]);
 
+  // Set up real-time subscription for listing changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('listing-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'voltmarket_listings'
+        },
+        () => {
+          // Refetch listings when any change occurs
+          fetchListings();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">

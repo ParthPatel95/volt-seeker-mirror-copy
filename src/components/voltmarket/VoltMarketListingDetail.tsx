@@ -55,6 +55,10 @@ interface ListingDetail {
   model?: string;
   equipment_condition?: string;
   quantity?: number;
+  manufacture_year?: number;
+  shipping_terms?: string;
+  th_specification?: string;
+  price_per_th?: number;
   gridbazaar_profiles: {
     company_name: string;
     is_id_verified: boolean;
@@ -384,38 +388,124 @@ export const VoltMarketListingDetail: React.FC = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3 md:space-y-4">
-                        {listing.power_capacity_mw > 0 && (
-                          <div className="flex items-center justify-between py-2 border-b">
-                            <div className="flex items-center gap-2 min-w-0">
-                              <Zap className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                              <span className="font-medium text-sm md:text-base">Power Capacity</span>
+                        {listing.listing_type === 'equipment' ? (
+                          // Equipment-specific specifications
+                          <>
+                            {listing.brand && (
+                              <div className="flex items-center justify-between py-2 border-b">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <Building2 className="w-4 h-4 text-purple-600 flex-shrink-0" />
+                                  <span className="font-medium text-sm md:text-base">Brand</span>
+                                </div>
+                                <span className="text-base md:text-lg font-semibold flex-shrink-0">{listing.brand}</span>
+                              </div>
+                            )}
+                            {listing.model && (
+                              <div className="flex items-center justify-between py-2 border-b">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <Zap className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                                  <span className="font-medium text-sm md:text-base">Model</span>
+                                </div>
+                                <span className="text-base md:text-lg font-semibold flex-shrink-0">{listing.model}</span>
+                              </div>
+                            )}
+                            {listing.th_specification && (
+                              <div className="flex items-center justify-between py-2 border-b">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <Zap className="w-4 h-4 text-orange-600 flex-shrink-0" />
+                                  <span className="font-medium text-sm md:text-base">Hash Rate</span>
+                                </div>
+                                <span className="text-base md:text-lg font-semibold flex-shrink-0">{listing.th_specification}</span>
+                              </div>
+                            )}
+                            {listing.price_per_th && listing.price_per_th > 0 && (
+                              <div className="flex items-center justify-between py-2 border-b">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <DollarSign className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                  <span className="font-medium text-sm md:text-base">Price per TH</span>
+                                </div>
+                                <span className="text-base md:text-lg font-semibold text-green-600 flex-shrink-0">${listing.price_per_th}</span>
+                              </div>
+                            )}
+                            {listing.equipment_condition && (
+                              <div className="flex items-center justify-between py-2 border-b">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <Shield className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                                  <span className="font-medium text-sm md:text-base">Condition</span>
+                                </div>
+                                <span className="text-base md:text-lg font-semibold flex-shrink-0 capitalize">{listing.equipment_condition}</span>
+                              </div>
+                            )}
+                            {listing.quantity && listing.quantity > 0 && (
+                              <div className="flex items-center justify-between py-2 border-b">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <Building2 className="w-4 h-4 text-gray-600 flex-shrink-0" />
+                                  <span className="font-medium text-sm md:text-base">Quantity</span>
+                                </div>
+                                <span className="text-base md:text-lg font-semibold flex-shrink-0">{listing.quantity.toLocaleString()} units</span>
+                              </div>
+                            )}
+                            {listing.manufacture_year && (
+                              <div className="flex items-center justify-between py-2 border-b">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <Calendar className="w-4 h-4 text-gray-600 flex-shrink-0" />
+                                  <span className="font-medium text-sm md:text-base">Manufacture Year</span>
+                                </div>
+                                <span className="text-base md:text-lg font-semibold flex-shrink-0">{listing.manufacture_year}</span>
+                              </div>
+                            )}
+                            <div className="flex items-center justify-between py-2 border-b">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <MapPin className="w-4 h-4 text-red-600 flex-shrink-0" />
+                                <span className="font-medium text-sm md:text-base">Location</span>
+                              </div>
+                              <span className="text-base md:text-lg font-semibold flex-shrink-0 text-right">{listing.location}</span>
                             </div>
-                            <span className="text-base md:text-lg font-semibold text-blue-600 flex-shrink-0">{listing.power_capacity_mw}MW</span>
-                          </div>
-                        )}
-                        {listing.square_footage && (
-                          <div className="flex items-center justify-between py-2 border-b">
-                            <div className="flex items-center gap-2 min-w-0">
-                              <Building2 className="w-4 h-4 text-green-600 flex-shrink-0" />
-                              <span className="font-medium text-sm md:text-base">Acres</span>
+                            <div className="flex items-center justify-between py-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <DollarSign className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                <span className="font-medium text-sm md:text-base">Total Price</span>
+                              </div>
+                              <span className="text-base md:text-lg font-semibold text-green-600 flex-shrink-0">{getPriceDisplay()}</span>
                             </div>
-                            <span className="text-base md:text-lg font-semibold flex-shrink-0">{listing.square_footage.toLocaleString()} acres</span>
-                          </div>
+                          </>
+                        ) : (
+                          // Site/hosting specifications
+                          <>
+                            {listing.power_capacity_mw > 0 && (
+                              <div className="flex items-center justify-between py-2 border-b">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <Zap className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                                  <span className="font-medium text-sm md:text-base">Power Capacity</span>
+                                </div>
+                                <span className="text-base md:text-lg font-semibold text-blue-600 flex-shrink-0">{listing.power_capacity_mw}MW</span>
+                              </div>
+                            )}
+                            {listing.square_footage && (
+                              <div className="flex items-center justify-between py-2 border-b">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <Building2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                  <span className="font-medium text-sm md:text-base">Acres</span>
+                                </div>
+                                <span className="text-base md:text-lg font-semibold flex-shrink-0">{listing.square_footage.toLocaleString()} acres</span>
+                              </div>
+                            )}
+                            <div className="flex items-center justify-between py-2 border-b">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <MapPin className="w-4 h-4 text-red-600 flex-shrink-0" />
+                                <span className="font-medium text-sm md:text-base">Location</span>
+                              </div>
+                              <span className="text-base md:text-lg font-semibold flex-shrink-0 text-right">{listing.location}</span>
+                            </div>
+                            <div className="flex items-center justify-between py-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <DollarSign className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                <span className="font-medium text-sm md:text-base">Price</span>
+                              </div>
+                              <span className="text-base md:text-lg font-semibold text-green-600 flex-shrink-0">{getPriceDisplay()}</span>
+                            </div>
+                          </>
                         )}
-                        <div className="flex items-center justify-between py-2 border-b">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <MapPin className="w-4 h-4 text-red-600 flex-shrink-0" />
-                            <span className="font-medium text-sm md:text-base">Location</span>
-                          </div>
-                          <span className="text-base md:text-lg font-semibold flex-shrink-0 text-right">{listing.location}</span>
-                        </div>
-                        <div className="flex items-center justify-between py-2">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <DollarSign className="w-4 h-4 text-green-600 flex-shrink-0" />
-                            <span className="font-medium text-sm md:text-base">Price</span>
-                          </div>
-                          <span className="text-base md:text-lg font-semibold text-green-600 flex-shrink-0">{getPriceDisplay()}</span>
-                        </div>
                       </div>
                     </CardContent>
                   </Card>
