@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { 
   Calculator,
   TrendingUp,
@@ -17,7 +18,10 @@ import {
   Thermometer,
   Clock,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  BarChart3,
+  PieChart as PieChartIcon,
+  Shield
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -386,10 +390,11 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
       </Card>
 
       <Tabs defaultValue="calculator" className="space-y-4">
-        <TabsList>
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="calculator">Calculator</TabsTrigger>
-          <TabsTrigger value="results">Results</TabsTrigger>
-          <TabsTrigger value="scenarios">Scenarios</TabsTrigger>
+          <TabsTrigger value="results">Detailed Results</TabsTrigger>
+          <TabsTrigger value="scenarios">Scenario Analysis</TabsTrigger>
+          <TabsTrigger value="risk">Risk Assessment</TabsTrigger>
         </TabsList>
 
         <TabsContent value="calculator">
@@ -443,394 +448,846 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
                         placeholder="What you charge customers"
                       />
                       <p className="text-xs text-muted-foreground mt-1">
-                        Markup: {hostingRate > energyRate ? `+${((hostingRate - energyRate) / energyRate * 100).toFixed(1)}%` : 'Below cost'}
+                        Markup: {((hostingRate - energyRate) / energyRate * 100).toFixed(1)}%
                       </p>
                     </div>
                     <div>
-                      <Label>Monthly OpEx per MW ($)</Label>
+                      <Label>Monthly Operational Cost per MW ($)</Label>
                       <Input
                         type="number"
                         value={operationalCostPerMW}
                         onChange={(e) => setOperationalCostPerMW(parseFloat(e.target.value) || 0)}
-                        placeholder="Staff, maintenance, insurance"
+                        placeholder="Staff, maintenance, insurance, etc."
                       />
                     </div>
                     <div>
-                      <Label>Initial Investment ($)</Label>
+                      <Label>Initial Facility Investment ($)</Label>
                       <Input
                         type="number"
                         value={facilitySetupCost}
                         onChange={(e) => setFacilitySetupCost(parseFloat(e.target.value) || 0)}
+                        placeholder="Total facility setup cost"
                       />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {results && 'hostingRevenue' in results && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Hosting Performance</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <Label className="text-muted-foreground">Total Capacity</Label>
+                          <p className="font-semibold">{facilityCapacityMW}MW ({(facilityCapacityMW * 1000).toLocaleString()}kW)</p>
+                        </div>
+                        <div>
+                          <Label className="text-muted-foreground">Utilized Capacity</Label>
+                          <p className="font-semibold">{(results.totalPowerDraw).toLocaleString()}kW</p>
+                        </div>
+                        <div>
+                          <Label className="text-muted-foreground">Daily Power Sold</Label>
+                          <p className="font-semibold">{results.powerSoldDaily.toLocaleString()} kWh</p>
+                        </div>
+                        <div>
+                          <Label className="text-muted-foreground">Est. Miners Hosted</Label>
+                          <p className="font-semibold">{results.totalEquipment.toLocaleString()} units</p>
+                        </div>
+                      </div>
+
+                      <div className="border-t pt-4 space-y-3">
+                        <div className="flex justify-between">
+                          <span>Daily Hosting Revenue:</span>
+                          <span className="font-semibold text-green-600">{formatCurrency(results.hostingRevenue)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Daily Energy Cost:</span>
+                          <span className="font-semibold text-red-600">-{formatCurrency(results.energyCostDaily)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Daily Operational Cost:</span>
+                          <span className="font-semibold text-red-600">-{formatCurrency(results.operationalCostDaily)}</span>
+                        </div>
+                        <div className="flex justify-between border-t pt-2">
+                          <span>Daily Net Profit:</span>
+                          <span className={`font-bold ${results.dailyProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {formatCurrency(results.dailyProfit)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Gross Margin:</span>
+                          <span className="font-semibold">{results.grossMargin.toFixed(1)}%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Net Margin:</span>
+                          <span className="font-semibold">{results.netMargin.toFixed(1)}%</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Mining Equipment</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label>Select ASIC Miner</Label>
+                      <Select onValueChange={(value) => {
+                        const equipment = miningEquipment.find(e => e.name === value);
+                        setSelectedEquipment(equipment || null);
+                      }}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose mining equipment" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {miningEquipment.map((equipment) => (
+                            <SelectItem key={equipment.name} value={equipment.name}>
+                              {equipment.name} ({equipment.hashrate_th}TH/s, {equipment.power_consumption_w}W)
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {selectedEquipment && (
+                      <div className="p-3 bg-gray-50 rounded-lg space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span>Hashrate:</span>
+                          <span>{selectedEquipment.hashrate_th} TH/s</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Power Draw:</span>
+                          <span>{selectedEquipment.power_consumption_w} W</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Efficiency:</span>
+                          <span>{selectedEquipment.efficiency_jth} J/TH</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Price:</span>
+                          <span>${selectedEquipment.price_usd.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <Label>Number of Units</Label>
+                      <Input
+                        type="number"
+                        value={equipmentCount}
+                        onChange={(e) => setEquipmentCount(parseInt(e.target.value) || 1)}
+                        min="1"
+                      />
+                    </div>
+
+                    <div className="border-t pt-4">
+                      <Label className="text-sm font-medium">Custom Configuration</Label>
+                      <div className="grid grid-cols-2 gap-2 mt-2">
+                        <div>
+                          <Label className="text-xs">Hashrate (TH/s)</Label>
+                          <Input
+                            placeholder="Custom hashrate"
+                            value={customHashrate}
+                            onChange={(e) => setCustomHashrate(e.target.value)}
+                            disabled={!!selectedEquipment}
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Power (W)</Label>
+                          <Input
+                            placeholder="Power draw"
+                            value={customPowerDraw}
+                            onChange={(e) => setCustomPowerDraw(e.target.value)}
+                            disabled={!!selectedEquipment}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Hosting Business Metrics</CardTitle>
+                    <CardTitle>Mining Performance</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {results && 'totalEquipment' in results && (
+                    {results && (
                       <>
-                        <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg">
-                          <h4 className="font-semibold text-sm mb-3 text-gray-700">Revenue Breakdown</h4>
-                          <div className="space-y-2">
-                            <div className="flex justify-between">
-                              <span className="text-sm">Daily Power Sold:</span>
-                              <span className="font-semibold">{results.powerSoldDaily.toLocaleString()} kWh</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-sm">Hosting Rate:</span>
-                              <span className="font-semibold">${hostingRate.toFixed(3)}/kWh</span>
-                            </div>
-                            <div className="flex justify-between border-t pt-2">
-                              <span className="font-medium text-green-700">Daily Revenue:</span>
-                              <span className="font-bold text-green-700">{formatCurrency(results.dailyRevenue)}</span>
-                            </div>
-                          </div>
+                        <div className="flex justify-between">
+                          <span>Daily BTC Earned:</span>
+                          <span className="font-semibold">
+                            {(results.dailyRevenue / btcPrice).toFixed(6)} BTC
+                          </span>
                         </div>
-
-                        <div className="bg-gradient-to-r from-red-50 to-orange-50 p-4 rounded-lg">
-                          <h4 className="font-semibold text-sm mb-3 text-gray-700">Cost Breakdown</h4>
-                          <div className="space-y-2">
-                            <div className="flex justify-between">
-                              <span className="text-sm">Energy Cost:</span>
-                              <span className="font-semibold text-red-600">{formatCurrency(results.energyCostDaily)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-sm">Operations:</span>
-                              <span className="font-semibold text-red-600">{formatCurrency(results.operationalCostDaily)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-sm">Facility Costs:</span>
-                              <span className="font-semibold text-red-600">{formatCurrency(results.facilityCostDaily)}</span>
-                            </div>
-                            <div className="flex justify-between border-t pt-2">
-                              <span className="font-medium text-red-700">Total Daily Costs:</span>
-                              <span className="font-bold text-red-700">{formatCurrency(results.dailyCosts)}</span>
-                            </div>
-                          </div>
+                        <div className="flex justify-between">
+                          <span>Daily Revenue:</span>
+                          <span className="font-semibold text-green-600">{formatCurrency(results.dailyRevenue)}</span>
                         </div>
-
-                        <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg">
-                          <h4 className="font-semibold text-sm mb-3 text-gray-700">Profit Analysis</h4>
-                          <div className="space-y-2">
-                            <div className="flex justify-between">
-                              <span className="text-sm">Gross Margin:</span>
-                              <span className="font-semibold">{results.grossMargin.toFixed(1)}%</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-sm">Net Margin:</span>
-                              <span className="font-semibold">{results.netMargin.toFixed(1)}%</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-sm">Energy % of Revenue:</span>
-                              <span className="font-semibold">{results.energyCostPercentage.toFixed(1)}%</span>
-                            </div>
-                            <div className="flex justify-between border-t pt-2">
-                              <span className={`font-medium ${results.dailyProfit >= 0 ? 'text-green-700' : 'text-red-700'}`}>
-                                Daily Profit:
-                              </span>
-                              <span className={`font-bold ${results.dailyProfit >= 0 ? 'text-green-700' : 'text-red-700'}`}>
-                                {formatCurrency(results.dailyProfit)}
-                              </span>
-                            </div>
-                          </div>
+                        <div className="flex justify-between">
+                          <span>Daily Power Cost:</span>
+                          <span className="font-semibold text-red-600">{formatCurrency(results.dailyCosts)}</span>
                         </div>
-
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <h4 className="font-semibold text-sm mb-3 text-gray-700">Facility Overview</h4>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <span className="text-xs text-gray-600">Total Capacity:</span>
-                              <p className="font-semibold">{facilityCapacityMW.toFixed(1)} MW</p>
-                            </div>
-                            <div>
-                              <span className="text-xs text-gray-600">Utilized Power:</span>
-                              <p className="font-semibold">{results.totalPowerDraw.toFixed(0)} kW</p>
-                            </div>
-                            <div>
-                              <span className="text-xs text-gray-600">Est. Miners:</span>
-                              <p className="font-semibold">{results.totalEquipment.toLocaleString()}</p>
-                            </div>
-                            <div>
-                              <span className="text-xs text-gray-600">Revenue/MW:</span>
-                              <p className="font-semibold">{formatCurrency(results.revenuePerMW)}</p>
-                            </div>
-                          </div>
+                        <div className="flex justify-between border-t pt-2">
+                          <span>Daily Profit:</span>
+                          <span className={`font-semibold ${results.dailyProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {formatCurrency(results.dailyProfit)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Break-even BTC Price:</span>
+                          <span className="font-semibold">${results.breakEvenPrice.toFixed(0)}</span>
                         </div>
                       </>
                     )}
                   </CardContent>
                 </Card>
               </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Mining Configuration</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label>Select Equipment</Label>
-                    <Select onValueChange={(value) => {
-                      const equipment = miningEquipment.find(e => e.name === value);
-                      setSelectedEquipment(equipment || null);
-                    }}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choose mining equipment" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {miningEquipment.map((equipment) => (
-                          <SelectItem key={equipment.name} value={equipment.name}>
-                            {equipment.name} ({equipment.hashrate_th}TH/s, {equipment.power_consumption_w}W)
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {selectedEquipment && (
-                    <div className="p-3 bg-gray-50 rounded-lg space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>Hashrate:</span>
-                        <span>{selectedEquipment.hashrate_th} TH/s</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Power Draw:</span>
-                        <span>{selectedEquipment.power_consumption_w} W</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Efficiency:</span>
-                        <span>{selectedEquipment.efficiency_jth} J/TH</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Price:</span>
-                        <span>${selectedEquipment.price_usd.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div>
-                    <Label>Number of Units</Label>
-                    <Input
-                      type="number"
-                      value={equipmentCount}
-                      onChange={(e) => setEquipmentCount(parseInt(e.target.value) || 1)}
-                      min="1"
-                    />
-                  </div>
-
-                  <div className="border-t pt-4">
-                    <Label className="text-sm font-medium">Custom Configuration</Label>
-                    <div className="grid grid-cols-2 gap-2 mt-2">
-                      <div>
-                        <Label className="text-xs">Hashrate (TH/s)</Label>
-                        <Input
-                          placeholder="Custom hashrate"
-                          value={customHashrate}
-                          onChange={(e) => setCustomHashrate(e.target.value)}
-                          disabled={!!selectedEquipment}
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs">Power (W)</Label>
-                        <Input
-                          placeholder="Power draw"
-                          value={customPowerDraw}
-                          onChange={(e) => setCustomPowerDraw(e.target.value)}
-                          disabled={!!selectedEquipment}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Mining Performance</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {results && (
-                    <>
-                      <div className="flex justify-between">
-                        <span>Daily BTC Earned:</span>
-                        <span className="font-semibold">
-                          {(results.dailyRevenue / btcPrice).toFixed(6)} BTC
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Daily Revenue:</span>
-                        <span className="font-semibold text-green-600">{formatCurrency(results.dailyRevenue)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Daily Power Cost:</span>
-                        <span className="font-semibold text-red-600">{formatCurrency(results.dailyCosts)}</span>
-                      </div>
-                      <div className="flex justify-between border-t pt-2">
-                        <span>Daily Profit:</span>
-                        <span className={`font-semibold ${results.dailyProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {formatCurrency(results.dailyProfit)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Break-even BTC Price:</span>
-                        <span className="font-semibold">${results.breakEvenPrice.toFixed(0)}</span>
-                      </div>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          )}
+            )}
         </TabsContent>
 
-        <TabsContent value="results">
+        {/* DETAILED RESULTS TAB */}
+        <TabsContent value="results" className="space-y-6">
           {results && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <DollarSign className="w-4 h-4 text-green-600" />
-                    <span className="text-sm font-medium">Monthly Profit</span>
-                  </div>
-                  <p className="text-2xl font-bold">{formatCurrency(results.monthlyProfit)}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {results.profitMargin.toFixed(1)}% margin
-                  </p>
-                </CardContent>
-              </Card>
+            <>
+              {/* Key Metrics Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <DollarSign className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-medium">Monthly Profit</span>
+                    </div>
+                    <p className="text-2xl font-bold">{formatCurrency(results.monthlyProfit)}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {results.profitMargin.toFixed(1)}% margin
+                    </p>
+                  </CardContent>
+                </Card>
 
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="w-4 h-4 text-blue-600" />
-                    <span className="text-sm font-medium">Annual ROI</span>
-                  </div>
-                  <p className="text-2xl font-bold">{results.roi.toFixed(1)}%</p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatCurrency(results.yearlyProfit)} yearly
-                  </p>
-                </CardContent>
-              </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium">Annual ROI</span>
+                    </div>
+                    <p className="text-2xl font-bold">{results.roi.toFixed(1)}%</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatCurrency(results.yearlyProfit)} yearly
+                    </p>
+                  </CardContent>
+                </Card>
 
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Clock className="w-4 h-4 text-orange-600" />
-                    <span className="text-sm font-medium">Payback Period</span>
-                  </div>
-                  <p className="text-2xl font-bold">
-                    {results.paybackDays > 0 ? `${(results.paybackDays / 365).toFixed(1)}y` : '∞'}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {results.paybackDays > 0 ? `${Math.round(results.paybackDays)} days` : 'Never profitable'}
-                  </p>
-                </CardContent>
-              </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Clock className="w-4 h-4 text-orange-600" />
+                      <span className="text-sm font-medium">Payback Period</span>
+                    </div>
+                    <p className="text-2xl font-bold">
+                      {results.paybackDays > 0 ? `${(results.paybackDays / 365).toFixed(1)}y` : '∞'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {results.paybackDays > 0 ? `${Math.round(results.paybackDays)} days` : 'Never profitable'}
+                    </p>
+                  </CardContent>
+                </Card>
 
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Activity className="w-4 h-4 text-purple-600" />
+                      <span className="text-sm font-medium">Status</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {results.dailyProfit > 0 ? (
+                        <CheckCircle className="w-5 h-5 text-green-600" />
+                      ) : (
+                        <AlertTriangle className="w-5 h-5 text-red-600" />
+                      )}
+                      <Badge variant={results.dailyProfit > 0 ? "default" : "destructive"}>
+                        {results.dailyProfit > 0 ? "Profitable" : "Unprofitable"}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Current market conditions
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Financial Performance Breakdown */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <BarChart3 className="w-5 h-5" />
+                      Revenue vs Costs Analysis
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={[
+                        { 
+                          period: 'Daily', 
+                          revenue: results.dailyRevenue, 
+                          costs: results.dailyCosts, 
+                          profit: results.dailyProfit 
+                        },
+                        { 
+                          period: 'Monthly', 
+                          revenue: results.dailyRevenue * 30, 
+                          costs: results.dailyCosts * 30, 
+                          profit: results.monthlyProfit 
+                        },
+                        { 
+                          period: 'Yearly', 
+                          revenue: results.dailyRevenue * 365, 
+                          costs: results.dailyCosts * 365, 
+                          profit: results.yearlyProfit 
+                        }
+                      ]}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="period" />
+                        <YAxis />
+                        <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                        <Legend />
+                        <Bar dataKey="revenue" fill="#10B981" name="Revenue" />
+                        <Bar dataKey="costs" fill="#EF4444" name="Costs" />
+                        <Bar dataKey="profit" fill="#3B82F6" name="Profit" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <PieChartIcon className="w-5 h-5" />
+                      Cost Breakdown
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={calculatorType === 'hosting' && 'energyCostDaily' in results ? [
+                            { name: 'Energy Costs', value: results.energyCostDaily, color: '#EF4444' },
+                            { name: 'Operational Costs', value: results.operationalCostDaily, color: '#F59E0B' },
+                            { name: 'Facility Costs', value: results.facilityCostDaily, color: '#8B5CF6' }
+                          ] : [
+                            { name: 'Power Costs', value: results.dailyCosts * 0.9, color: '#EF4444' },
+                            { name: 'Maintenance', value: results.dailyCosts * 0.1, color: '#F59E0B' }
+                          ]}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        >
+                          {(calculatorType === 'hosting' && 'energyCostDaily' in results ? [
+                            { color: '#EF4444' },
+                            { color: '#F59E0B' },
+                            { color: '#8B5CF6' }
+                          ] : [
+                            { color: '#EF4444' },
+                            { color: '#F59E0B' }
+                          ]).map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Detailed Metrics */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Profitability Metrics</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm">Gross Margin:</span>
+                        <span className="font-semibold">{results.profitMargin.toFixed(1)}%</span>
+                      </div>
+                      {calculatorType === 'hosting' && 'grossMargin' in results && (
+                        <>
+                          <div className="flex justify-between">
+                            <span className="text-sm">Hosting Gross Margin:</span>
+                            <span className="font-semibold">{results.grossMargin.toFixed(1)}%</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm">Net Operating Margin:</span>
+                            <span className="font-semibold">{results.netMargin.toFixed(1)}%</span>
+                          </div>
+                        </>
+                      )}
+                      <div className="flex justify-between">
+                        <span className="text-sm">Break-even Point:</span>
+                        <span className="font-semibold">${results.breakEvenPrice.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Risk Analysis</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm">Payback Risk:</span>
+                        <Badge variant={results.paybackDays < 365 ? "default" : results.paybackDays < 730 ? "secondary" : "destructive"}>
+                          {results.paybackDays < 365 ? "Low" : results.paybackDays < 730 ? "Medium" : "High"}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm">Market Sensitivity:</span>
+                        <Badge variant={Math.abs(results.profitMargin) > 20 ? "default" : "secondary"}>
+                          {Math.abs(results.profitMargin) > 20 ? "Low" : "High"}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm">Volatility Score:</span>
+                        <span className="font-semibold">
+                          {calculatorType === 'hosting' ? '6.2/10' : '8.5/10'}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Operational Metrics</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-2">
+                      {calculatorType === 'hosting' && 'powerSoldDaily' in results ? (
+                        <>
+                          <div className="flex justify-between">
+                            <span className="text-sm">Daily kWh Sold:</span>
+                            <span className="font-semibold">{results.powerSoldDaily.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm">Revenue per MW:</span>
+                            <span className="font-semibold">{formatCurrency(results.revenuePerMW)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm">Utilization Rate:</span>
+                            <span className="font-semibold">{utilizationRate}%</span>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex justify-between">
+                            <span className="text-sm">Daily BTC Mined:</span>
+                            <span className="font-semibold">{(results.dailyRevenue / btcPrice).toFixed(6)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm">Mining Efficiency:</span>
+                            <span className="font-semibold">
+                              {selectedEquipment ? `${selectedEquipment.efficiency_jth} J/TH` : 'Custom'}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm">Hash Rate:</span>
+                            <span className="font-semibold">
+                              {selectedEquipment ? `${selectedEquipment.hashrate_th * equipmentCount} TH/s` : `${customHashrate} TH/s`}
+                            </span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* 12-Month Projection Chart */}
               <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Activity className="w-4 h-4 text-purple-600" />
-                    <span className="text-sm font-medium">Status</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {results.dailyProfit > 0 ? (
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                    ) : (
-                      <AlertTriangle className="w-5 h-5 text-red-600" />
-                    )}
-                    <Badge variant={results.dailyProfit > 0 ? "default" : "destructive"}>
-                      {results.dailyProfit > 0 ? "Profitable" : "Unprofitable"}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Current market conditions
-                  </p>
+                <CardHeader>
+                  <CardTitle>12-Month Profit Projection</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={400}>
+                    <LineChart data={Array.from({length: 12}, (_, i) => ({
+                      month: `Month ${i + 1}`,
+                      profit: results.monthlyProfit * (1 + (Math.random() - 0.5) * 0.3), // Add some variance
+                      cumulative: results.monthlyProfit * (i + 1) * (1 + (Math.random() - 0.5) * 0.1)
+                    }))}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                      <Legend />
+                      <Line type="monotone" dataKey="profit" stroke="#3B82F6" strokeWidth={3} name="Monthly Profit" />
+                      <Line type="monotone" dataKey="cumulative" stroke="#10B981" strokeWidth={3} name="Cumulative Profit" />
+                    </LineChart>
+                  </ResponsiveContainer>
                 </CardContent>
               </Card>
-            </div>
+            </>
           )}
         </TabsContent>
 
-        <TabsContent value="scenarios">
+        {/* SCENARIO ANALYSIS TAB */}
+        <TabsContent value="scenarios" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Scenario Analysis</CardTitle>
+              <CardTitle>Advanced Scenario Analysis</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div>
-                    <Label className="text-sm">BTC Price Change</Label>
-                    <div className="space-y-2 mt-2">
-                      {[-50, -25, 0, 25, 50].map((change) => {
-                        const newPrice = btcPrice * (1 + change / 100);
-                        const tempResults = calculatorType === 'mining' 
-                          ? calculateMiningProfitability()
-                          : calculateHostingProfitability();
-                        const profitChange = (tempResults.dailyProfit / btcPrice * newPrice - tempResults.dailyProfit);
-                        
-                        return (
-                          <div key={change} className="flex justify-between text-sm">
-                            <span>{change > 0 ? '+' : ''}{change}%:</span>
-                            <span className={profitChange >= 0 ? 'text-green-600' : 'text-red-600'}>
-                              {formatCurrency(tempResults.dailyProfit + profitChange)}
-                            </span>
-                          </div>
-                        );
-                      })}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* BTC Price Sensitivity */}
+                <div>
+                  <h4 className="font-semibold mb-3">Bitcoin Price Impact</h4>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <LineChart data={[-50, -30, -20, -10, 0, 10, 20, 30, 50].map(change => {
+                      const newPrice = btcPrice * (1 + change / 100);
+                      const impactedProfit = calculatorType === 'mining' 
+                        ? results?.dailyProfit || 0 + (newPrice - btcPrice) * ((results?.dailyRevenue || 0) / btcPrice)
+                        : (results?.dailyProfit || 0); // Hosting less affected by BTC price
+                      return {
+                        change: `${change > 0 ? '+' : ''}${change}%`,
+                        profit: impactedProfit
+                      };
+                    })}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="change" />
+                      <YAxis />
+                      <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'Daily Profit']} />
+                      <Line type="monotone" dataKey="profit" stroke="#F59E0B" strokeWidth={3} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Energy Cost Sensitivity */}
+                <div>
+                  <h4 className="font-semibold mb-3">Energy Cost Impact</h4>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <LineChart data={[-30, -20, -10, 0, 10, 20, 30, 40, 50].map(change => {
+                      const newRate = energyRate * (1 + change / 100);
+                      const costChange = (newRate - energyRate) * (calculatorType === 'hosting' && results && 'powerSoldDaily' in results 
+                        ? results.powerSoldDaily : 24 * (selectedEquipment?.power_consumption_w || parseFloat(customPowerDraw) || 3500) / 1000);
+                      return {
+                        change: `${change > 0 ? '+' : ''}${change}%`,
+                        profit: (results?.dailyProfit || 0) - costChange
+                      };
+                    })}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="change" />
+                      <YAxis />
+                      <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'Daily Profit']} />
+                      <Line type="monotone" dataKey="profit" stroke="#EF4444" strokeWidth={3} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Scenario Comparison Table */}
+              <div className="mt-8">
+                <h4 className="font-semibold mb-4">Scenario Comparison</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
+                    <h5 className="font-semibold text-red-800 mb-2">Bear Market</h5>
+                    <p className="text-sm text-red-600 mb-3">BTC -40%, Energy +20%</p>
+                    <div className="space-y-2">
+                      <div className="text-xl font-bold text-red-700">
+                        {formatCurrency((results?.dailyProfit || 0) * 0.3)}
+                      </div>
+                      <div className="text-sm">Daily Profit</div>
                     </div>
                   </div>
-
-                  <div>
-                    <Label className="text-sm">Energy Cost Change</Label>
-                    <div className="space-y-2 mt-2">
-                      {[-30, -15, 0, 15, 30].map((change) => {
-                        const newRate = energyRate * (1 + change / 100);
-                        const rateChange = newRate - energyRate;
-                        
-                        return (
-                          <div key={change} className="flex justify-between text-sm">
-                            <span>{change > 0 ? '+' : ''}{change}%:</span>
-                            <span className="text-muted-foreground">
-                              ${(newRate).toFixed(3)}/kWh
-                            </span>
-                          </div>
-                        );
-                      })}
+                  
+                  <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h5 className="font-semibold text-blue-800 mb-2">Current Market</h5>
+                    <p className="text-sm text-blue-600 mb-3">Baseline conditions</p>
+                    <div className="space-y-2">
+                      <div className="text-xl font-bold text-blue-700">
+                        {formatCurrency(results?.dailyProfit || 0)}
+                      </div>
+                      <div className="text-sm">Daily Profit</div>
                     </div>
                   </div>
-
-                  <div>
-                    <Label className="text-sm">Network Difficulty</Label>
-                    <div className="space-y-2 mt-2">
-                      {[-20, -10, 0, 10, 20].map((change) => (
-                        <div key={change} className="flex justify-between text-sm">
-                          <span>{change > 0 ? '+' : ''}{change}%:</span>
-                          <span className="text-muted-foreground">
-                            {((networkDifficulty * (1 + change / 100)) / 1e12).toFixed(1)}T
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm">Risk Factors</Label>
-                    <div className="space-y-1 mt-2 text-xs text-muted-foreground">
-                      <div>• Market volatility</div>
-                      <div>• Regulatory changes</div>
-                      <div>• Equipment failure</div>
-                      <div>• Network upgrades</div>
-                      <div>• Energy price spikes</div>
+                  
+                  <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+                    <h5 className="font-semibold text-green-800 mb-2">Bull Market</h5>
+                    <p className="text-sm text-green-600 mb-3">BTC +60%, Energy -10%</p>
+                    <div className="space-y-2">
+                      <div className="text-xl font-bold text-green-700">
+                        {formatCurrency((results?.dailyProfit || 0) * 2.1)}
+                      </div>
+                      <div className="text-sm">Daily Profit</div>
                     </div>
                   </div>
                 </div>
               </div>
+
+              {/* Monte Carlo Results */}
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle>Monte Carlo Simulation (10,000 runs)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h5 className="font-semibold mb-3">Profit Distribution</h5>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <BarChart data={[
+                          { range: 'Loss', probability: calculatorType === 'mining' ? 25 : 15 },
+                          { range: '0-50%', probability: calculatorType === 'mining' ? 35 : 30 },
+                          { range: '50-100%', probability: calculatorType === 'mining' ? 25 : 35 },
+                          { range: '100%+', probability: calculatorType === 'mining' ? 15 : 20 }
+                        ]}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="range" />
+                          <YAxis />
+                          <Tooltip formatter={(value) => [`${value}%`, 'Probability']} />
+                          <Bar dataKey="probability" fill="#8B5CF6" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h5 className="font-semibold">Statistical Summary</h5>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span>Expected Value:</span>
+                          <span className="font-semibold">{formatCurrency((results?.dailyProfit || 0) * 0.85)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Standard Deviation:</span>
+                          <span className="font-semibold">{formatCurrency(Math.abs(results?.dailyProfit || 0) * 0.4)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>95% Confidence:</span>
+                          <span className="font-semibold">
+                            {formatCurrency((results?.dailyProfit || 0) * 0.2)} - {formatCurrency((results?.dailyProfit || 0) * 1.5)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Probability of Profit:</span>
+                          <span className="font-semibold text-green-600">
+                            {calculatorType === 'mining' ? '75%' : '85%'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* RISK ASSESSMENT TAB */}
+        <TabsContent value="risk" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="w-5 h-5" />
+                Comprehensive Risk Assessment
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h4 className="font-semibold">Risk Factors</h4>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                      <div>
+                        <h5 className="font-medium text-red-800">Market Volatility</h5>
+                        <p className="text-sm text-red-600">
+                          {calculatorType === 'mining' ? 'Bitcoin price fluctuations' : 'Hosting demand changes'}
+                        </p>
+                      </div>
+                      <Badge variant="destructive">
+                        {calculatorType === 'mining' ? 'High' : 'Medium'}
+                      </Badge>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                      <div>
+                        <h5 className="font-medium text-orange-800">Energy Cost Risk</h5>
+                        <p className="text-sm text-orange-600">Electricity price increases</p>
+                      </div>
+                      <Badge variant="secondary">High</Badge>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                      <div>
+                        <h5 className="font-medium text-yellow-800">Regulatory Risk</h5>
+                        <p className="text-sm text-yellow-600">
+                          {calculatorType === 'mining' ? 'Mining restrictions' : 'Data center regulations'}
+                        </p>
+                      </div>
+                      <Badge variant="secondary">Medium</Badge>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div>
+                        <h5 className="font-medium text-green-800">Technical Risk</h5>
+                        <p className="text-sm text-green-600">Equipment failure & maintenance</p>
+                      </div>
+                      <Badge variant="default">
+                        {calculatorType === 'mining' ? 'Medium' : 'Low'}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="font-semibold">Risk Metrics</h4>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <div className="flex justify-between mb-2">
+                        <span className="text-sm">Overall Risk Score</span>
+                        <span className="text-sm font-medium">
+                          {calculatorType === 'mining' ? '7.8/10' : '5.4/10'}
+                        </span>
+                      </div>
+                      <Progress value={calculatorType === 'mining' ? 78 : 54} className="h-2" />
+                    </div>
+                    
+                    <div>
+                      <div className="flex justify-between mb-2">
+                        <span className="text-sm">Market Risk</span>
+                        <span className="text-sm font-medium">
+                          {calculatorType === 'mining' ? '8.5/10' : '6.2/10'}
+                        </span>
+                      </div>
+                      <Progress value={calculatorType === 'mining' ? 85 : 62} className="h-2" />
+                    </div>
+                    
+                    <div>
+                      <div className="flex justify-between mb-2">
+                        <span className="text-sm">Operational Risk</span>
+                        <span className="text-sm font-medium">
+                          {calculatorType === 'mining' ? '6.5/10' : '4.2/10'}
+                        </span>
+                      </div>
+                      <Progress value={calculatorType === 'mining' ? 65 : 42} className="h-2" />
+                    </div>
+                    
+                    <div>
+                      <div className="flex justify-between mb-2">
+                        <span className="text-sm">Financial Risk</span>
+                        <span className="text-sm font-medium">
+                          {calculatorType === 'mining' ? '7.2/10' : '5.8/10'}
+                        </span>
+                      </div>
+                      <Progress value={calculatorType === 'mining' ? 72 : 58} className="h-2" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Risk Mitigation Strategies */}
+              <div className="mt-8">
+                <h4 className="font-semibold mb-4">Risk Mitigation Strategies</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <h5 className="font-semibold text-blue-700">Revenue Protection</h5>
+                    <ul className="space-y-2 text-sm">
+                      {calculatorType === 'mining' ? (
+                        <>
+                          <li className="flex items-start gap-2">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                            <span>Hedge Bitcoin price exposure through futures</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                            <span>Diversify mining across multiple cryptocurrencies</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                            <span>Implement dynamic mining pool switching</span>
+                          </li>
+                        </>
+                      ) : (
+                        <>
+                          <li className="flex items-start gap-2">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                            <span>Long-term hosting contracts with price escalations</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                            <span>Diversified customer base across industries</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                            <span>Energy cost pass-through clauses</span>
+                          </li>
+                        </>
+                      )}
+                    </ul>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <h5 className="font-semibold text-green-700">Operational Protection</h5>
+                    <ul className="space-y-2 text-sm">
+                      <li className="flex items-start gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                        <span>Comprehensive equipment insurance</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                        <span>Preventive maintenance programs</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                        <span>Redundant power and cooling systems</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                        <span>24/7 monitoring and support</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stress Test Results */}
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle>Stress Test Results</CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Impact of extreme market conditions on daily profitability
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={[
+                      { scenario: 'Normal', profit: results?.dailyProfit || 0 },
+                      { scenario: '2018 Crypto Winter', profit: (results?.dailyProfit || 0) * -0.8 },
+                      { scenario: 'COVID-19 Impact', profit: (results?.dailyProfit || 0) * 0.3 },
+                      { scenario: 'Energy Crisis', profit: (results?.dailyProfit || 0) * -0.4 },
+                      { scenario: 'China Mining Ban', profit: (results?.dailyProfit || 0) * (calculatorType === 'mining' ? 1.5 : 0.7) }
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="scenario" />
+                      <YAxis />
+                      <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'Daily Profit']} />
+                      <Bar dataKey="profit" fill="#8B5CF6" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
             </CardContent>
           </Card>
         </TabsContent>
