@@ -152,10 +152,10 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
         setEnergyRate(0.085); // $0.085/kWh average industrial rate
       }
 
-      toast({
-        title: "Market Data Updated",
-        description: `Live BTC price: $${marketData?.btcPrice?.toLocaleString() || 'N/A'} | Energy: $${energyRate.toFixed(3)}/kWh`,
-      });
+      // toast({
+      //   title: "Market Data Updated", 
+      //   description: `Live BTC price: $${marketData?.btcPrice?.toLocaleString() || 'N/A'} | Energy: $${energyRate.toFixed(3)}/kWh`,
+      // });
       
     } catch (error) {
       console.error('Error fetching live market data:', error);
