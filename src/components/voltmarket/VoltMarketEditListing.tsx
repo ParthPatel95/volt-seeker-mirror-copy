@@ -297,7 +297,7 @@ export const VoltMarketEditListing: React.FC = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="square_footage">Square Footage</Label>
+                  <Label htmlFor="square_footage">Acres</Label>
                   <Input
                     id="square_footage"
                     type="number"

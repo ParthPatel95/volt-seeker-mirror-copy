@@ -397,7 +397,7 @@ export const VoltMarketListingDetail: React.FC = () => {
                           <div className="flex items-center justify-between py-2 border-b">
                             <div className="flex items-center gap-2 min-w-0">
                               <Building2 className="w-4 h-4 text-green-600 flex-shrink-0" />
-                              <span className="font-medium text-sm md:text-base">Square Footage</span>
+                              <span className="font-medium text-sm md:text-base">Acres</span>
                             </div>
                             <span className="text-base md:text-lg font-semibold flex-shrink-0">{listing.square_footage.toLocaleString()} acres</span>
                           </div>
@@ -477,7 +477,7 @@ export const VoltMarketListingDetail: React.FC = () => {
                       )}
                       {listing.square_footage && (
                         <div>
-                          <label className="text-sm font-medium text-gray-500">Square Footage</label>
+                          <label className="text-sm font-medium text-gray-500">Acres</label>
                           <div className="flex items-center gap-1">
                             <Building2 className="w-4 h-4 text-blue-600" />
                             <span>{listing.square_footage.toLocaleString()} acres</span>

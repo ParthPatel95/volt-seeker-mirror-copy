@@ -868,7 +868,7 @@ export const VoltMarketCreateListing: React.FC = () => {
                   )}
                   {formData.square_footage > 0 && (
                     <div>
-                      <strong>Square Footage:</strong> {formData.square_footage.toLocaleString()} acres
+                      <strong>Acres:</strong> {formData.square_footage.toLocaleString()} acres
                     </div>
                   )}
                   {selectedTags.length > 0 && (
