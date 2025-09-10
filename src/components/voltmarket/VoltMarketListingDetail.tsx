@@ -30,7 +30,19 @@ import {
   Calendar,
   User,
   FileText,
-  Shield
+  Shield,
+  Settings,
+  Cpu,
+  Gauge,
+  Battery,
+  Package,
+  Truck,
+  Square,
+  Award,
+  Snowflake,
+  Home,
+  Server,
+  TrendingUp
 } from 'lucide-react';
 
 interface ListingDetail {
@@ -552,65 +564,265 @@ export const VoltMarketListingDetail: React.FC = () => {
               <TabsContent value="details">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Specifications</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                      <Settings className="w-5 h-5" />
+                      Detailed Specifications
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {listing.power_capacity_mw > 0 && (
+                    {listing.listing_type === 'equipment' ? (
+                      // Equipment specifications with enhanced layout
+                      <div className="space-y-6">
+                        {/* Hardware Information */}
                         <div>
-                          <label className="text-sm font-medium text-gray-500">Power Capacity</label>
-                          <div className="flex items-center gap-1">
-                            <Zap className="w-4 h-4 text-blue-600" />
-                            <span>{listing.power_capacity_mw}MW</span>
+                          <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                            <Cpu className="w-5 h-5" />
+                            Hardware Information
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {listing.brand && (
+                              <div className="bg-muted/50 p-4 rounded-lg">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Building2 className="w-4 h-4 text-blue-600" />
+                                  <label className="text-sm font-medium text-muted-foreground">Brand</label>
+                                </div>
+                                <span className="text-lg font-semibold">{listing.brand}</span>
+                              </div>
+                            )}
+                            {listing.model && (
+                              <div className="bg-muted/50 p-4 rounded-lg">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Zap className="w-4 h-4 text-purple-600" />
+                                  <label className="text-sm font-medium text-muted-foreground">Model</label>
+                                </div>
+                                <span className="text-lg font-semibold">{listing.model}</span>
+                              </div>
+                            )}
+                            {listing.equipment_condition && (
+                              <div className="bg-muted/50 p-4 rounded-lg">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Shield className="w-4 h-4 text-green-600" />
+                                  <label className="text-sm font-medium text-muted-foreground">Condition</label>
+                                </div>
+                                <span className="text-lg font-semibold capitalize">{listing.equipment_condition}</span>
+                              </div>
+                            )}
+                            {listing.manufacture_year && (
+                              <div className="bg-muted/50 p-4 rounded-lg">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Calendar className="w-4 h-4 text-orange-600" />
+                                  <label className="text-sm font-medium text-muted-foreground">Manufacture Year</label>
+                                </div>
+                                <span className="text-lg font-semibold">{listing.manufacture_year}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
-                      )}
-                      {listing.square_footage && (
+
+                        {/* Performance Specifications */}
+                        {listing.th_specification && (
+                          <div>
+                            <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                              <Gauge className="w-5 h-5" />
+                              Performance Specifications
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20 p-4 rounded-lg border border-orange-200 dark:border-orange-800">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Zap className="w-4 h-4 text-orange-600" />
+                                  <label className="text-sm font-medium text-orange-700 dark:text-orange-300">Hash Rate</label>
+                                </div>
+                                <span className="text-xl font-bold text-orange-800 dark:text-orange-200">{listing.th_specification}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Inventory & Pricing */}
                         <div>
-                          <label className="text-sm font-medium text-gray-500">Acres</label>
-                          <div className="flex items-center gap-1">
-                            <Building2 className="w-4 h-4 text-blue-600" />
-                            <span>{listing.square_footage.toLocaleString()} acres</span>
+                          <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                            <Package className="w-5 h-5" />
+                            Inventory & Pricing
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {listing.quantity && listing.quantity > 0 && (
+                              <div className="bg-muted/50 p-4 rounded-lg">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Package className="w-4 h-4 text-indigo-600" />
+                                  <label className="text-sm font-medium text-muted-foreground">Available Quantity</label>
+                                </div>
+                                <span className="text-lg font-semibold">{listing.quantity.toLocaleString()} units</span>
+                              </div>
+                            )}
+                            {listing.price_per_th && listing.price_per_th > 0 && (
+                              <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <DollarSign className="w-4 h-4 text-green-600" />
+                                  <label className="text-sm font-medium text-green-700 dark:text-green-300">Price per TH/s</label>
+                                </div>
+                                <span className="text-xl font-bold text-green-800 dark:text-green-200">${listing.price_per_th}</span>
+                              </div>
+                            )}
+                            <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+                              <div className="flex items-center gap-2 mb-2">
+                                <DollarSign className="w-4 h-4 text-purple-600" />
+                                <label className="text-sm font-medium text-purple-700 dark:text-purple-300">Total Value</label>
+                              </div>
+                              <span className="text-xl font-bold text-purple-800 dark:text-purple-200">{getPriceDisplay()}</span>
+                            </div>
                           </div>
                         </div>
-                      )}
-                      {listing.facility_tier && (
+
+                        {/* Shipping & Terms */}
+                        {listing.shipping_terms && (
+                          <div>
+                            <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                              <Truck className="w-5 h-5" />
+                              Shipping & Terms
+                            </h3>
+                            <div className="bg-muted/50 p-4 rounded-lg">
+                              <p className="text-sm leading-relaxed">{listing.shipping_terms}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Location */}
                         <div>
-                          <label className="text-sm font-medium text-gray-500">Facility Tier</label>
-                          <span>{listing.facility_tier}</span>
+                          <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                            <MapPin className="w-5 h-5" />
+                            Location
+                          </h3>
+                          <div className="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-950/20 dark:to-pink-950/20 p-4 rounded-lg border border-red-200 dark:border-red-800">
+                            <div className="flex items-center gap-2 mb-2">
+                              <MapPin className="w-4 h-4 text-red-600" />
+                              <label className="text-sm font-medium text-red-700 dark:text-red-300">Available From</label>
+                            </div>
+                            <span className="text-lg font-semibold text-red-800 dark:text-red-200">{listing.location}</span>
+                          </div>
                         </div>
-                      )}
-                      {listing.cooling_type && (
+                      </div>
+                    ) : (
+                      // Site/hosting specifications with enhanced layout
+                      <div className="space-y-6">
+                        {/* Power Infrastructure */}
                         <div>
-                          <label className="text-sm font-medium text-gray-500">Cooling Type</label>
-                          <span>{listing.cooling_type}</span>
+                          <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                            <Zap className="w-5 h-5" />
+                            Power Infrastructure
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {listing.power_capacity_mw && listing.power_capacity_mw > 0 && (
+                              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Zap className="w-4 h-4 text-blue-600" />
+                                  <label className="text-sm font-medium text-blue-700 dark:text-blue-300">Total Power Capacity</label>
+                                </div>
+                                <span className="text-xl font-bold text-blue-800 dark:text-blue-200">{listing.power_capacity_mw} MW</span>
+                              </div>
+                            )}
+                            {listing.power_rate_per_kw && listing.power_rate_per_kw > 0 && (
+                              <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20 p-4 rounded-lg border border-orange-200 dark:border-orange-800">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <DollarSign className="w-4 h-4 text-orange-600" />
+                                  <label className="text-sm font-medium text-orange-700 dark:text-orange-300">Power Rate</label>
+                                </div>
+                                <span className="text-xl font-bold text-orange-800 dark:text-orange-200">${listing.power_rate_per_kw}/kW</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      )}
-                      {listing.brand && (
+
+                        {/* Facility Details */}
                         <div>
-                          <label className="text-sm font-medium text-gray-500">Brand</label>
-                          <span>{listing.brand}</span>
+                          <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                            <Building2 className="w-5 h-5" />
+                            Facility Details
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {listing.square_footage && listing.square_footage > 0 && (
+                              <div className="bg-muted/50 p-4 rounded-lg">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Square className="w-4 h-4 text-purple-600" />
+                                  <label className="text-sm font-medium text-muted-foreground">Site Area</label>
+                                </div>
+                                <span className="text-lg font-semibold">{listing.square_footage.toLocaleString()} acres</span>
+                              </div>
+                            )}
+                            {listing.facility_tier && (
+                              <div className="bg-muted/50 p-4 rounded-lg">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Award className="w-4 h-4 text-gold-600" />
+                                  <label className="text-sm font-medium text-muted-foreground">Facility Tier</label>
+                                </div>
+                                <span className="text-lg font-semibold capitalize">{listing.facility_tier}</span>
+                              </div>
+                            )}
+                            {listing.cooling_type && (
+                              <div className="bg-muted/50 p-4 rounded-lg">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Snowflake className="w-4 h-4 text-cyan-600" />
+                                  <label className="text-sm font-medium text-muted-foreground">Cooling System</label>
+                                </div>
+                                <span className="text-lg font-semibold capitalize">{listing.cooling_type}</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      )}
-                      {listing.model && (
+
+                        {/* Hosting Services */}
+                        {listing.listing_type === 'hosting' && listing.lease_rate && listing.lease_rate > 0 && (
+                          <div>
+                            <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                              <Server className="w-5 h-5" />
+                              Hosting Services
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <DollarSign className="w-4 h-4 text-green-600" />
+                                  <label className="text-sm font-medium text-green-700 dark:text-green-300">Lease Rate</label>
+                                </div>
+                                <span className="text-xl font-bold text-green-800 dark:text-green-200">${listing.lease_rate}/month</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Pricing */}
                         <div>
-                          <label className="text-sm font-medium text-gray-500">Model</label>
-                          <span>{listing.model}</span>
+                          <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                            <DollarSign className="w-5 h-5" />
+                            Pricing
+                          </h3>
+                          <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 p-6 rounded-lg border border-purple-200 dark:border-purple-800">
+                            <div className="flex items-center gap-2 mb-2">
+                              <DollarSign className="w-5 h-5 text-purple-600" />
+                              <label className="text-base font-medium text-purple-700 dark:text-purple-300">
+                                {listing.listing_type === 'site_sale' ? 'Sale Price' : 
+                                 listing.listing_type === 'site_lease' ? 'Lease Price' : 
+                                 listing.listing_type === 'hosting' ? 'Hosting Price' : 'Price'}
+                              </label>
+                            </div>
+                            <span className="text-2xl font-bold text-purple-800 dark:text-purple-200">{getPriceDisplay()}</span>
+                          </div>
                         </div>
-                      )}
-                      {listing.equipment_condition && (
+
+                        {/* Location */}
                         <div>
-                          <label className="text-sm font-medium text-gray-500">Condition</label>
-                          <span>{listing.equipment_condition}</span>
+                          <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                            <MapPin className="w-5 h-5" />
+                            Location
+                          </h3>
+                          <div className="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-950/20 dark:to-pink-950/20 p-4 rounded-lg border border-red-200 dark:border-red-800">
+                            <div className="flex items-center gap-2 mb-2">
+                              <MapPin className="w-4 h-4 text-red-600" />
+                              <label className="text-sm font-medium text-red-700 dark:text-red-300">Property Location</label>
+                            </div>
+                            <span className="text-lg font-semibold text-red-800 dark:text-red-200">{listing.location}</span>
+                          </div>
                         </div>
-                      )}
-                      {listing.quantity && listing.quantity > 1 && (
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">Quantity</label>
-                          <span>{listing.quantity} units</span>
-                        </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
