@@ -82,7 +82,7 @@ export const useVoltMarketListings = () => {
       
       console.log('Successfully deleted listing from database');
       
-      // Remove from local state immediately - this ensures instant UI update
+      // Remove from both local states immediately
       setUserListings(prev => {
         const updated = prev.filter(listing => listing.id !== listingId);
         console.log('Updated user listings after delete:', updated.length);
@@ -95,10 +95,8 @@ export const useVoltMarketListings = () => {
         return updated;
       });
       
-      // Force a refresh of listings to ensure consistency
-      setTimeout(() => {
-        fetchListings();
-      }, 100);
+      // Immediately refresh all listings to ensure consistency across all components
+      await fetchListings();
       
       return { success: true };
     } catch (error) {

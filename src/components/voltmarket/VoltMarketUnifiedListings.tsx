@@ -174,6 +174,7 @@ export const VoltMarketUnifiedListings: React.FC = () => {
 
   // Set up real-time subscription for listing changes
   useEffect(() => {
+    console.log('Setting up real-time subscription for listing changes');
     const channel = supabase
       .channel('voltmarket-listing-changes')
       .on(
@@ -184,23 +185,27 @@ export const VoltMarketUnifiedListings: React.FC = () => {
           table: 'voltmarket_listings'
         },
         (payload) => {
-          console.log('Real-time listing change:', payload);
+          console.log('Real-time listing change received:', payload);
           
           // Handle different events
           if (payload.eventType === 'DELETE') {
+            console.log('Processing DELETE event for listing:', payload.old?.id);
             // Remove deleted listing from state immediately
             setListings(prev => {
-              const updated = prev.filter(listing => listing.id !== payload.old?.id);
-              console.log(`Removed listing ${payload.old?.id} from browse listings`);
-              return updated;
+              const beforeCount = prev.length;
+              const filtered = prev.filter(listing => listing.id !== payload.old?.id);
+              console.log(`Browse listings count changed from ${beforeCount} to ${filtered.length}`);
+              return filtered;
             });
           } else if (payload.eventType === 'UPDATE') {
+            console.log('Processing UPDATE event for listing:', payload.new?.id, 'status:', payload.new?.status);
             // Handle status changes (inactive listings should be filtered out)
             if (payload.new.status !== 'active') {
               setListings(prev => {
-                const updated = prev.filter(listing => listing.id !== payload.new.id);
-                console.log(`Removed inactive listing ${payload.new.id} from browse listings`);
-                return updated;
+                const beforeCount = prev.length;
+                const filtered = prev.filter(listing => listing.id !== payload.new.id);
+                console.log(`Removed inactive listing, count changed from ${beforeCount} to ${filtered.length}`);
+                return filtered;
               });
             } else {
               // Update existing listing
@@ -211,13 +216,19 @@ export const VoltMarketUnifiedListings: React.FC = () => {
               ));
             }
           } else if (payload.eventType === 'INSERT' && payload.new.status === 'active') {
-            // Add new active listings
-            fetchListings(); // Refetch to get complete data with profiles
+            console.log('Processing INSERT event for new active listing:', payload.new?.id);
+            // Add new active listings - refetch to get complete data with profiles
+            fetchListings();
           }
         }
       )
       .subscribe((status) => {
         console.log('Real-time subscription status:', status);
+        if (status === 'SUBSCRIBED') {
+          console.log('Successfully subscribed to voltmarket_listings changes');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('Real-time subscription error');
+        }
       });
 
     return () => {
