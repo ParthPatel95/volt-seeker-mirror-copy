@@ -731,30 +731,45 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart data={[
-                        { 
-                          period: 'Daily', 
-                          revenue: results.dailyRevenue, 
-                          costs: results.dailyCosts, 
-                          profit: results.dailyProfit 
-                        },
-                        { 
-                          period: 'Monthly', 
-                          revenue: results.dailyRevenue * 30, 
-                          costs: results.dailyCosts * 30, 
-                          profit: results.monthlyProfit 
-                        },
-                        { 
-                          period: 'Yearly', 
-                          revenue: results.dailyRevenue * 365, 
-                          costs: results.dailyCosts * 365, 
-                          profit: results.yearlyProfit 
-                        }
-                      ]}>
+                    <ResponsiveContainer width="100%" height={350}>
+                      <BarChart 
+                        data={[
+                          { 
+                            period: 'Daily', 
+                            revenue: results.dailyRevenue, 
+                            costs: results.dailyCosts, 
+                            profit: results.dailyProfit 
+                          },
+                          { 
+                            period: 'Monthly', 
+                            revenue: results.dailyRevenue * 30, 
+                            costs: results.dailyCosts * 30, 
+                            profit: results.monthlyProfit 
+                          },
+                          { 
+                            period: 'Yearly', 
+                            revenue: results.dailyRevenue * 365, 
+                            costs: results.dailyCosts * 365, 
+                            profit: results.yearlyProfit 
+                          }
+                        ]}
+                        margin={{ top: 20, right: 30, left: 80, bottom: 20 }}
+                      >
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="period" />
-                        <YAxis />
+                        <XAxis 
+                          dataKey="period" 
+                          tick={{ fontSize: 12 }}
+                          interval={0}
+                        />
+                        <YAxis 
+                          tick={{ fontSize: 12 }}
+                          tickFormatter={(value) => {
+                            if (Math.abs(value) >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
+                            if (Math.abs(value) >= 1000) return `$${(value / 1000).toFixed(0)}K`;
+                            return `$${value.toFixed(0)}`;
+                          }}
+                          width={70}
+                        />
                         <Tooltip formatter={(value) => formatCurrency(Number(value))} />
                         <Legend />
                         <Bar dataKey="revenue" fill="#10B981" name="Revenue" />
@@ -773,8 +788,8 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <PieChart>
+                    <ResponsiveContainer width="100%" height={350}>
+                      <PieChart margin={{ top: 20, right: 30, left: 30, bottom: 20 }}>
                         <Pie
                           data={calculatorType === 'hosting' && 'energyCostDaily' in results ? [
                             { name: 'Energy Costs', value: results.energyCostDaily, color: '#EF4444' },
@@ -787,7 +802,7 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
                           cx="50%"
                           cy="50%"
                           labelLine={false}
-                          outerRadius={80}
+                          outerRadius={90}
                           fill="#8884d8"
                           dataKey="value"
                           label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
@@ -922,15 +937,30 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
                   <CardTitle>12-Month Profit Projection</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={400}>
-                    <LineChart data={Array.from({length: 12}, (_, i) => ({
-                      month: `Month ${i + 1}`,
-                      profit: results.monthlyProfit * (1 + (Math.random() - 0.5) * 0.3), // Add some variance
-                      cumulative: results.monthlyProfit * (i + 1) * (1 + (Math.random() - 0.5) * 0.1)
-                    }))}>
+                  <ResponsiveContainer width="100%" height={450}>
+                    <LineChart 
+                      data={Array.from({length: 12}, (_, i) => ({
+                        month: `M${i + 1}`,
+                        profit: results.monthlyProfit * (1 + (Math.random() - 0.5) * 0.3), // Add some variance
+                        cumulative: results.monthlyProfit * (i + 1) * (1 + (Math.random() - 0.5) * 0.1)
+                      }))}
+                      margin={{ top: 20, right: 30, left: 80, bottom: 20 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
+                      <XAxis 
+                        dataKey="month" 
+                        tick={{ fontSize: 12 }}
+                        interval={0}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12 }}
+                        tickFormatter={(value) => {
+                          if (Math.abs(value) >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
+                          if (Math.abs(value) >= 1000) return `$${(value / 1000).toFixed(0)}K`;
+                          return `$${value.toFixed(0)}`;
+                        }}
+                        width={70}
+                      />
                       <Tooltip formatter={(value) => formatCurrency(Number(value))} />
                       <Legend />
                       <Line type="monotone" dataKey="profit" stroke="#3B82F6" strokeWidth={3} name="Monthly Profit" />
@@ -954,20 +984,34 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
                 {/* BTC Price Sensitivity */}
                 <div>
                   <h4 className="font-semibold mb-3">Bitcoin Price Impact</h4>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={[-50, -30, -20, -10, 0, 10, 20, 30, 50].map(change => {
-                      const newPrice = btcPrice * (1 + change / 100);
-                      const impactedProfit = calculatorType === 'mining' 
-                        ? results?.dailyProfit || 0 + (newPrice - btcPrice) * ((results?.dailyRevenue || 0) / btcPrice)
-                        : (results?.dailyProfit || 0); // Hosting less affected by BTC price
-                      return {
-                        change: `${change > 0 ? '+' : ''}${change}%`,
-                        profit: impactedProfit
-                      };
-                    })}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart 
+                      data={[-50, -30, -20, -10, 0, 10, 20, 30, 50].map(change => {
+                        const newPrice = btcPrice * (1 + change / 100);
+                        const impactedProfit = calculatorType === 'mining' 
+                          ? results?.dailyProfit || 0 + (newPrice - btcPrice) * ((results?.dailyRevenue || 0) / btcPrice)
+                          : (results?.dailyProfit || 0); // Hosting less affected by BTC price
+                        return {
+                          change: `${change > 0 ? '+' : ''}${change}%`,
+                          profit: impactedProfit
+                        };
+                      })}
+                      margin={{ top: 20, right: 30, left: 80, bottom: 20 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="change" />
-                      <YAxis />
+                      <XAxis 
+                        dataKey="change" 
+                        tick={{ fontSize: 12 }}
+                        interval={0}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12 }}
+                        tickFormatter={(value) => {
+                          if (Math.abs(value) >= 1000) return `$${(value / 1000).toFixed(0)}K`;
+                          return `$${value.toFixed(0)}`;
+                        }}
+                        width={70}
+                      />
                       <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'Daily Profit']} />
                       <Line type="monotone" dataKey="profit" stroke="#F59E0B" strokeWidth={3} />
                     </LineChart>
@@ -977,19 +1021,33 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
                 {/* Energy Cost Sensitivity */}
                 <div>
                   <h4 className="font-semibold mb-3">Energy Cost Impact</h4>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={[-30, -20, -10, 0, 10, 20, 30, 40, 50].map(change => {
-                      const newRate = energyRate * (1 + change / 100);
-                      const costChange = (newRate - energyRate) * (calculatorType === 'hosting' && results && 'powerSoldDaily' in results 
-                        ? results.powerSoldDaily : 24 * (selectedEquipment?.power_consumption_w || parseFloat(customPowerDraw) || 3500) / 1000);
-                      return {
-                        change: `${change > 0 ? '+' : ''}${change}%`,
-                        profit: (results?.dailyProfit || 0) - costChange
-                      };
-                    })}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart 
+                      data={[-30, -20, -10, 0, 10, 20, 30, 40, 50].map(change => {
+                        const newRate = energyRate * (1 + change / 100);
+                        const costChange = (newRate - energyRate) * (calculatorType === 'hosting' && results && 'powerSoldDaily' in results 
+                          ? results.powerSoldDaily : 24 * (selectedEquipment?.power_consumption_w || parseFloat(customPowerDraw) || 3500) / 1000);
+                        return {
+                          change: `${change > 0 ? '+' : ''}${change}%`,
+                          profit: (results?.dailyProfit || 0) - costChange
+                        };
+                      })}
+                      margin={{ top: 20, right: 30, left: 80, bottom: 20 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="change" />
-                      <YAxis />
+                      <XAxis 
+                        dataKey="change" 
+                        tick={{ fontSize: 12 }}
+                        interval={0}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12 }}
+                        tickFormatter={(value) => {
+                          if (Math.abs(value) >= 1000) return `$${(value / 1000).toFixed(0)}K`;
+                          return `$${value.toFixed(0)}`;
+                        }}
+                        width={70}
+                      />
                       <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'Daily Profit']} />
                       <Line type="monotone" dataKey="profit" stroke="#EF4444" strokeWidth={3} />
                     </LineChart>
@@ -1045,16 +1103,27 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <h5 className="font-semibold mb-3">Profit Distribution</h5>
-                      <ResponsiveContainer width="100%" height={200}>
-                        <BarChart data={[
-                          { range: 'Loss', probability: calculatorType === 'mining' ? 25 : 15 },
-                          { range: '0-50%', probability: calculatorType === 'mining' ? 35 : 30 },
-                          { range: '50-100%', probability: calculatorType === 'mining' ? 25 : 35 },
-                          { range: '100%+', probability: calculatorType === 'mining' ? 15 : 20 }
-                        ]}>
+                      <ResponsiveContainer width="100%" height={250}>
+                        <BarChart 
+                          data={[
+                            { range: 'Loss', probability: calculatorType === 'mining' ? 25 : 15 },
+                            { range: '0-50%', probability: calculatorType === 'mining' ? 35 : 30 },
+                            { range: '50-100%', probability: calculatorType === 'mining' ? 25 : 35 },
+                            { range: '100%+', probability: calculatorType === 'mining' ? 15 : 20 }
+                          ]}
+                          margin={{ top: 20, right: 30, left: 50, bottom: 20 }}
+                        >
                           <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="range" />
-                          <YAxis />
+                          <XAxis 
+                            dataKey="range" 
+                            tick={{ fontSize: 12 }}
+                            interval={0}
+                          />
+                          <YAxis 
+                            tick={{ fontSize: 12 }}
+                            tickFormatter={(value) => `${value}%`}
+                            width={40}
+                          />
                           <Tooltip formatter={(value) => [`${value}%`, 'Probability']} />
                           <Bar dataKey="probability" fill="#8B5CF6" />
                         </BarChart>
@@ -1271,17 +1340,34 @@ export const VoltMarketProfitabilityCalculator: React.FC<VoltMarketProfitability
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={[
-                      { scenario: 'Normal', profit: results?.dailyProfit || 0 },
-                      { scenario: '2018 Crypto Winter', profit: (results?.dailyProfit || 0) * -0.8 },
-                      { scenario: 'COVID-19 Impact', profit: (results?.dailyProfit || 0) * 0.3 },
-                      { scenario: 'Energy Crisis', profit: (results?.dailyProfit || 0) * -0.4 },
-                      { scenario: 'China Mining Ban', profit: (results?.dailyProfit || 0) * (calculatorType === 'mining' ? 1.5 : 0.7) }
-                    ]}>
+                  <ResponsiveContainer width="100%" height={350}>
+                    <BarChart 
+                      data={[
+                        { scenario: 'Normal', profit: results?.dailyProfit || 0 },
+                        { scenario: '2018 Winter', profit: (results?.dailyProfit || 0) * -0.8 },
+                        { scenario: 'COVID-19', profit: (results?.dailyProfit || 0) * 0.3 },
+                        { scenario: 'Energy Crisis', profit: (results?.dailyProfit || 0) * -0.4 },
+                        { scenario: 'Mining Ban', profit: (results?.dailyProfit || 0) * (calculatorType === 'mining' ? 1.5 : 0.7) }
+                      ]}
+                      margin={{ top: 20, right: 30, left: 80, bottom: 60 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="scenario" />
-                      <YAxis />
+                      <XAxis 
+                        dataKey="scenario" 
+                        tick={{ fontSize: 11 }}
+                        interval={0}
+                        angle={-45}
+                        textAnchor="end"
+                        height={80}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12 }}
+                        tickFormatter={(value) => {
+                          if (Math.abs(value) >= 1000) return `$${(value / 1000).toFixed(0)}K`;
+                          return `$${value.toFixed(0)}`;
+                        }}
+                        width={70}
+                      />
                       <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'Daily Profit']} />
                       <Bar dataKey="profit" fill="#8B5CF6" />
                     </BarChart>
