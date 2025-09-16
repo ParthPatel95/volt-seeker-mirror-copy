@@ -129,7 +129,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Update the user's email verification status in their profile
+    // Update the user's email verification status in their profile AND Supabase auth
     if (userId) {
       console.log('Updating user profile email verification status...')
       const { error: profileError } = await supabase
@@ -141,6 +141,23 @@ Deno.serve(async (req) => {
         console.error('Error updating profile:', profileError)
         // Don't fail the request if profile update fails, as the main verification succeeded
         console.log('Profile update failed but verification succeeded')
+      }
+
+      // CRITICAL: Also update Supabase Auth email_confirmed_at to sync with native auth system
+      console.log('Updating Supabase auth email confirmation...')
+      const { error: authUpdateError } = await supabase.auth.admin.updateUserById(
+        userId,
+        { 
+          email_confirm: true,
+          user_metadata: { email_verified: true }
+        }
+      )
+
+      if (authUpdateError) {
+        console.error('Error updating Supabase auth email confirmation:', authUpdateError)
+        // Don't fail the verification even if this fails
+      } else {
+        console.log('Successfully updated Supabase auth email confirmation')
       }
     }
 
