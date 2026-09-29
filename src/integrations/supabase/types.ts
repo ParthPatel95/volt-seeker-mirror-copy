@@ -3259,6 +3259,39 @@ export type Database = {
         }
         Relationships: []
       }
+      voltmarket_seller_directory: {
+        Row: {
+          bio: string | null
+          company_name: string
+          is_id_verified: boolean
+          member_since: string
+          profile_image_url: string | null
+          seller_type: string | null
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          bio?: string | null
+          company_name: string
+          is_id_verified?: boolean
+          member_since?: string
+          profile_image_url?: string | null
+          seller_type?: string | null
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          bio?: string | null
+          company_name?: string
+          is_id_verified?: boolean
+          member_since?: string
+          profile_image_url?: string | null
+          seller_type?: string | null
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       voltmarket_social_interactions: {
         Row: {
           content: string | null
@@ -3445,19 +3478,6 @@ export type Database = {
     Functions: {
       cleanup_old_predictions: { Args: never; Returns: undefined }
       generate_verification_code: { Args: never; Returns: string }
-      get_public_voltmarket_sellers: {
-        Args: never
-        Returns: {
-          bio: string
-          company_name: string
-          created_at: string
-          is_id_verified: boolean
-          profile_image_url: string
-          seller_type: string
-          user_id: string
-          website: string
-        }[]
-      }
       increment: {
         Args: { column_name: string; row_id: string; table_name: string }
         Returns: undefined
