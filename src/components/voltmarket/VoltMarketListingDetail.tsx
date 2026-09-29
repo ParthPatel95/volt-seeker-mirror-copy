@@ -897,7 +897,7 @@ export const VoltMarketListingDetail: React.FC = () => {
                           <h3 className="font-semibold text-lg">{listing.gridbazaar_profiles?.company_name || 'Marketplace Seller'}</h3>
                           {listing.gridbazaar_profiles?.seller_type && (
                             <p className="mt-1 text-sm capitalize text-muted-foreground">
-                              {listing.gridbazaar_profiles.seller_type.replaceAll('_', ' ')}
+                              {listing.gridbazaar_profiles.seller_type.replace(/_/g, ' ')}
                             </p>
                           )}
                         {listing.gridbazaar_profiles?.is_id_verified && (
