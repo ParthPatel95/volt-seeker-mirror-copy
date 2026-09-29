@@ -43,6 +43,7 @@ import {
   Home,
   Server,
   TrendingUp
+  ,Globe
 } from 'lucide-react';
 
 interface ListingDetail {
@@ -75,6 +76,10 @@ interface ListingDetail {
     company_name: string;
     is_id_verified: boolean;
     bio?: string;
+    seller_type?: string;
+    website?: string;
+    profile_image_url?: string;
+    member_since?: string;
   } | null;
 }
 
@@ -130,11 +135,13 @@ export const VoltMarketListingDetail: React.FC = () => {
       }
 
       // Then get the seller profile
-      const { data: profileData } = await supabase
-        .from('gridbazaar_profiles')
-        .select('company_name, is_id_verified, bio')
+      const { data: profileData, error: profileError } = await supabase
+        .from('voltmarket_seller_directory')
+        .select('company_name, is_id_verified, bio, seller_type, website, profile_image_url, member_since')
         .eq('user_id', listingData.seller_id)
         .maybeSingle();
+
+      if (profileError) throw profileError;
 
       const data = {
         ...listingData,
@@ -873,27 +880,61 @@ export const VoltMarketListingDetail: React.FC = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="font-semibold text-lg">{listing.gridbazaar_profiles?.company_name || 'Unknown Seller'}</h3>
+                    <div className="space-y-6">
+                      <div className="flex items-start gap-4">
+                        {listing.gridbazaar_profiles?.profile_image_url ? (
+                          <img
+                            src={listing.gridbazaar_profiles.profile_image_url}
+                            alt=""
+                            className="h-14 w-14 shrink-0 rounded-md object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-muted">
+                            <Building2 className="h-6 w-6 text-muted-foreground" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <h3 className="font-semibold text-lg">{listing.gridbazaar_profiles?.company_name || 'Marketplace Seller'}</h3>
+                          {listing.gridbazaar_profiles?.seller_type && (
+                            <p className="mt-1 text-sm capitalize text-muted-foreground">
+                              {listing.gridbazaar_profiles.seller_type.replace(/_/g, ' ')}
+                            </p>
+                          )}
                         {listing.gridbazaar_profiles?.is_id_verified && (
                           <Badge variant="outline" className="text-green-600 mt-1">
                             <Shield className="w-3 h-3 mr-1" />
                             Verified
                           </Badge>
                         )}
+                        </div>
                       </div>
                       {listing.gridbazaar_profiles?.bio && (
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-2">About</h4>
-                          <p className="text-gray-700">{listing.gridbazaar_profiles.bio}</p>
+                          <h4 className="font-medium mb-2">About</h4>
+                          <p className="text-muted-foreground leading-relaxed">{listing.gridbazaar_profiles.bio}</p>
                         </div>
                       )}
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Member Since</h4>
-                        <p className="text-gray-600">
-                          {new Date(listing.created_at).toLocaleDateString()}
-                        </p>
+                      <div className="grid gap-4 border-t pt-4 sm:grid-cols-2">
+                        <div>
+                          <h4 className="font-medium mb-1">Member Since</h4>
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(listing.gridbazaar_profiles?.member_since || listing.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+                          </p>
+                        </div>
+                        {listing.gridbazaar_profiles?.website && (
+                          <div>
+                            <h4 className="font-medium mb-1">Website</h4>
+                            <a
+                              href={listing.gridbazaar_profiles.website}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                            >
+                              <Globe className="h-4 w-4" />
+                              Visit company website
+                            </a>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </CardContent>

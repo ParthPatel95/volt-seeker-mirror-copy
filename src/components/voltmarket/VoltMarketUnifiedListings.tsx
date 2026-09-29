@@ -96,7 +96,7 @@ export const VoltMarketUnifiedListings: React.FC = () => {
       // Get seller profiles for all listings
       const sellerIds = [...new Set(filteredData.map(l => l.seller_id))];
       const { data: profilesData } = await supabase
-        .from('gridbazaar_profiles')
+        .from('voltmarket_seller_directory')
         .select('user_id, company_name, is_id_verified, bio')
         .in('user_id', sellerIds);
 

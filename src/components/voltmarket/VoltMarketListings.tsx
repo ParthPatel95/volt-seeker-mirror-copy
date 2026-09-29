@@ -40,10 +40,7 @@ export const VoltMarketListings: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('voltmarket_listings')
-        .select(`
-          *,
-          gridbazaar_profiles!seller_id(company_name, is_id_verified)
-        `)
+        .select('*')
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 
@@ -51,10 +48,18 @@ export const VoltMarketListings: React.FC = () => {
 
       if (error) throw error;
       
-      // Transform the data to match the expected interface
+      const sellerIds = [...new Set((data || []).map(listing => listing.seller_id))];
+      const { data: profiles, error: profilesError } = await supabase
+        .from('voltmarket_seller_directory')
+        .select('user_id, company_name, is_id_verified')
+        .in('user_id', sellerIds);
+
+      if (profilesError) throw profilesError;
+      const profilesByUserId = new Map((profiles || []).map(profile => [profile.user_id, profile]));
+
       const transformedData = data?.map(listing => ({
         ...listing,
-        gridbazaar_profiles: listing.gridbazaar_profiles
+        gridbazaar_profiles: profilesByUserId.get(listing.seller_id) || null
       })) || [];
       
       console.log('Transformed listings:', transformedData);
