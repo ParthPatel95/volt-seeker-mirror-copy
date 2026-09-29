@@ -176,7 +176,7 @@ export function EnhancedSatelliteAnalysisPanel() {
 
       if (status === 'confirmed') {
         // Store confirmed detection as substation
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('substations')
           .insert({
             name: `Satellite Detected ${detection.coordinates.lat.toFixed(4)}, ${detection.coordinates.lng.toFixed(4)}`,

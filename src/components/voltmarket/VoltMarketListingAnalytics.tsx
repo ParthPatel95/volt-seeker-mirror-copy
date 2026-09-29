@@ -353,7 +353,7 @@ export const VoltMarketListingAnalytics: React.FC<{ listingId: string }> = ({ li
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="views"
-                      label={({ location, percentage }) => `${location} ${percentage}%`}
+                      label={({ location, percentage }: any) => `${location} ${percentage}%`}
                     >
                       {analytics.geographicData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

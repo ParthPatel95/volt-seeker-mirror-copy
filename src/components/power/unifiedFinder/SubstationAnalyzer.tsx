@@ -51,7 +51,7 @@ export function useSubstationAnalyzer({
     for (const substation of substationsToStore) {
       try {
         // Check if substation already exists
-        const { data: existingSubstation, error: checkError } = await supabase
+        const { data: existingSubstation, error: checkError } = await (supabase as any)
           .from('substations')
           .select('id')
           .eq('name', substation.name)
@@ -70,7 +70,7 @@ export function useSubstationAnalyzer({
         }
 
         // Insert new substation
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('substations')
           .insert({
             name: substation.name,
@@ -182,7 +182,7 @@ export function useSubstationAnalyzer({
   const updateSubstationAnalysis = async (substation: DiscoveredSubstation, capacityResult: any, ownershipResult?: any): Promise<boolean> => {
     try {
       // First, try to find the substation by name and coordinates
-      const { data: existingSubstation, error: findError } = await supabase
+      const { data: existingSubstation, error: findError } = await (supabase as any)
         .from('substations')
         .select('id')
         .eq('name', substation.name)
@@ -201,7 +201,7 @@ export function useSubstationAnalyzer({
       }
 
       // Update the existing substation
-      const { error: updateError } = await supabase
+      const { error: updateError } = await (supabase as any)
         .from('substations')
         .update({
           capacity_mva: Math.round(capacityResult.estimatedCapacity.max * 1.25),

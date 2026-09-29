@@ -426,7 +426,7 @@ export const VoltMarketMarketReports: React.FC = () => {
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="value"
-                      label={({ sector, value }) => `${sector} ${value}%`}
+                      label={({ sector, value }: any) => `${sector} ${value}%`}
                     >
                       {marketData?.sectorData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

@@ -68,7 +68,7 @@ export const VoltMarketEditListing: React.FC = () => {
 
   const fetchListing = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('voltmarket_listings')
         .select('*')
         .eq('id', id)
@@ -114,7 +114,7 @@ export const VoltMarketEditListing: React.FC = () => {
 
     setSaving(true);
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('voltmarket_listings')
         .update({
           title: listing.title,

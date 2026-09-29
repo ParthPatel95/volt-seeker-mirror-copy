@@ -28,7 +28,7 @@ export function ScrapedPropertyCard({ property, onMoveToProperties, onDelete }: 
     setMoving(true);
     try {
       // Insert into main properties table with proper type mapping
-      const { error: insertError } = await supabase
+      const { error: insertError } = await (supabase as any)
         .from('properties')
         .insert({
           address: property.address,
@@ -54,7 +54,7 @@ export function ScrapedPropertyCard({ property, onMoveToProperties, onDelete }: 
       if (insertError) throw insertError;
 
       // Mark as moved in scraped_properties table
-      const { error: updateError } = await supabase
+      const { error: updateError } = await (supabase as any)
         .from('scraped_properties')
         .update({ description: property.description + " [Moved to Properties]" })
         .eq('id', property.id);
@@ -82,7 +82,7 @@ export function ScrapedPropertyCard({ property, onMoveToProperties, onDelete }: 
   const deleteProperty = async () => {
     setDeleting(true);
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('scraped_properties')
         .delete()
         .eq('id', property.id);
