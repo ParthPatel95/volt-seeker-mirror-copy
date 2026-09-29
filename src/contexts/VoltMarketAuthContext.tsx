@@ -55,7 +55,7 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
   const fetchProfile = async (userId: string) => {
     try {
       console.log('Fetching profile for user:', userId);
-      const { data: profileData, error } = await supabase
+      const { data: profileData, error } = await (supabase as any)
         .from('gridbazaar_profiles')
         .select('*')
         .eq('user_id', userId)
@@ -82,7 +82,7 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
   }) => {
     try {
       // For signup, we need to ensure the profile is created with proper auth context
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('gridbazaar_profiles')
         .insert({
           user_id: userId,
@@ -303,7 +303,7 @@ export const VoltMarketAuthProvider: React.FC<{ children: React.ReactNode }> = (
     if (!user) return { error: new Error('No user logged in') };
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('gridbazaar_profiles')
         .update(updates)
         .eq('user_id', user.id)

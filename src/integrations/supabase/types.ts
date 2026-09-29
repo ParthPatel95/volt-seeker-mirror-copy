@@ -439,7 +439,7 @@ export type Database = {
         Row: {
           company_name: string
           company_ticker: string | null
-          coordinates: unknown | null
+          coordinates: unknown
           created_at: string
           id: string
           location_description: string
@@ -451,7 +451,7 @@ export type Database = {
         Insert: {
           company_name: string
           company_ticker?: string | null
-          coordinates?: unknown | null
+          coordinates?: unknown
           created_at?: string
           id: string
           location_description: string
@@ -463,7 +463,7 @@ export type Database = {
         Update: {
           company_name?: string
           company_ticker?: string | null
-          coordinates?: unknown | null
+          coordinates?: unknown
           created_at?: string
           id?: string
           location_description?: string
@@ -887,7 +887,7 @@ export type Database = {
           address: string | null
           ai_insights: string | null
           city: string | null
-          coordinates: unknown | null
+          coordinates: unknown
           created_at: string
           created_by: string | null
           data_sources: Json | null
@@ -907,7 +907,7 @@ export type Database = {
           address?: string | null
           ai_insights?: string | null
           city?: string | null
-          coordinates?: unknown | null
+          coordinates?: unknown
           created_at?: string
           created_by?: string | null
           data_sources?: Json | null
@@ -927,7 +927,7 @@ export type Database = {
           address?: string | null
           ai_insights?: string | null
           city?: string | null
-          coordinates?: unknown | null
+          coordinates?: unknown
           created_at?: string
           created_by?: string | null
           data_sources?: Json | null
@@ -1560,7 +1560,7 @@ export type Database = {
           created_at: string | null
           details: Json | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           table_name: string | null
           user_agent: string | null
           user_id: string | null
@@ -1570,7 +1570,7 @@ export type Database = {
           created_at?: string | null
           details?: Json | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           table_name?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -1580,7 +1580,7 @@ export type Database = {
           created_at?: string | null
           details?: Json | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           table_name?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -2306,7 +2306,7 @@ export type Database = {
           capacity_utilization: number | null
           city: string
           confidence_level: number | null
-          coordinates: unknown | null
+          coordinates: unknown
           created_at: string
           created_by: string
           deleted_at: string | null
@@ -2348,7 +2348,7 @@ export type Database = {
           capacity_utilization?: number | null
           city: string
           confidence_level?: number | null
-          coordinates?: unknown | null
+          coordinates?: unknown
           created_at?: string
           created_by: string
           deleted_at?: string | null
@@ -2390,7 +2390,7 @@ export type Database = {
           capacity_utilization?: number | null
           city?: string
           confidence_level?: number | null
-          coordinates?: unknown | null
+          coordinates?: unknown
           created_at?: string
           created_by?: string
           deleted_at?: string | null
@@ -3437,14 +3437,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      cleanup_old_predictions: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      generate_verification_code: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      cleanup_old_predictions: { Args: never; Returns: undefined }
+      generate_verification_code: { Args: never; Returns: string }
       increment: {
         Args: { column_name: string; row_id: string; table_name: string }
         Returns: undefined
@@ -3453,10 +3447,7 @@ export type Database = {
         Args: { p_points: number; p_user_id: string }
         Returns: undefined
       }
-      is_voltscout_approved: {
-        Args: { user_id: string }
-        Returns: boolean
-      }
+      is_voltscout_approved: { Args: { user_id: string }; Returns: boolean }
       update_user_progress: {
         Args: { p_action_type: string; p_points: number; p_user_id: string }
         Returns: undefined
@@ -3540,12 +3531,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -3569,11 +3560,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -3594,11 +3585,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -3619,11 +3610,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -3636,11 +3627,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }

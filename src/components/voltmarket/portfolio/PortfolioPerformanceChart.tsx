@@ -124,7 +124,7 @@ export const PortfolioPerformanceChart: React.FC<PortfolioPerformanceChartProps>
                   formatCurrency(value),
                   name === 'value' ? 'Portfolio' : 'Benchmark'
                 ]}
-                labelFormatter={(date) => formatDate(date)}
+                labelFormatter={(date) => formatDate(String(date))}
               />
               <Area
                 type="monotone"

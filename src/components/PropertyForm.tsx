@@ -61,7 +61,7 @@ export function PropertyForm({ onPropertyAdded, onCancel }: PropertyFormProps) {
         created_by: user.id
       };
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('properties')
         .insert(propertyData);
 

@@ -60,7 +60,7 @@ export function GoogleMapsSubstationFinder() {
 
   const loadStoredSubstations = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('substations')
         .select('*')
         .order('created_at', { ascending: false }) as any;
@@ -221,7 +221,7 @@ export function GoogleMapsSubstationFinder() {
 
   const storeSubstationData = async (substation: DiscoveredSubstation, capacityResult: any) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('substations')
         .upsert({
           name: substation.name,

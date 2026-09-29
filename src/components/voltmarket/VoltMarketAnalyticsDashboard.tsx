@@ -272,7 +272,7 @@ export const VoltMarketAnalyticsDashboard: React.FC = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ category, count }) => `${category}: ${count}`}
+                    label={({ category, count }: any) => `${category}: ${count}`}
                     outerRadius={60}
                     fill="#8884d8"
                     dataKey="count"

@@ -62,7 +62,7 @@ export function useSubstationOperations() {
 
   const storeSubstationData = async (substation: DiscoveredSubstation, capacityResult: any) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('substations')
         .upsert({
           name: substation.name,
