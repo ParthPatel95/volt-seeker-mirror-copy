@@ -1,0 +1,1 @@
+alter table public.voltmarket_listings add column if not exists th_specification text, add column if not exists price_per_th numeric;

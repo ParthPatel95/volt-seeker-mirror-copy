@@ -2795,6 +2795,7 @@ export type Database = {
           model: string | null
           power_capacity_mw: number | null
           power_rate_per_kw: number | null
+          price_per_th: number | null
           property_type: string | null
           quantity: number | null
           requires_verification: boolean | null
@@ -2803,6 +2804,7 @@ export type Database = {
           specs: Json | null
           square_footage: number | null
           status: Database["public"]["Enums"]["voltmarket_listing_status"]
+          th_specification: string | null
           title: string
           updated_at: string
         }
@@ -2830,6 +2832,7 @@ export type Database = {
           model?: string | null
           power_capacity_mw?: number | null
           power_rate_per_kw?: number | null
+          price_per_th?: number | null
           property_type?: string | null
           quantity?: number | null
           requires_verification?: boolean | null
@@ -2838,6 +2841,7 @@ export type Database = {
           specs?: Json | null
           square_footage?: number | null
           status?: Database["public"]["Enums"]["voltmarket_listing_status"]
+          th_specification?: string | null
           title: string
           updated_at?: string
         }
@@ -2865,6 +2869,7 @@ export type Database = {
           model?: string | null
           power_capacity_mw?: number | null
           power_rate_per_kw?: number | null
+          price_per_th?: number | null
           property_type?: string | null
           quantity?: number | null
           requires_verification?: boolean | null
@@ -2873,6 +2878,7 @@ export type Database = {
           specs?: Json | null
           square_footage?: number | null
           status?: Database["public"]["Enums"]["voltmarket_listing_status"]
+          th_specification?: string | null
           title?: string
           updated_at?: string
         }
